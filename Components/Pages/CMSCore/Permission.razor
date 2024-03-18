@@ -1,0 +1,266 @@
+﻿@page "/CMSCore/Permission"
+@using EmptyProject.Areas.CMSCore.Entities;
+@using EmptyProject.Areas.CMSCore.Repositories;
+@using EmptyProject.Components.Shared;
+@using EmptyProject.Areas.CMSCore.DTOs;
+@inject UserRepository userRepository;
+@inject RoleRepository roleRepository;
+@inject MenuRepository menuRepository;
+@inject RoleMenuRepository rolemenuRepository;
+@inject StateContainer StateContainer;
+@inject NavigationManager NavigationManager;
+
+<PageTitle>Permissions - EmptyProject</PageTitle>
+
+<EmptyProject.Components.Layout.NavBarVerticalDashboard lstMenuResult="lstAllMenuByRoleIdNavBarVerticalDashboard"></EmptyProject.Components.Layout.NavBarVerticalDashboard>
+
+<div class="main-content position-relative max-height-vh-100 h-100">
+    <EmptyProject.Components.Layout.NavBarHorizontalDashboard></EmptyProject.Components.Layout.NavBarHorizontalDashboard>
+    <div class="container-fluid px-2 px-md-4">
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
+            <span class="mask bg-gradient-primary opacity-6"></span>
+        </div>
+        <div class="card card-body mx-3 mx-md-4 mt-n6">
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="mt-4 mb-2">
+                        Permissions
+                    </h4>
+                    <hr />
+                    <p>Choose a role</p>
+                    @if (lstAllRole != null)
+                    {
+                        @foreach (Role role in lstAllRole)
+                        {
+                            <button class="btn bg-gradient-primary mx-2"
+                                    @onclick="() => ChooseRole(role.Name)">
+                                @role.Name
+                            </button>
+                        }
+                    }
+                    <hr />
+                    @if (lstMenuWithState != null)
+                    {
+                        @if (lstMenuWithState.Count == 0)
+                        {
+                            <div class="d-flex justify-content-center">
+                                <a href="https://www.shutterstock.com/es/image-photo/astronaut-elements-this-image-furnished-by-1022034061"
+                                   target="_blank">
+                                    <img src="img/BasicCore/Astronaut.jpg"
+                                         alt="login-first">
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            @if (lstMenuWithState != null)
+                            {
+                                @foreach (MenuWithStateDTO menu in lstMenuWithState)
+                                {
+                                    if (menu.IsSelected)
+                                    {
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   checked
+                                                   @onchange="() => Submit(menu.MenuId, menu.IsSelected)"
+                                                   id="@menu.Name">
+                                            <label class="form-check-label"
+                                                   for="@menu.Name">
+                                                @menu.Name
+                                            </label>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   @onchange="() => Submit(menu.MenuId, menu.IsSelected)"
+                                                   id="@menu.Name">
+                                            <label class="form-check-label"
+                                                   for="@menu.Name">
+                                                @menu.Name
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    <hr />
+                </div>
+            </div>
+        </div>
+    </div>
+    <EmptyProject.Components.Layout.FooterDashboard></EmptyProject.Components.Layout.FooterDashboard>
+</div>
+
+@code{
+    #region Properties
+    public EmptyProject.Areas.CMSCore.Entities.User User { get; set; } = new();
+
+    public bool Toggle { get; set; } = false;
+
+    public int ChosenRole { get; set; }
+
+    public List<MenuWithStateDTO> lstMenuWithState { get; set; }
+
+    public List<Menu> lstAllMenuByRoleId { get; set; }
+
+    public List<Menu> lstAllMenuByRoleIdNavBarVerticalDashboard { get; set; }
+
+    public List<Role> lstAllRole { get; set; }
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //Look for saved user in shared component, simulates a session
+            User = StateContainer.User == null ? new() : StateContainer.User;
+
+            if (User.UserId != 0)
+            {
+                //Logged user
+                if (User.RoleId != 1) //Only Root can access
+                {
+                    NavigationManager.NavigateTo("403");
+                }
+                
+                Toggle = true;
+
+                List<Menu> lstMenu = menuRepository
+                                            .GetAll();
+
+                lstAllMenuByRoleId = rolemenuRepository
+                                            .GetAllByRoleId(User.RoleId, lstMenu);
+
+                lstAllMenuByRoleIdNavBarVerticalDashboard = rolemenuRepository
+                                                                .GetAllByRoleId(User.RoleId, lstMenu);
+
+                lstAllRole = roleRepository
+                                .GetAll();
+
+                lstMenuWithState = [];
+            }
+            else
+            {
+                //Not logged user
+                Toggle = false;
+
+                //Redirect to...
+                NavigationManager.NavigateTo("Login");
+            }
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+        }
+    }
+
+    private void ChooseRole(string chosenRole)
+    {
+        try
+        {
+            List<Menu> lstAllMenu = menuRepository
+                                            .GetAll();
+
+            if (chosenRole == "Root")
+            {
+                lstMenuWithState = rolemenuRepository
+                                            .GetAllWithStateByRoleId(1, lstAllMenu); //Role 1: Root
+                ChosenRole = 1;
+            }
+            else if(chosenRole == "Administrator")
+            {
+                lstMenuWithState = rolemenuRepository
+                                            .GetAllWithStateByRoleId(2, lstAllMenu); //Role 2: Administrator
+                ChosenRole = 2;
+            }
+            else
+            {
+                lstMenuWithState = rolemenuRepository
+                                            .GetAllWithStateByRoleId(3, lstAllMenu); //Role 3: Client
+
+                ChosenRole = 3;
+            }
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+        }
+    }
+
+    private void Submit(int menuId, bool isSelected)
+    {
+        try
+        {
+            //Delete by MenuId and RoleId
+            rolemenuRepository
+                    .DeleteByMenuIdAndRoleId(ChosenRole, menuId);
+
+            if (!isSelected)
+            {
+                RoleMenu rolemenu = new()
+                    {
+                        MenuId = menuId,
+                        RoleId = ChosenRole
+                    };
+
+                rolemenuRepository
+                        .Add(rolemenu);
+            }
+
+            //Re-render the page
+            InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+        }
+    }
+}

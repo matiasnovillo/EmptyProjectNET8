@@ -1,0 +1,44 @@
+﻿@page "/"
+
+@using EmptyProject.Areas.CMSCore.Entities;
+@using EmptyProject.Areas.CMSCore.Repositories;
+@using EmptyProject.Components.Shared;
+@inject UserRepository userRepository;
+@inject StateContainer StateContainer
+
+<PageTitle>Home - EmptyProject</PageTitle>
+
+<EmptyProject.Components.Layout.NavBarHorizontalHome></EmptyProject.Components.Layout.NavBarHorizontalHome>
+
+<h1>EmptyProject</h1>
+
+<EmptyProject.Components.Layout.FooterHome></EmptyProject.Components.Layout.FooterHome>
+
+@code{
+    protected override void OnInitialized()
+    {
+        try
+        {
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+        }
+
+    }
+}

@@ -1,0 +1,75 @@
+﻿@page "/RecuperarContrasena"
+
+<EmptyProject.Components.Layout.NavBarHorizontalHome></EmptyProject.Components.Layout.NavBarHorizontalHome>
+
+<div class="page-header min-vh-100"
+     style="background-image: url('img/EmptyProject/RecuperarContrasena.png');"
+     loading="lazy">
+    <div class="container my-auto">
+        <div class="row">
+            <div class="col-lg-4 col-md-7 mx-auto">
+                <div class="card z-index-0 my-auto">
+                    <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                        <div class="bg-gradient-success shadow-success border-radius-lg py-3 text-center">
+                            <h4 class="font-weight-bolder text-white mb-0 mt-1">
+                                Recuperar contraseña
+                            </h4>
+                            <p class="text-white mb-1 mt-2 mx-3">
+                                Por favor, ingrese su correo electrónico para recuperar su contraseña
+                            </p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form role="form">
+                            <div class="input-group input-group-static mb-3">
+                                <label>
+                                    Email
+                                </label>
+                                <input type="email" 
+                                    class="form-control" 
+                                    placeholder="mnovillo@gmail.com">
+                            </div>
+                            <div class="text-center">
+                                <button type="button" 
+                                    class="btn bg-gradient-dark btn-lg w-100 my-4 mb-2">
+                                    Enviar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<EmptyProject.Components.Layout.FooterHome></EmptyProject.Components.Layout.FooterHome>
+
+@code {
+    protected override void OnInitialized()
+    {
+        try
+        {
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+        }
+
+    }
+}

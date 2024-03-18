@@ -1,0 +1,132 @@
+﻿@page "/Dashboard"
+
+@using EmptyProject.Areas.CMSCore.Entities;
+@using EmptyProject.Areas.CMSCore.Repositories;
+@using EmptyProject.Components.Shared;
+@inject UserRepository userRepository;
+@inject RoleRepository roleRepository;
+@inject MenuRepository menuRepository;
+@inject RoleMenuRepository rolemenuRepository;
+@inject StateContainer StateContainer;
+@inject NavigationManager NavigationManager;
+
+<PageTitle>Tablero de control - EmptyProject</PageTitle>
+
+<EmptyProject.Components.Layout.NavBarVerticalDashboard lstMenuResult="lstMenuResult"></EmptyProject.Components.Layout.NavBarVerticalDashboard>
+
+<div class="main-content position-relative max-height-vh-100 h-100">
+    <EmptyProject.Components.Layout.NavBarHorizontalDashboard></EmptyProject.Components.Layout.NavBarHorizontalDashboard>
+    <div class="container-fluid px-2 px-md-4">
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
+        <span class="mask bg-gradient-primary opacity-6"></span>
+        </div>
+        <div class="card card-body mx-3 mx-md-4 mt-n6">
+            <div class="row gx-4 mb-2">
+                <div class="col-auto">
+                    <div class="avatar avatar-xl position-relative ml-3">
+                        <img src="..."
+                             alt="profile_image"
+                             class="w-100 border-radius-lg shadow-sm">
+                    </div>
+                </div>
+                <div class="col-auto my-auto">
+                    <div class="h-100">
+                        <h2 class="mb-1">
+                            @User.Email
+                        </h2>
+                        <p class="mb-0 font-weight-normal text-sm">
+              
+                        </p>
+                    </div>
+                    <hr />
+                </div>
+                <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
+                &nbsp;
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="mt-4 mb-4">
+                        Pages
+                    </h4>
+                    @if (lstMenuResult != null)
+                        {
+                        @foreach (Menu menu in lstMenuResult)
+                        {
+                            if (menu.MenuFatherId == 0)
+                            {
+                                @* <h6 class="mt-4">
+                    <i class="fas fa-folder"></i>&nbsp;
+                    @menu.Name
+                    </h6> *@
+                            }
+                            else
+                            {
+                                <NavLink class="btn bg-gradient-primary mx-1 my-1"
+                                            href="@menu.URLPath">
+                                    <i class="fas fa-file"></i>&nbsp;
+                                    @menu.Name
+                                </NavLink>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+<EmptyProject.Components.Layout.FooterDashboard></EmptyProject.Components.Layout.FooterDashboard>
+</div>
+
+@code{
+    #region Properties
+    public EmptyProject.Areas.CMSCore.Entities.User? User { get; set; } = new();
+
+    public List<Menu> lstMenuResult { get; set; } = [];
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //Look for saved user in shared component, simulates a session
+            User = StateContainer.User == null ? new() : StateContainer.User;
+
+            if (User.UserId != 0)
+            {
+                //Logged user
+
+                List<Menu> lstMenu = menuRepository
+                                                .GetAll();
+
+                lstMenuResult = rolemenuRepository
+                                            .GetAllByRoleId(User.RoleId, lstMenu);
+            }
+            else
+            {
+                //Not logged user
+
+                //Redirect to...
+                NavigationManager.NavigateTo("Login");
+            }
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+        } 
+    }
+}

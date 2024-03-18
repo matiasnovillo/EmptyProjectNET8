@@ -1,0 +1,300 @@
+
+@page "/CMSCore/MenuPage/{MenuId:int}"
+
+@using EmptyProject.Areas.CMSCore.Repositories;
+@using EmptyProject.Areas.CMSCore.Entities;
+@using EmptyProject.Areas.CMSCore.DTOs;
+@inject MenuRepository menuRepository;
+
+@if (MenuId == 0)
+{
+    <PageTitle>Add menu - EmptyProject</PageTitle>
+}
+else
+{
+    <PageTitle>Edit menu - EmptyProject</PageTitle>
+}
+
+<EmptyProject.Components.Layout.NavBarVerticalDashboard lstMenuResult="lstMenuResult"></EmptyProject.Components.Layout.NavBarVerticalDashboard>
+
+<div class="main-content position-relative max-height-vh-100 h-100">
+    <EmptyProject.Components.Layout.NavBarHorizontalDashboard></EmptyProject.Components.Layout.NavBarHorizontalDashboard>
+    <div class="container-fluid px-2 px-md-4">
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
+            <span class="mask bg-gradient-primary opacity-6"></span>
+        </div>
+        <div class="card card-body mx-3 mx-md-4 mt-n6">
+            <div class="card-header mb-0 pb-0 bg-white">
+                <h1 class="mb-3">
+                    @if(MenuId == 0)
+                    {
+                        <span>Add menu</span>
+                    }
+                    else
+                    {
+                        <span>Edit menu</span>
+                    }
+                </h1>
+                <NavLink class="btn btn-outline-info" href="CMSCore/MenuPage">
+                    <span class="fas fa-chevron-left"></span>
+                    &nbsp;Go back
+                </NavLink>
+            </div>
+            <div class="card-body px-0">
+                <form method="post" @onsubmit="Submit"
+                      @formname="menu-form" class="mb-4">
+                    <AntiforgeryToken />
+                    <!--Name-->
+                    <div class="mb-3">
+                        <label for="name"
+                               class="input-group input-group-static">
+                            Name
+                        </label>
+                        <input type="text"
+                               id="name"
+                               class="form-control"
+                               
+                               @bind="Menu!.Name" />
+                    </div>
+                    <!--MenuFatherId-->
+                    <div class="mb-3">
+                        <label for="menufatherid"
+                               class="input-group input-group-static">
+                            MenuFatherId
+                        </label>
+                        <input type="number"
+                               step="1"
+                               min="0" 
+                               max="5000" 
+                               id="menufatherid"
+                               class="form-control"
+                               
+                               @bind="Menu!.MenuFatherId" />
+                    </div>
+                    <!--Order-->
+                    <div class="mb-3">
+                        <label for="order"
+                               class="input-group input-group-static">
+                            Order
+                        </label>
+                        <input type="number"
+                               step="1"
+                               min="0" 
+                               max="5000" 
+                               id="order"
+                               class="form-control"
+                               
+                               @bind="Menu!.Order" />
+                    </div>
+                    <!--URLPath-->
+                    <div class="mb-3">
+                        <label for="urlpath"
+                               class="input-group input-group-static">
+                            URLPath
+                        </label>
+                        <input type="text"
+                               id="urlpath"
+                               class="form-control"
+                               
+                               @bind="Menu!.URLPath" />
+                    </div>
+                    <!--IconURLPath-->
+                    <div class="mb-3">
+                        <label for="iconurlpath"
+                               class="input-group input-group-static">
+                            IconURLPath
+                        </label>
+                        <input type="text"
+                               id="iconurlpath"
+                               class="form-control"
+                               
+                               @bind="Menu!.IconURLPath" />
+                    </div>
+                    
+                    <hr />
+                    <button id="btn-submit" type="submit"
+                            class="btn bg-gradient-primary">
+                        <i class="fas fa-pen"></i>
+                        @if (MenuId == 0)
+                        {
+                            <span>Add</span>
+                        }
+                        else
+                        {
+                            <span>Edit</span>
+                        }
+                    </button>
+                    <NavLink class="btn btn-outline-info" href="CMSCore/MenuPage">
+                        <span class="fas fa-chevron-left"></span>
+                        &nbsp;Go back
+                    </NavLink>
+                </form>
+                @if (MessageForForm != "")
+                {
+                    <span class="text-danger">
+                        @((MarkupString)MessageForForm)
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <EmptyProject.Components.Layout.FooterDashboard></EmptyProject.Components.Layout.FooterDashboard>
+</div>
+
+@code {
+    #region Properties
+    public List<Menu> lstMenuResult { get; set; } = [];
+
+    public List<Role> lstRole { get; set; } = [];
+
+    [Parameter]
+    public int MenuId { get; set; }
+
+    public string MessageForForm { get; set; } = "";
+
+    [SupplyParameterFromForm]
+    public Menu? Menu { get; set; }
+
+    public User? User { get; set; }
+
+
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //Look for saved user in shared component, simulates a session
+            User = StateContainer.User == null ? new() : StateContainer.User;
+
+            lstMenuResult = [];
+            Menu = new();
+
+            if (User != null)
+            {
+                if (User.UserId != 0)
+                {
+                    //Logged user
+                    if (User.RoleId != 1) //Only Root can access
+                    {
+                        NavigationManager.NavigateTo("403");
+                    }
+
+                    List<Menu> lstMenu = menuRepository
+                                        .GetAll();
+
+                    lstMenuResult = rolemenuRepository
+                                        .GetAllByRoleId(User.RoleId, lstMenu);
+
+                    lstRole = roleRepository.GetAll();
+
+                    if (MenuId == 0)
+                    {
+                        //Create new Menu
+                        Menu = new();
+                    }
+                    else
+                    {
+                        //Edit user
+                        //Populate user data
+                        Menu = menuRepository
+                                    .GetByMenuId(MenuId);
+                    }
+                }
+                else
+                {
+                    //Not logged user
+
+                    //Redirect to...
+                    NavigationManager.NavigateTo("Login");
+                }
+            }
+            else
+            {
+                //Impossible
+            }
+
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            MessageForForm = $@"There was a mistake. Try again.
+                             Error message: {ex.Message}";
+        }
+    }
+
+    private void Submit()
+    {
+        try
+        {
+            if (MenuId == 0)
+            {
+                //Create new Menu
+                Menu.MenuId = 0;
+                Menu.DateTimeCreation = DateTime.Now;
+                Menu.DateTimeLastModification = DateTime.Now;
+
+                menuRepository
+                        .Add(Menu);
+            }
+            else
+            {
+                //Update data
+                Menu.DateTimeLastModification = DateTime.Now;
+
+                menuRepository
+                            .Update(Menu);
+            }
+
+            //Redirect to users page
+            NavigationManager.NavigateTo("CMSCore/MenuPage");
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            MessageForForm = $@"There was a mistake. Try again.
+                             Error message: {ex.Message}";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    
+}
+

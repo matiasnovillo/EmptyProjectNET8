@@ -1,0 +1,120 @@
+﻿<!-- Navbar -->
+  <div class="container position-sticky z-index-sticky top-0">
+    <div class="row">
+      <div class="col-12">
+        <nav class="navbar navbar-expand-lg navbar-expand-lg blur border-radius-lg top-0 z-index-3 shadow position-absolute mt-4 py-2 start-0 end-0 mx-4 my-3 py-2 start-0 end-0 mx-4">
+          <div class="container-fluid px-0">
+            @* <img src="img/EmptyProject/EmptyProject.png" 
+            alt="logo-cordoba-lifestyle" 
+            height="100" /> *@
+            <NavLink class="navbar-brand font-weight-bolder ms-sm-3 d-none d-md-block" 
+            href="" 
+            rel="tooltip" 
+            title="Córdoba LifeStyle" 
+            data-placement="bottom">
+              Córdoba
+            </NavLink>
+            <NavLink class="navbar-brand font-weight-bolder ms-sm-3 d-block d-md-none" 
+            href="" 
+            rel="tooltip" 
+            title="Designed and Coded by Creative Tim" 
+            data-placement="bottom">
+              LifeStyle
+            </NavLink>
+            <NavLink href="Login/Dashboard" 
+                class="btn btn-sm bg-gradient-dark mb-0 ms-auto d-lg-none d-block">
+                Acceder           
+            </NavLink>
+            <button class="navbar-toggler" 
+            type="button" 
+            data-toggle="collapse" 
+            data-target="#navigation-control"
+            aria-controls="navigation-control"
+            aria-expanded="false" 
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon mt-2">
+                <span class="navbar-toggler-bar bar1"></span>
+                <span class="navbar-toggler-bar bar2"></span>
+                <span class="navbar-toggler-bar bar3"></span>
+            </span>
+            </button>
+            <div class="collapse navbar-collapse w-100 pt-3 pb-2 py-lg-0" 
+            id="navigation-control">
+              <ul class="navbar-nav navbar-nav-hover ms-auto">
+                <!--MARKETPLACE-->
+                <li class="nav-item mx-2">
+                    <NavLink role="button"
+                    class="nav-link ps-2 d-flex cursor-pointer align-items-center"
+                    id="dropdownMenuBlocks"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    href="Marketplace">
+                        <i class="fas fa-store"></i>&nbsp;
+                        Marketplace
+                    </NavLink>
+                </li>
+                <!--AGENDA-->
+                <li class="nav-item mx-2">
+                    <NavLink role="button"
+                    class="nav-link ps-2 d-flex cursor-pointer align-items-center"
+                    id="dropdownMenuBlocks"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    href="Agenda">
+                        <i class="fas fa-book"></i>&nbsp;
+                        Agenda
+                    </NavLink>
+                </li>
+                <!--TEMAS DE INTERES-->
+                <li class="nav-item mx-2">
+                    <NavLink role="button"
+                                class="nav-link ps-2 d-flex cursor-pointer align-items-center"
+                                id="dropdownMenuBlocks"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                href="TemasDeInteres">
+                        <i class="fas fa-image"></i>&nbsp;
+                        Temas de interés
+                    </NavLink>
+                </li>
+                <!--CONTACTO-->
+                <li class="nav-item mx-2">
+                  <NavLink role="button" 
+                      class="nav-link ps-2 d-flex cursor-pointer align-items-center" 
+                      id="dropdownMenuBlocks" 
+                      data-bs-toggle="dropdown" 
+                      aria-expanded="false"
+                      href="Contacto">
+                    <i class="fas fa-envelope"></i>&nbsp;
+                    Contacto
+                  </NavLink>
+                </li>
+                <!--REVISTA-->
+                <li class="nav-item mx-2">
+                  <NavLink role="button" 
+                      class="nav-link ps-2 d-flex cursor-pointer align-items-center" 
+                      id="dropdownMenuDocs" 
+                      data-bs-toggle="dropdown" 
+                      aria-expanded="false"
+                      href="RevistaDigital">
+                    <i class="fas fa-newspaper"></i>&nbsp;
+                        Revista
+                  </NavLink>
+                </li>
+              </ul>
+              <!--ACCEDER-->
+              <ul class="navbar-nav d-lg-block d-none">
+                <li class="nav-item">
+                    <NavLink href="Login/Dashboard"
+                    class="btn btn-sm bg-gradient-dark mb-0" 
+                    onclick="smoothToPricing('pricing-soft-ui')">
+                      Acceder
+                  </NavLink>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </div>

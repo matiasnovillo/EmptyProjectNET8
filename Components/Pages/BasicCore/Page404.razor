@@ -1,0 +1,65 @@
+﻿@page "/404"
+
+<PageTitle>404 - EmptyProject</PageTitle>
+
+<EmptyProject.Components.Layout.NavBarHorizontalHome></EmptyProject.Components.Layout.NavBarHorizontalHome>
+
+<div class="page-header align-items-start min-vh-100"
+     style="background-image: url(img/BasicCore/404Image.png);"
+     loading="lazy">
+    <span class="mask bg-gradient-dark opacity-6"></span>
+    <div class="container my-auto">
+        <div class="row">
+            <div class="col-lg-12 m-auto text-center">
+                <h1 class="display-1 text-bolder text-white">
+                    Página no encontrada 
+                </h1>
+                <h3 class="text-white">
+                    Lo sentimos pero la página que buscas no existe
+                </h3>
+                <p class="lead text-white">
+                    Te recomendamos ir a la página de inicio
+                </p>
+                <NavLink class="btn bg-gradient-warning mt-4"
+                href="/">
+                    <i class="fas fa-home"></i>
+                    Inicio
+                </NavLink>
+            </div>
+        </div>
+    </div>
+</div>
+
+<EmptyProject.Components.Layout.FooterHome></EmptyProject.Components.Layout.FooterHome>
+
+@code {
+    [Parameter]
+    public string Path { get; set; } = "";
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+        }
+
+    }
+}

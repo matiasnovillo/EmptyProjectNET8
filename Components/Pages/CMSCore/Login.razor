@@ -1,0 +1,263 @@
+﻿@page "/Login/{NextPageToSetUp}"
+
+@using EmptyProject.Areas.CMSCore.Entities;
+@using EmptyProject.Areas.CMSCore.Repositories;
+@using EmptyProject.Components.Shared;
+@inject UserRepository userRepository;
+@inject StateContainer StateContainer;
+@inject NavigationManager NavigationManager;
+
+<PageTitle>Login - EmptyProject</PageTitle>
+
+<div class="container position-sticky z-index-sticky top-0">
+    <div class="row">
+        <div class="col-12">
+            <EmptyProject.Components.Layout.NavBarHorizontalHome></EmptyProject.Components.Layout.NavBarHorizontalHome>
+        </div>
+    </div>
+</div>
+<div class="page-header align-items-start min-height-300 m-3 border-radius-xl" 
+style="background-image: url('https://images.unsplash.com/photo-1491466424936-e304919aada7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1949&q=80');" 
+loading="lazy">
+    <span class="mask bg-gradient-dark opacity-6"></span>
+</div>
+<div class="container mb-4">
+    <div class="row mt-lg-n12 mt-md-n12 mt-n12 justify-content-center">
+        <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
+            <div class="card mt-8">
+                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                    <div class="bg-gradient-success shadow-success border-radius-lg py-3 pe-1 text-center py-4">
+                        <h4 class="font-weight-bolder text-white mt-1">
+                            Acceder
+                        </h4>
+                        <p class="mb-1 text-sm text-white">
+                            Ingresá tus credenciales
+                        </p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="post" @onsubmit="Submit"
+                          @formname="login-form" class="text-start">
+                        <AntiforgeryToken />
+                        <div class="mb-3">
+                            <label for="email"
+                                   class="input-group input-group-static">
+                                <i class="fas fa-envelope"></i>&nbsp;
+                                Email
+                            </label>
+                            <input 
+                                type="email" 
+                                id="email"
+                                   class="form-control @(ValidEmail)"
+                                   @onchange="HandleEmailChange"
+                                placeholder="user@example.com" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="password"
+                                   class="input-group input-group-static">
+                                <i class="fas fa-key"></i>&nbsp;
+                                Contraseña
+                            </label>
+                            <input type="password"
+                                class="form-control @(ValidPassword)"
+                                @onchange="HandlePasswordChange"
+                                id="password" />
+                        </div>
+                        <div class="container text-center">
+                            <button id="btn-login" type="submit"
+                                    class="btn btn-success mt-3">
+                                <i class="fas fa-unlock"></i>
+                                Entrar
+                            </button>
+                        </div>
+                    </form>
+                    @if (MessageForLoginForm != "")
+                    {
+                        <div class="alert alert-danger text-white font-weight-bold mt-3" 
+                        role="alert">
+                            @((MarkupString)MessageForLoginForm)
+                        </div>
+                    }
+                </div>
+                <div class="card-footer text-center pt-0 px-lg-2 px-1">
+                    <p class="mb-2 text-sm mx-auto">
+                        No tienes cuenta?
+                        <NavLink href="Contacto" 
+                        class="text-success text-gradient font-weight-bold">
+                            Creá una
+                        </NavLink>
+                    </p>
+                    <p class="mb-4 text-sm mx-auto">
+                        Olvidaste tu contraseña?
+                        <NavLink href="RecuperarContrasena"
+                                 class="text-success text-gradient font-weight-bold">
+                            Recuperar contraseña
+                        </NavLink>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<EmptyProject.Components.Layout.FooterHome></EmptyProject.Components.Layout.FooterHome>
+
+@code {
+    #region Properties
+    [Parameter]
+    public string NextPageToSetUp { get; set; } = "";
+
+    [SupplyParameterFromForm]
+    public Areas.CMSCore.Entities.User User { get; set; } = new();
+
+    public string MessageForLoginForm { get; set; } = "";
+
+    public bool Toggle { get; set; } = false;
+
+    public string ValidEmail { get; set; } = "";
+
+    public string ValidPassword { get; set; } = "";
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        //Look for saved user in shared component, simulates a session
+        User = StateContainer.User == null ? new() : StateContainer.User;
+
+        if (User.UserId != 0)
+        {
+            //Logged user
+            Toggle = true;
+
+            //Redirect to...
+            NavigationManager.NavigateTo("Dashboard");
+        }
+        else
+        {
+            //Not logged user
+            Toggle = false;
+        }
+    }
+
+    #region Events
+    private void Submit()
+    {
+        try
+        {
+            //Encrypt password
+            string EncryptedPassword = EmptyProject.Library.Security
+                                            .EncodeString(User.Password);
+
+            //Get user by email and password
+            User = userRepository
+                        .GetByEmailAndPassword(User.Email,
+                        EncryptedPassword);
+
+            //Next if is to quit null value from User
+            if (User == null)
+            {
+                User = new();
+            }
+
+            if (User.UserId != 0)
+            {
+                //User found
+                StateContainer.User = User;
+                Toggle = true;
+
+                //Redirect to...
+                NavigationManager.NavigateTo(NextPageToSetUp);
+            }
+            else
+            {
+                //User not found
+                MessageForLoginForm = $@"<i class=""fas fa-exclamation""></i>
+                                        Usuario no encontrado";
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            MessageForLoginForm = $@"<i class=""fas fa-exclamation""></i>
+                                    Hubo un error. Intenta nuevamente.
+                                    Mensaje de error: {ex.Message}";
+        }
+    }
+
+    private void HandleEmailChange(ChangeEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(e.Value?.ToString()))
+        {
+            ValidEmail = "is-invalid";
+        }
+        else
+        {
+            ValidEmail = "is-valid";
+            User.Email = e.Value?.ToString();
+        }
+    }
+
+    private void HandlePasswordChange(ChangeEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(e.Value?.ToString()))
+        {
+            ValidPassword = "is-invalid";
+        }
+        else
+        {
+            ValidPassword = "is-valid";
+            User.Password = e.Value?.ToString();
+        }
+    }
+
+    private void Salir(MouseEventArgs e)
+    {
+        try
+        {
+            User = new Areas.CMSCore.Entities.User();
+            StateContainer.User = new Areas.CMSCore.Entities.User();
+
+            //Show login form
+            Toggle = false;
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            MessageForLoginForm = $@"<i class=""fas fa-exclamation""></i>
+                                    Hubo un error. Intenta nuevamente.
+                                    Mensaje de error: {ex.Message}";
+        }
+    }
+    #endregion
+}
