@@ -48,8 +48,8 @@ loading="lazy">
                             <input 
                                 type="email" 
                                 id="email"
-                                   class="form-control @(ValidEmail)"
-                                   @onchange="HandleEmailChange"
+                                class="form-control"
+                                @bind="User.Email"
                                 placeholder="user@example.com" />
                         </div>
                         <div class="mb-3">
@@ -59,8 +59,8 @@ loading="lazy">
                                 Contraseña
                             </label>
                             <input type="password"
-                                class="form-control @(ValidPassword)"
-                                @onchange="HandlePasswordChange"
+                                class="form-control"
+                                   @bind="User.Password"
                                 id="password" />
                         </div>
                         <div class="container text-center">
@@ -111,12 +111,6 @@ loading="lazy">
     public Areas.CMSCore.Entities.User User { get; set; } = new();
 
     public string MessageForLoginForm { get; set; } = "";
-
-    public bool Toggle { get; set; } = false;
-
-    public string ValidEmail { get; set; } = "";
-
-    public string ValidPassword { get; set; } = "";
     #endregion
 
     protected override void OnInitialized()
@@ -126,16 +120,12 @@ loading="lazy">
 
         if (User.UserId != 0)
         {
-            //Logged user
-            Toggle = true;
-
             //Redirect to...
             NavigationManager.NavigateTo("Dashboard");
         }
         else
         {
             //Not logged user
-            Toggle = false;
         }
     }
 
@@ -153,17 +143,10 @@ loading="lazy">
                         .GetByEmailAndPassword(User.Email,
                         EncryptedPassword);
 
-            //Next if is to quit null value from User
-            if (User == null)
-            {
-                User = new();
-            }
-
             if (User.UserId != 0)
             {
                 //User found
                 StateContainer.User = User;
-                Toggle = true;
 
                 //Redirect to...
                 NavigationManager.NavigateTo(NextPageToSetUp);
@@ -200,41 +183,12 @@ loading="lazy">
         }
     }
 
-    private void HandleEmailChange(ChangeEventArgs e)
-    {
-        if (string.IsNullOrWhiteSpace(e.Value?.ToString()))
-        {
-            ValidEmail = "is-invalid";
-        }
-        else
-        {
-            ValidEmail = "is-valid";
-            User.Email = e.Value?.ToString();
-        }
-    }
-
-    private void HandlePasswordChange(ChangeEventArgs e)
-    {
-        if (string.IsNullOrWhiteSpace(e.Value?.ToString()))
-        {
-            ValidPassword = "is-invalid";
-        }
-        else
-        {
-            ValidPassword = "is-valid";
-            User.Password = e.Value?.ToString();
-        }
-    }
-
     private void Salir(MouseEventArgs e)
     {
         try
         {
             User = new Areas.CMSCore.Entities.User();
             StateContainer.User = new Areas.CMSCore.Entities.User();
-
-            //Show login form
-            Toggle = false;
         }
         catch (Exception ex)
         {

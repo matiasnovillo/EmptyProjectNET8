@@ -16,6 +16,8 @@ namespace EmptyProject.Areas.CMSCore.DTOs
     public class paginatedRoleDTO
     {
         public List<Role?> lstRole { get; set; }
+        public List<User?> lstUserCreation { get; set; }
+        public List<User?> lstUserLastModification { get; set; }
         public int TotalItems { get; set; }
         public int PageIndex { get; set; }
         public int PageSize { get; set; }

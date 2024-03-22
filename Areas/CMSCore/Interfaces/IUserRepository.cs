@@ -26,7 +26,7 @@ namespace EmptyProject.Areas.CMSCore.Interfaces
 
         List<User?> GetAll();
 
-        paginatedUserDTO GetAllByUserIdPaginated(string textToSearch,
+        paginatedUserDTO GetAllByEmailPaginated(string textToSearch,
             bool strictSearch,
             int pageIndex,
             int pageSize);

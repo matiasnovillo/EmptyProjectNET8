@@ -1,8 +1,8 @@
-using EmptyProject.Areas.BasicCore.Entities.Configuration;
 using EmptyProject.Areas.BasicCore.Repositories;
 using EmptyProject.Areas.CMSCore.Repositories;
 using EmptyProject.Components.Shared;
 using EmptyProject.Components;
+using EmptyProject.Areas.BasicCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +23,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddDbContext<EFCoreContext>(ServiceLifetime.Scoped);
+builder.Services.AddDbContext<EmptyProjectContext>(ServiceLifetime.Scoped);
 
 //Set access to repositories
 builder.Services.AddScoped<UserRepository>();

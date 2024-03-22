@@ -26,7 +26,7 @@ namespace EmptyProject.Areas.CMSCore.Interfaces
 
         List<Menu?> GetAll();
 
-        paginatedMenuDTO GetAllByMenuIdPaginated(string textToSearch,
+        paginatedMenuDTO GetAllByNameOrURLPathPaginated(string textToSearch,
             bool strictSearch,
             int pageIndex,
             int pageSize);

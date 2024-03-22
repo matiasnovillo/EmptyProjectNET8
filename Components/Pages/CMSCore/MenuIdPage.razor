@@ -8,14 +8,14 @@
 
 @if (MenuId == 0)
 {
-    <PageTitle>Add menu - EmptyProject</PageTitle>
+    <PageTitle>Agregar menú - EmptyProject</PageTitle>
 }
 else
 {
-    <PageTitle>Edit menu - EmptyProject</PageTitle>
+    <PageTitle>Editar menú - EmptyProject</PageTitle>
 }
 
-<EmptyProject.Components.Layout.NavBarVerticalDashboard lstMenuResult="lstMenuResult"></EmptyProject.Components.Layout.NavBarVerticalDashboard>
+<EmptyProject.Components.Layout.NavBarVerticalDashboard lstFoldersAndPages="lstFoldersAndPages"></EmptyProject.Components.Layout.NavBarVerticalDashboard>
 
 <div class="main-content position-relative max-height-vh-100 h-100">
     <EmptyProject.Components.Layout.NavBarHorizontalDashboard></EmptyProject.Components.Layout.NavBarHorizontalDashboard>
@@ -29,16 +29,16 @@ else
                 <h1 class="mb-3">
                     @if(MenuId == 0)
                     {
-                        <span>Add menu</span>
+                        <span>Agregar menú</span>
                     }
                     else
                     {
-                        <span>Edit menu</span>
+                        <span>Editar menú</span>
                     }
                 </h1>
                 <NavLink class="btn btn-outline-info" href="CMSCore/MenuPage">
                     <span class="fas fa-chevron-left"></span>
-                    &nbsp;Go back
+                    &nbsp;Volver
                 </NavLink>
             </div>
             <div class="card-body px-0">
@@ -49,7 +49,7 @@ else
                     <div class="mb-3">
                         <label for="name"
                                class="input-group input-group-static">
-                            Name
+                            Nombre
                         </label>
                         <input type="text"
                                id="name"
@@ -61,7 +61,7 @@ else
                     <div class="mb-3">
                         <label for="menufatherid"
                                class="input-group input-group-static">
-                            MenuFatherId
+                            ID del menú padre
                         </label>
                         <input type="number"
                                step="1"
@@ -76,7 +76,7 @@ else
                     <div class="mb-3">
                         <label for="order"
                                class="input-group input-group-static">
-                            Order
+                            Orden
                         </label>
                         <input type="number"
                                step="1"
@@ -91,7 +91,7 @@ else
                     <div class="mb-3">
                         <label for="urlpath"
                                class="input-group input-group-static">
-                            URLPath
+                            URL
                         </label>
                         <input type="text"
                                id="urlpath"
@@ -103,7 +103,7 @@ else
                     <div class="mb-3">
                         <label for="iconurlpath"
                                class="input-group input-group-static">
-                            IconURLPath
+                            Icono de la URL
                         </label>
                         <input type="text"
                                id="iconurlpath"
@@ -118,23 +118,21 @@ else
                         <i class="fas fa-pen"></i>
                         @if (MenuId == 0)
                         {
-                            <span>Add</span>
+                            <span>Agregar</span>
                         }
                         else
                         {
-                            <span>Edit</span>
+                            <span>Editar</span>
                         }
                     </button>
                     <NavLink class="btn btn-outline-info" href="CMSCore/MenuPage">
                         <span class="fas fa-chevron-left"></span>
-                        &nbsp;Go back
+                        &nbsp;Volver
                     </NavLink>
                 </form>
-                @if (MessageForForm != "")
+                @if (Message != "")
                 {
-                    <span class="text-danger">
-                        @((MarkupString)MessageForForm)
-                    </span>
+                    @((MarkupString)Message)
                 }
             </div>
         </div>
@@ -145,14 +143,14 @@ else
 
 @code {
     #region Properties
-    public List<Menu> lstMenuResult { get; set; } = [];
+    public List<folderForDashboard> lstFoldersAndPages = new();
 
     public List<Role> lstRole { get; set; } = [];
 
     [Parameter]
     public int MenuId { get; set; }
 
-    public string MessageForForm { get; set; } = "";
+    public string Message { get; set; } = "";
 
     [SupplyParameterFromForm]
     public Menu? Menu { get; set; }
@@ -169,7 +167,7 @@ else
             //Look for saved user in shared component, simulates a session
             User = StateContainer.User == null ? new() : StateContainer.User;
 
-            lstMenuResult = [];
+            lstFoldersAndPages = [];
             Menu = new();
 
             if (User != null)
@@ -185,8 +183,8 @@ else
                     List<Menu> lstMenu = menuRepository
                                         .GetAll();
 
-                    lstMenuResult = rolemenuRepository
-                                        .GetAllByRoleId(User.RoleId, lstMenu);
+                    lstFoldersAndPages = rolemenuRepository
+                                            .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
 
                     lstRole = roleRepository.GetAll();
 
@@ -236,8 +234,9 @@ else
 
             failureRepository.Add(failure);
 
-            MessageForForm = $@"There was a mistake. Try again.
-                             Error message: {ex.Message}";
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                            Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                        </div>";
         }
     }
 
@@ -285,8 +284,9 @@ else
 
             failureRepository.Add(failure);
 
-            MessageForForm = $@"There was a mistake. Try again.
-                             Error message: {ex.Message}";
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                            Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                        </div>";
         }
         finally
         {

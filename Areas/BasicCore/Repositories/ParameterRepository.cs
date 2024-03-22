@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using EmptyProject.Areas.BasicCore.Entities;
-using EmptyProject.Areas.BasicCore.Entities.Configuration;
 using EmptyProject.Areas.BasicCore.DTOs;
 using EmptyProject.Areas.BasicCore.Interfaces;
 using System.Data;
+using DocumentFormat.OpenXml.Spreadsheet;
+using EmptyProject.Areas.CMSCore.Entities;
+using Parameter = EmptyProject.Areas.BasicCore.Entities.Parameter;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -21,9 +23,9 @@ namespace EmptyProject.Areas.BasicCore.Repositories
 {
     public class ParameterRepository : IParameterRepository
     {
-        protected readonly EFCoreContext _context;
+        protected readonly EmptyProjectContext _context;
 
-        public ParameterRepository(EFCoreContext context)
+        public ParameterRepository(EmptyProjectContext context)
         {
             _context = context;
         }
@@ -66,7 +68,7 @@ namespace EmptyProject.Areas.BasicCore.Repositories
             catch (Exception) { throw; }
         }
 
-        public paginatedParameterDTO GetAllByParameterIdPaginated(string textToSearch,
+        public paginatedParameterDTO GetAllByNamePaginated(string textToSearch,
             bool strictSearch,
             int pageIndex, 
             int pageSize)
@@ -81,18 +83,28 @@ namespace EmptyProject.Areas.BasicCore.Repositories
 
                 int TotalParameter = _context.Parameter.Count();
 
-                var paginatedParameter = _context.Parameter
+                var query = from parametro in _context.Parameter
+                            join userCreation in _context.User on parametro.UserCreationId equals userCreation.UserId
+                            join userLastModification in _context.User on parametro.UserLastModificationId equals userLastModification.UserId
+                            select new { Parametro = parametro, UserCreation = userCreation, UserLastModification = userLastModification };
+
+                // Extraemos los resultados en listas separadas
+                List<Parameter> lstParameter = query.Select(result => result.Parametro)
                         .Where(x => strictSearch ?
-                            words.All(word => x.ParameterId.ToString().Contains(word)) :
-                            words.Any(word => x.ParameterId.ToString().Contains(word)))
-                        .OrderBy(p => p.ParameterId)
+                            words.All(word => x.Name.Contains(word)) :
+                            words.Any(word => x.Name.Contains(word)))
+                        .OrderByDescending(p => p.DateTimeLastModification)
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
+                List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
+                List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
 
                 return new paginatedParameterDTO
                 {
-                    lstParameter = paginatedParameter,
+                    lstParameter = lstParameter,
+                    lstUserCreation = lstUserCreation,
+                    lstUserLastModification = lstUserLastModification,
                     TotalItems = TotalParameter,
                     PageIndex = pageIndex,
                     PageSize = pageSize

@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using EmptyProject.Areas.BasicCore.Entities;
-using EmptyProject.Areas.BasicCore.Entities.Configuration;
 using EmptyProject.Areas.BasicCore.DTOs;
 using EmptyProject.Areas.BasicCore.Interfaces;
 using System.Data;
+using EmptyProject.Areas.CMSCore.Entities;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -21,9 +21,9 @@ namespace EmptyProject.Areas.BasicCore.Repositories
 {
     public class FailureRepository : IFailureRepository
     {
-        protected readonly EFCoreContext _context;
+        protected readonly EmptyProjectContext _context;
 
-        public FailureRepository(EFCoreContext context)
+        public FailureRepository(EmptyProjectContext context)
         {
             _context = context;
         }
@@ -81,18 +81,28 @@ namespace EmptyProject.Areas.BasicCore.Repositories
 
                 int TotalFailure = _context.Failure.Count();
 
-                var paginatedFailure = _context.Failure
+                var query = from failure in _context.Failure
+                            join userCreation in _context.User on failure.UserCreationId equals userCreation.UserId
+                            join userLastModification in _context.User on failure.UserLastModificationId equals userLastModification.UserId
+                            select new { Failure = failure, UserCreation = userCreation, UserLastModification = userLastModification };
+
+                // Extraemos los resultados en listas separadas
+                List<Failure> lstFailure = query.Select(result => result.Failure)
                         .Where(x => strictSearch ?
                             words.All(word => x.FailureId.ToString().Contains(word)) :
                             words.Any(word => x.FailureId.ToString().Contains(word)))
-                        .OrderBy(p => p.FailureId)
+                        .OrderByDescending(p => p.DateTimeLastModification)
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
+                List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
+                List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
 
                 return new paginatedFailureDTO
                 {
-                    lstFailure = paginatedFailure,
+                    lstFailure = lstFailure,
+                    lstUserCreation = lstUserCreation,
+                    lstUserLastModification = lstUserLastModification,
                     TotalItems = TotalFailure,
                     PageIndex = pageIndex,
                     PageSize = pageSize

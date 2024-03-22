@@ -26,7 +26,7 @@ namespace EmptyProject.Areas.BasicCore.Interfaces
 
         List<Parameter?> GetAll();
 
-        paginatedParameterDTO GetAllByParameterIdPaginated(string textToSearch,
+        paginatedParameterDTO GetAllByNamePaginated(string textToSearch,
             bool strictSearch,
             int pageIndex,
             int pageSize);

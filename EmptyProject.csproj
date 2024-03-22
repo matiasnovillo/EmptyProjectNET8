@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\Uploads\EmptyProject\**" />
+    <Content Remove="wwwroot\Uploads\EmptyProject\**" />
+    <EmbeddedResource Remove="wwwroot\Uploads\EmptyProject\**" />
+    <None Remove="wwwroot\Uploads\EmptyProject\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.102.1" />
     <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="IronPdf" Version="2023.12.6" />
@@ -26,16 +33,12 @@
 
   <ItemGroup>
     <Folder Include="Areas\CMSCore\Interfaces\" />
-    <Folder Include="Backup\" />
     <Folder Include="CommonFunctions\" />
-    <Folder Include="DBBackup\" />
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\Downloads\ExcelFiles\" />
     <Folder Include="wwwroot\Downloads\CSVFiles\" />
     <Folder Include="wwwroot\Downloads\PDFFiles\" />
-    <Folder Include="wwwroot\Uploads\FiyiRequirements\BlogPost\" />
-    <Folder Include="wwwroot\Uploads\FiyiRequirements\Agenda\" />
-    <Folder Include="wwwroot\Uploads\FiyiRequirements\MarketPlacePostService\" />
+    <Folder Include="wwwroot\Uploads\" />
   </ItemGroup>
 
 </Project>

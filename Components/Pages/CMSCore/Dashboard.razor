@@ -12,7 +12,7 @@
 
 <PageTitle>Tablero de control - EmptyProject</PageTitle>
 
-<EmptyProject.Components.Layout.NavBarVerticalDashboard lstMenuResult="lstMenuResult"></EmptyProject.Components.Layout.NavBarVerticalDashboard>
+<EmptyProject.Components.Layout.NavBarVerticalDashboard lstFoldersAndPages="lstFoldersAndPages"></EmptyProject.Components.Layout.NavBarVerticalDashboard>
 
 <div class="main-content position-relative max-height-vh-100 h-100">
     <EmptyProject.Components.Layout.NavBarHorizontalDashboard></EmptyProject.Components.Layout.NavBarHorizontalDashboard>
@@ -25,7 +25,7 @@
             <div class="row gx-4 mb-2">
                 <div class="col-auto">
                     <div class="avatar avatar-xl position-relative ml-3">
-                        <img src="..."
+                        <img src="/img/CMSCore/User.png"
                              alt="profile_image"
                              class="w-100 border-radius-lg shadow-sm">
                     </div>
@@ -48,26 +48,23 @@
             <div class="row">
                 <div class="col-12">
                     <h4 class="mt-4 mb-4">
-                        Pages
+                        Páginas
                     </h4>
-                    @if (lstMenuResult != null)
+                    @if (lstFoldersAndPages != null)
+                    {
+                        @foreach (folderForDashboard folderandpages in lstFoldersAndPages)
                         {
-                        @foreach (Menu menu in lstMenuResult)
-                        {
-                            if (menu.MenuFatherId == 0)
+                            <h6 class="mt-4">
+                                <i class="fas fa-folder"></i>&nbsp;
+                                @folderandpages.Folder.Name
+                            </h6>
+                            foreach (itemForFolderForDashboard item in folderandpages.Pages)
                             {
-                                @* <h6 class="mt-4">
-                    <i class="fas fa-folder"></i>&nbsp;
-                    @menu.Name
-                    </h6> *@
-                            }
-                            else
-                            {
-                                <NavLink class="btn bg-gradient-primary mx-1 my-1"
-                                            href="@menu.URLPath">
+                                <a class="btn bg-gradient-primary mx-1 my-1"
+                                   href="@item.URLPath">
                                     <i class="fas fa-file"></i>&nbsp;
-                                    @menu.Name
-                                </NavLink>
+                                    @item.Name
+                                </a>
                             }
                         }
                     }
@@ -82,7 +79,7 @@
     #region Properties
     public EmptyProject.Areas.CMSCore.Entities.User? User { get; set; } = new();
 
-    public List<Menu> lstMenuResult { get; set; } = [];
+    public List<folderForDashboard> lstFoldersAndPages = new();
     #endregion
 
     protected override void OnInitialized()
@@ -99,8 +96,8 @@
                 List<Menu> lstMenu = menuRepository
                                                 .GetAll();
 
-                lstMenuResult = rolemenuRepository
-                                            .GetAllByRoleId(User.RoleId, lstMenu);
+                lstFoldersAndPages = rolemenuRepository
+                                            .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
             }
             else
             {

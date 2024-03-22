@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using EmptyProject.Areas.CMSCore.Entities;
-using EmptyProject.Areas.BasicCore.Entities.Configuration;
 using EmptyProject.Areas.CMSCore.DTOs;
 using EmptyProject.Areas.CMSCore.Interfaces;
 using System.Data;
+using EmptyProject.Areas.BasicCore;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -21,9 +21,9 @@ namespace EmptyProject.Areas.CMSCore.Repositories
 {
     public class MenuRepository : IMenuRepository
     {
-        protected readonly EFCoreContext _context;
+        protected readonly EmptyProjectContext _context;
 
-        public MenuRepository(EFCoreContext context)
+        public MenuRepository(EmptyProjectContext context)
         {
             _context = context;
         }
@@ -66,7 +66,7 @@ namespace EmptyProject.Areas.CMSCore.Repositories
             catch (Exception) { throw; }
         }
 
-        public paginatedMenuDTO GetAllByMenuIdPaginated(string textToSearch,
+        public paginatedMenuDTO GetAllByNameOrURLPathPaginated(string textToSearch,
             bool strictSearch,
             int pageIndex, 
             int pageSize)
@@ -81,18 +81,28 @@ namespace EmptyProject.Areas.CMSCore.Repositories
 
                 int TotalMenu = _context.Menu.Count();
 
-                var paginatedMenu = _context.Menu
+                var query = from menu in _context.Menu
+                            join userCreation in _context.User on menu.UserCreationId equals userCreation.UserId
+                            join userLastModification in _context.User on menu.UserLastModificationId equals userLastModification.UserId
+                            select new { Menu = menu, UserCreation = userCreation, UserLastModification = userLastModification };
+
+                // Extraemos los resultados en listas separadas
+                List<Menu> lstMenu = query.Select(result => result.Menu)
                         .Where(x => strictSearch ?
-                            words.All(word => x.MenuId.ToString().Contains(word)) :
-                            words.Any(word => x.MenuId.ToString().Contains(word)))
-                        .OrderBy(p => p.MenuId)
+                            words.All(word => x.Name.Contains(word)) :
+                            words.Any(word => x.Name.Contains(word)))
+                        .OrderByDescending(p => p.DateTimeLastModification)
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
+                List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
+                List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
 
                 return new paginatedMenuDTO
                 {
-                    lstMenu = paginatedMenu,
+                    lstMenu = lstMenu,
+                    lstUserCreation = lstUserCreation,
+                    lstUserLastModification = lstUserLastModification,
                     TotalItems = TotalMenu,
                     PageIndex = pageIndex,
                     PageSize = pageSize

@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using EmptyProject.Areas.CMSCore.Entities;
-using EmptyProject.Areas.BasicCore.Entities.Configuration;
 using EmptyProject.Areas.CMSCore.DTOs;
 using EmptyProject.Areas.CMSCore.Interfaces;
 using System.Data;
+using EmptyProject.Areas.BasicCore;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -21,9 +21,9 @@ namespace EmptyProject.Areas.CMSCore.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        protected readonly EFCoreContext _context;
+        protected readonly EmptyProjectContext _context;
 
-        public UserRepository(EFCoreContext context)
+        public UserRepository(EmptyProjectContext context)
         {
             _context = context;
         }
@@ -66,7 +66,18 @@ namespace EmptyProject.Areas.CMSCore.Repositories
             catch (Exception) { throw; }
         }
 
-        public paginatedUserDTO GetAllByUserIdPaginated(string textToSearch,
+        public List<User> GetAllByRoleAsRoot()
+        {
+            try
+            {
+                return _context.User
+                    .Where(x => x.RoleId == 1) //Only Root
+                    .ToList();
+            }
+            catch (Exception) { throw; }
+        }
+
+        public paginatedUserDTO GetAllByEmailPaginated(string textToSearch,
             bool strictSearch,
             int pageIndex, 
             int pageSize)
@@ -81,18 +92,31 @@ namespace EmptyProject.Areas.CMSCore.Repositories
 
                 int TotalUser =  _context.User.Count();
 
-                var paginatedUser =  _context.User
+                var query = from user in _context.User
+                            join userCreation in _context.User on user.UserCreationId equals userCreation.UserId
+                            join userLastModification in _context.User on user.UserLastModificationId equals userLastModification.UserId
+                            join role in _context.Role on user.RoleId equals role.RoleId
+                            select new { User = user, UserCreation = userCreation, UserLastModification = userLastModification, Role = role };
+
+                // Extraemos los resultados en listas separadas
+                List<User> lstUser = query.Select(result => result.User)
                         .Where(x => strictSearch ?
-                            words.All(word => x.UserId.ToString().Contains(word)) :
-                            words.Any(word => x.UserId.ToString().Contains(word)))
-                        .OrderBy(p => p.UserId)
+                            words.All(word => x.Email.Contains(word)) :
+                            words.Any(word => x.Email.Contains(word)))
+                        .OrderByDescending(p => p.DateTimeLastModification)
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
+                List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
+                List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
+                List<Role> lstRole = query.Select(result => result.Role).ToList();
 
                 return new paginatedUserDTO
                 {
-                    lstUser = paginatedUser,
+                    lstUser = lstUser,
+                    lstUserCreation = lstUserCreation,
+                    lstUserLastModification = lstUserLastModification,
+                    lstRole = lstRole,
                     TotalItems = TotalUser,
                     PageIndex = pageIndex,
                     PageSize = pageSize
