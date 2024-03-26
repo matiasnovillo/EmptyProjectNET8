@@ -1,4 +1,4 @@
-﻿@page "/Login/{NextPageToSetUp}"
+﻿@page "/Login"
 
 @using EmptyProject.Areas.CMSCore.Entities;
 @using EmptyProject.Areas.CMSCore.Repositories;
@@ -104,9 +104,6 @@ loading="lazy">
 
 @code {
     #region Properties
-    [Parameter]
-    public string NextPageToSetUp { get; set; } = "";
-
     [SupplyParameterFromForm]
     public Areas.CMSCore.Entities.User User { get; set; } = new();
 
@@ -149,7 +146,7 @@ loading="lazy">
                 StateContainer.User = User;
 
                 //Redirect to...
-                NavigationManager.NavigateTo(NextPageToSetUp);
+                NavigationManager.NavigateTo("/Dashboard");
             }
             else
             {

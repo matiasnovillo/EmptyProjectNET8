@@ -245,7 +245,11 @@ else
             if (FailureId == 0)
             {
                 //Create new Failure
-                Failure!.FailureId = 0;
+                Failure.Active = true;
+                Failure.DateTimeCreation = DateTime.Now;
+                Failure.DateTimeLastModification = DateTime.Now;
+                Failure.UserCreationId = User.UserId;
+                Failure.UserLastModificationId = User.UserId;
 
                 failureRepository
                         .Add(Failure);
@@ -253,6 +257,9 @@ else
             else
             {
                 //Update data
+                Failure.DateTimeLastModification = DateTime.Now;
+                Failure.UserLastModificationId = User.UserId;
+
                 failureRepository
                             .Update(Failure!);
             }

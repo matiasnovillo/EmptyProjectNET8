@@ -154,6 +154,7 @@
                             {
                                 @for (int i = 0; i < paginatedRoleDTO.lstRole.Count(); i++)
                                 {
+                                    int deleteButton = @paginatedRoleDTO.lstRole[i]!.RoleId;
                                     <tr>
                                         <td>@paginatedRoleDTO.lstRole[i]?.RoleId</td>
                                         @if (@paginatedRoleDTO.lstRole[i]!.Active)
@@ -177,7 +178,7 @@
                                         <td>
                                             <div class="nav-item">
                                                 <button class="btn btn-sm btn-outline-danger"
-                                                        onclick=@(() => Delete(paginatedRoleDTO.lstRole[i]!.RoleId))>
+                                                        onclick=@(() => Delete(deleteButton))>
                                                     <span class="fas fa-trash" aria-hidden="true"></span>
                                                 </button>
                                             </div>
@@ -200,6 +201,8 @@
                     {
                         @for (int i = 0; i < paginatedRoleDTO.lstRole.Count(); i++)
                         {
+                            int deleteButton = @paginatedRoleDTO.lstRole[i]!.RoleId;
+
                             <div class="card shadow-lg mt-2">
                                 <div class="card-body">
                                     <p><b>ID: </b>@paginatedRoleDTO.lstRole[i]?.RoleId</p>
@@ -217,7 +220,7 @@
                                         </div>
                                         <div class="col-2">
                                             <button class="btn btn-lg btn-outline-danger"
-                                                    onclick=@(() => Delete(paginatedRoleDTO.lstRole[i]!.RoleId))>
+                                                    onclick=@(() => Delete(deleteButton))>
                                                 <span class="fas fa-trash" aria-hidden="true"></span>
                                             </button>
                                             <a class="btn btn-lg btn-outline-info"

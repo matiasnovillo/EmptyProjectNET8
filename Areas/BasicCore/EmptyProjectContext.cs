@@ -28,7 +28,9 @@ namespace EmptyProject.Areas.BasicCore
         {
             try
             {
-                string ConnectionStringDevelopment = "data source =.; " +
+                string ConnectionString = "";
+#if DEBUG
+                ConnectionString = "data source =.; " +
                     "initial catalog = EmptyProject; " +
                     "Integrated Security = SSPI;" +
                     " MultipleActiveResultSets=True;" +
@@ -36,19 +38,17 @@ namespace EmptyProject.Areas.BasicCore
                     "Persist Security Info=True;" +
                     "App=EntityFramework;" +
                     "TrustServerCertificate=True;";
-
-                string IP = "192.168.28.14";
-                string Server = "www4.baehost.com";
-
-                string ConnectionStringProduction = "Password=5wn9IyD)t3ZL-4;" +
+#else
+                ConnectionString = "Password=[Password];" +
                     "Persist Security Info=True;" +
-                    "User ID=fiyista1_Admin;" +
-                    "Initial Catalog=fiyista1_EmptyProject;" +
-                    "Data Source=www4.baehost.com;" +
+                    "User ID=[User];" +
+                    "Initial Catalog=[Database];" +
+                    "Data Source=[Server];" +
                     "TrustServerCertificate=True";
+#endif
 
                 optionsBuilder
-                    .UseSqlServer(ConnectionStringDevelopment);
+                    .UseSqlServer(ConnectionString);
             }
             catch (Exception) { throw; }
         }

@@ -40,6 +40,16 @@ namespace EmptyProject.Areas.BasicCore.Entities.EntitiesConfiguration
                     .HasColumnType("int")
                     .IsRequired(true);
 
+                //DateTimeCreation
+                entity.Property(e => e.DateTimeCreation)
+                    .HasColumnType("datetime")
+                    .IsRequired(true);
+
+                //DateTimeLastModification
+                entity.Property(e => e.DateTimeLastModification)
+                    .HasColumnType("datetime")
+                    .IsRequired(true);
+
                 //Message
                 entity.Property(e => e.Message)
                     .HasColumnType("text")

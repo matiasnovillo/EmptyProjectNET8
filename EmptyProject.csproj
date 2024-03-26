@@ -35,6 +35,7 @@
     <Folder Include="Areas\CMSCore\Interfaces\" />
     <Folder Include="CommonFunctions\" />
     <Folder Include="Migrations\" />
+    <Folder Include="BDBackup\" />
     <Folder Include="wwwroot\Downloads\ExcelFiles\" />
     <Folder Include="wwwroot\Downloads\CSVFiles\" />
     <Folder Include="wwwroot\Downloads\PDFFiles\" />
