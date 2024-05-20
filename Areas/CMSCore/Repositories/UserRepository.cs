@@ -231,7 +231,8 @@ namespace EmptyProject.Areas.CMSCore.Repositories
                         user.UserLastModificationId,
                         user.Email,
                         user.Password,
-                        user.RoleId
+                        user.RoleId,
+                        user.ProfilePicture
                         
                         );
                 }

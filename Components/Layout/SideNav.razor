@@ -63,36 +63,6 @@
                     }
                 }
             }
-            <li class="nav-item mt-5 mb-1">
-                <NavLink class="nav-link text-white"
-                         role="button"
-                         href="PerfilDelUsuario">
-                    <span class="nav-link-text ms-2 ps-1">
-                        <i class="fas fa-user"></i>
-                        Perfil
-                    </span>
-                </NavLink>
-            </li>
-            <li class="nav-item mb-1">
-                <NavLink class="nav-link text-white"
-                         role="button"
-                         href="CambiarContrasena">
-                    <span class="nav-link-text ms-2 ps-1">
-                        <i class="fas fa-key"></i>
-                        Cambiar contraseña
-                    </span>
-                </NavLink>
-            </li>
-            <li class="nav-item mb-2 mb-4">
-                <NavLink class="nav-link text-white"
-                         role="button"
-                         @onclick="Salir">
-                    <span class="nav-link-text ms-2 ps-1">
-                        <i class="fas fa-lock"></i>
-                        Salir
-                    </span>
-                </NavLink>
-            </li>
         </ul>
     </div>
 </aside>
@@ -100,10 +70,4 @@
 @code{
     [Parameter]
     public List<folderForDashboard> lstFoldersAndPages { get; set; }
-
-    private void Salir()
-    {
-        StateContainer.User = null;
-        NavigationManager.NavigateTo("Login/Dashboard");
-    }
 }

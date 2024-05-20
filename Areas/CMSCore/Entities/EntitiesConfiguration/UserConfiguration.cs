@@ -55,7 +55,10 @@ namespace EmptyProject.Areas.CMSCore.Entities.EntitiesConfiguration
                     .HasColumnType("int")
                     .IsRequired(true);
 
-                
+                //RoleId
+                entity.Property(e => e.ProfilePicture)
+                    .HasColumnType("varchar(8000)")
+                    .IsRequired(false);
             }
             catch (Exception) { throw; }
         }

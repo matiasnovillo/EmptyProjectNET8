@@ -16,30 +16,33 @@
 
 <main class="main-content border-radius-lg ">
 
-    <EmptyProject.Components.Layout.NavBarDashboard></EmptyProject.Components.Layout.NavBarDashboard>
+    <EmptyProject.Components.Layout.NavBarDashboard Pagina="Panel de control"></EmptyProject.Components.Layout.NavBarDashboard>
 
     <div class="container-fluid px-2 px-md-4">
         <div class="page-header min-height-300 border-radius-xl mt-4"
-             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
-            <span class="mask bg-gradient-primary opacity-6"></span>
+             style="background-image: url('img/BasicCore/Landscape.jpg');">
+            <span class="mask bg-gradient-dark opacity-6"></span>
         </div>
         <div class="card card-body mx-3 mx-md-4 mt-n6">
             <div class="row gx-4 mb-2">
                 <div class="col-auto">
                     <div class="avatar avatar-xl position-relative ml-3">
-                        <img src="/img/CMSCore/User.png"
+                        <img src="@User.ProfilePicture"
                              alt="profile_image"
                              class="w-100 border-radius-lg shadow-sm">
                     </div>
                 </div>
                 <div class="col-auto my-auto">
                     <div class="h-100">
-                        <h2 class="mb-1">
+                        <h4 class="mb-1">
                             @User.Email
-                        </h2>
-                        <p class="mb-0 font-weight-normal text-sm">
-
-                        </p>
+                        </h4>
+                        @if (User.RoleId == 1)
+                        {
+                            <p class="mb-0 font-weight-normal text-sm">
+                                Root
+                            </p>
+                        }
                     </div>
                     <hr />
                 </div>
@@ -62,7 +65,7 @@
                             </h6>
                             foreach (itemForFolderForDashboard item in folderandpages.Pages)
                             {
-                                <a class="btn bg-gradient-primary mx-1 my-1"
+                                <a class="btn btn-dark mx-1 my-1"
                                    href="@item.URLPath">
                                     <i class="fas fa-file"></i>&nbsp;
                                     @item.Name

@@ -57,6 +57,8 @@ namespace EmptyProject.Areas.CMSCore.Entities
 
         [Library.ModelAttributeValidator.Key("RoleId")]
         public int RoleId { get; set; }
+
+        public string ProfilePicture { get; set; }
     
         public string ToStringOnlyValuesForHTML()
         {
