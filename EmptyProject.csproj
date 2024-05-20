@@ -43,6 +43,7 @@
     <Folder Include="Areas\CMSCore\Interfaces\" />
     <Folder Include="Migrations\" />
     <Folder Include="DatabaseBackups\" />
+    <Folder Include="wwwroot\img\EmptyProject\" />
   </ItemGroup>
 
 </Project>
