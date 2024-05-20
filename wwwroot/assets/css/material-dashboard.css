@@ -38284,4 +38284,25 @@ text,
   }
 }
 
+
+        /* css agregado*/
+
+/* remueve el scrollbar horizontal en el sidebar izquierdo */
+#sidenav-main{ overflow-x:hidden }
+#sidenav-collapse-main {overflow-x: hidden}
+
+/* modal show */
+.modal.show { display: block !important }
+
+/* toast notification */
+.toast.bg-gradient-dark {
+    position: fixed;z-index: 999;
+    top: 35%; left: 42%;    
+}
+/* toast notification celulares */
+@media(max-width: 779px){
+    .toast.bg-gradient-dark { left: 3% }
+}
+
+
 /*# sourceMappingURL=dashboard-pro.css.map */

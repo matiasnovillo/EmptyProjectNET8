@@ -266,6 +266,7 @@ if (document.querySelector('.fixed-plugin')) {
 
 //Set Sidebar Color
 function sidebarColor(a) {
+    alert('asdasd')
   var parent = a.parentElement.children;
   var color = a.getAttribute("data-color");
 
@@ -685,6 +686,7 @@ function getEventTarget(e) {
 // End tabs navigation
 
 // click to minimize the sidebar or reverse to normal
+ 
 if (document.querySelector('.sidenav-toggler')) {
   var sidenavToggler = document.getElementsByClassName('sidenav-toggler')[0];
   var sidenavShow = document.getElementsByClassName('g-sidenav-show')[0];
@@ -709,7 +711,7 @@ if (document.querySelector('.sidenav-toggler')) {
       }
     }
   }
-}
+} 
 
 
 // Toggle Sidenav
@@ -1855,4 +1857,5 @@ var material = {
     }
   }
 
+}
 }
