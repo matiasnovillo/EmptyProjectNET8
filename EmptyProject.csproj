@@ -42,7 +42,7 @@
   <ItemGroup>
     <Folder Include="Areas\CMSCore\Interfaces\" />
     <Folder Include="Migrations\" />
-    <Folder Include="BDBackup\" />
+    <Folder Include="DatabaseBackups\" />
   </ItemGroup>
 
 </Project>

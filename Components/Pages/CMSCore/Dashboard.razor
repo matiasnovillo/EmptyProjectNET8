@@ -12,14 +12,16 @@
 
 <PageTitle>Tablero de control - EmptyProject</PageTitle>
 
-<EmptyProject.Components.Layout.NavBarVerticalDashboard lstFoldersAndPages="lstFoldersAndPages"></EmptyProject.Components.Layout.NavBarVerticalDashboard>
+<EmptyProject.Components.Layout.SideNav lstFoldersAndPages="lstFoldersAndPages"></EmptyProject.Components.Layout.SideNav>
 
-<div class="main-content position-relative max-height-vh-100 h-100">
-    <EmptyProject.Components.Layout.NavBarHorizontalDashboard></EmptyProject.Components.Layout.NavBarHorizontalDashboard>
+<main class="main-content border-radius-lg ">
+
+    <EmptyProject.Components.Layout.NavBarDashboard></EmptyProject.Components.Layout.NavBarDashboard>
+
     <div class="container-fluid px-2 px-md-4">
         <div class="page-header min-height-300 border-radius-xl mt-4"
              style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
-        <span class="mask bg-gradient-primary opacity-6"></span>
+            <span class="mask bg-gradient-primary opacity-6"></span>
         </div>
         <div class="card card-body mx-3 mx-md-4 mt-n6">
             <div class="row gx-4 mb-2">
@@ -36,13 +38,13 @@
                             @User.Email
                         </h2>
                         <p class="mb-0 font-weight-normal text-sm">
-              
+
                         </p>
                     </div>
                     <hr />
                 </div>
                 <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
-                &nbsp;
+                    &nbsp;
                 </div>
             </div>
             <div class="row">
@@ -72,10 +74,12 @@
             </div>
         </div>
     </div>
-<EmptyProject.Components.Layout.FooterDashboard></EmptyProject.Components.Layout.FooterDashboard>
-</div>
+</main>
 
-@code{
+<EmptyProject.Components.Layout.FixedPlugin></EmptyProject.Components.Layout.FixedPlugin>
+<EmptyProject.Components.Layout.FooterDashboard></EmptyProject.Components.Layout.FooterDashboard>
+
+@code {
     #region Properties
     public EmptyProject.Areas.CMSCore.Entities.User? User { get; set; } = new();
 
@@ -124,6 +128,6 @@
                 };
 
             failureRepository.Add(failure);
-        } 
+        }
     }
 }

@@ -3,8 +3,10 @@ using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.Areas.CMSCore.Entities.EntitiesConfiguration;
 using EmptyProject.Areas.BasicCore.Entities.EntitiesConfiguration;
 using EmptyProject.Areas.BasicCore.Entities;
+using EmptyProject.Areas.EmptyProject.Entities;
+using EmptyProject.Areas.EmptyProject.Entities.EntitiesConfiguration;
 
-namespace EmptyProject.Areas.BasicCore
+namespace EmptyProject.DatabaseContexts
 {
     public class EmptyProjectContext : DbContext
     {
@@ -18,6 +20,7 @@ namespace EmptyProject.Areas.BasicCore
         public DbSet<Parameter> Parameter { get; set; }
 
         //EmptyProject
+        public DbSet<Client> Client { get; set; }
 
         public EmptyProjectContext(IConfiguration configuration)
         {
@@ -65,6 +68,7 @@ namespace EmptyProject.Areas.BasicCore
                 modelBuilder.ApplyConfiguration(new ParameterConfiguration());
 
                 //EmptyProject
+                modelBuilder.ApplyConfiguration(new ClientConfiguration());
 
                 #region User
                 modelBuilder.Entity<User>().HasData(new User

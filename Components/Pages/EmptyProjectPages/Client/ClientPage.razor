@@ -1,0 +1,1101 @@
+
+@page "/EmptyProject/ClientPage"
+
+@using EmptyProject.Areas.EmptyProject.Repositories;
+@using EmptyProject.Areas.EmptyProject.Entities;
+@using EmptyProject.Areas.EmptyProject.DTOs;
+@inject ClientRepository clientRepository;
+
+<PageTitle>Buscar Client - EmptyProject</PageTitle>
+
+<EmptyProject.Components.Layout.NavBarVerticalDashboard lstFoldersAndPages="lstFoldersAndPages"></EmptyProject.Components.Layout.NavBarVerticalDashboard>
+
+<div class="main-content position-relative max-height-vh-100 h-100">
+    <EmptyProject.Components.Layout.NavBarHorizontalDashboard></EmptyProject.Components.Layout.NavBarHorizontalDashboard>
+    <div class="container-fluid px-2 px-md-4">
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
+            <span class="mask bg-gradient-primary opacity-6"></span>
+        </div>
+        <div class="card card-body mx-3 mx-md-4 mt-n6">
+            <div class="card-header mb-0 pb-0 bg-white">
+                <h1 class="mb-3">
+                    Buscar client
+                </h1>
+                <NavLink class="btn btn-outline-info" href="Dashboard">
+                    <span class="fas fa-chevron-left" aria-hidden="true"></span>
+                    &nbsp;Volver
+                </NavLink>
+                <NavLink class="btn btn-success text-white" href="EmptyProject/ClientPage/0">
+                    <span class="fas fa-plus" aria-hidden="true"></span>
+                    &nbsp;Crear client
+                </NavLink>
+            </div>
+            <div class="card-body px-0">
+                @((MarkupString)Message)
+                <div class="row">
+                    <div class="col-12 col-md-4">
+                        <!--Searchbox-->
+                        <input type="search" @oninput="SearchText"
+                               class="form-control"
+                               placeholder="Buscar client por ClientId..." />
+                        <br />
+                        <!--Strict or lax search-->
+                        <div>
+                            <h6><b>Búsqueda estricta o laxa</b></h6>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       name="strict-search"
+                                       @bind="checkStrict"
+                                       id="strict-search" />
+                                <label class="form-check-label"
+                                       for="strict-search">
+                                    Búsqueda estricta
+                                </label>
+                            </div>
+                        </div>
+                        <br />
+                        <h6><b>Tipo de vista</b></h6>
+                        <div class="btn-group mb-3" role="group" aria-label="btngroup">
+                            <button type="button" 
+                                class="btn bg-gradient-primary"
+                                onclick=@(() => ChangeView("table"))>
+                                <i class="fas fa-table"></i>
+                                Tabla
+                            </button>
+                            <button type="button" 
+                                class="btn bg-gradient-primary"
+                                onclick=@(() => ChangeView("list"))>
+                                <i class="fas fa-th-list"></i>
+                                Cartas
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-8">
+                        <div class="row">
+                            <div class="d-flex justify-content-end">
+                                <!--Export buttons-->
+                                <button type="button"
+                                        @onclick="ConvertToExcel"
+                                        class="btn btn-outline-info ml-4 mb-4">
+                                    <i class="fas fa-file"></i>
+                                    Exportar a Excel
+                                </button>
+                                <button type="button"
+                                        @onclick="ConvertToCSV"
+                                        class="btn btn-outline-warning mb-4 mx-3">
+                                    <i class="fas fa-file"></i>
+                                    Exportar a CSV
+                                </button>
+                                <button type="button"
+                                        @onclick="ConvertToPDF"
+                                        class="btn btn-outline-success mb-4">
+                                    <i class="fas fa-file"></i>
+                                    Exportar a PDF
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="d-flex justify-content-end">
+                                <!--Download buttons-->
+                                @if (ShowDownloadButtonForExcel)
+                                {
+                                    <a class="btn btn-info mb-4"
+                                       href="@DownloadPathForExcel"
+                                       download>
+                                        <i class="fas fa-download"></i>
+                                        Descargar
+                                    </a>
+                                }
+                                @if (ShowDownloadButtonForCSV)
+                                {
+                                    <a class="btn btn-warning mb-4 mx-3"
+                                       href="@DownloadPathForCSV"
+                                       download>
+                                        <i class="fas fa-download"></i>
+                                        Descargar
+                                    </a>
+                                }
+                                @if (ShowDownloadButtonForPDF)
+                                {
+                                    <a class="btn btn-success mb-4"
+                                       href="@DownloadPathForPDF"
+                                       download>
+                                        <i class="fas fa-download"></i>
+                                        Descargar
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--Table-->
+                <h6><b>Nº de registros: @TotalRows</b></h6>
+                @if (ChosenView == "table")
+                {
+                    <table class="table table-striped table-hover table-bordered table-responsive mt-4">
+                        <thead>
+                            <tr>
+                                <th>ClientId</th>
+                                <th>Active</th>
+                                <th>DateTimeCreation</th>
+                                <th>DateTimeLastModification</th>
+                                <th>UserCreationId</th>
+                                <th>UserLastModificationId</th>
+                                <th>Boolean</th>
+                                <th>DateTime</th>
+                                <th>Decimal</th>
+                                <th>Integer</th>
+                                <th>TextArea</th>
+                                <th>TextBasic</th>
+                                <th>TextEditor</th>
+                                <th>TextEmail</th>
+                                <th>TextFile</th>
+                                <th>TextHexColour</th>
+                                <th>TextPassword</th>
+                                <th>TextPhoneNumber</th>
+                                <th>TextTag</th>
+                                <th>TextURL</th>
+                                <th>ClientStatusId</th>
+                                
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (paginatedClientDTO != null)
+                            {
+                                @for (int i = 0; i < paginatedClientDTO.lstClient.Count(); i++)
+                                {
+                                    int deleteButton = @paginatedClientDTO.lstClient[i]!.ClientId;
+
+                                    <tr>
+                                        <td>@paginatedClientDTO.lstClient[i]?.ClientId</td>
+                                        @if (@paginatedClientDTO.lstClient[i]!.Active)
+                                        {
+                                            <td>
+                                                <span class="badge rounded-pill bg-success">Sí</span>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                <span class="badge rounded-pill bg-danger">No</span>
+                                            </td>
+                                        }
+                                        <td>@paginatedClientDTO.lstClient[i]?.DateTimeCreation</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.DateTimeLastModification</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.UserCreationId</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.UserLastModificationId</td>
+                                        @if (@paginatedClientDTO.lstClient[i]!.Boolean)
+                                        {
+                                            <td>
+                                                <span class="badge rounded-pill bg-success">Sí</span>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                <span class="badge rounded-pill bg-danger">No</span>
+                                            </td>
+                                        }
+                                        <td>@paginatedClientDTO.lstClient[i]?.DateTime</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.Decimal</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.Integer</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.TextArea</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.TextBasic</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.TextEditor</td>
+                                        <td>
+                                            <a class="nav-link text-info"
+                                               href="mailto:@paginatedClientDTO.lstClient[i]?.TextEmail">
+                                                <b class="fas fa-envelope"></b>
+                                                @paginatedClientDTO.lstClient[i]?.TextEmail
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a class="nav-link text-info"
+                                               href="@paginatedClientDTO.lstClient[i]?.TextFile"
+                                               download>
+                                                <b class="fas fa-download"></b>
+                                                @paginatedClientDTO.lstClient[i]?.TextFile
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span style="color:@paginatedClientDTO.lstClient[i]?.TextHexColour">
+                                                <b class="fas fa-palette"></b>
+                                                @paginatedClientDTO.lstClient[i]?.TextHexColour
+                                            </span>
+                                        </td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.TextPassword</td>
+                                        <td>
+                                            <a class="nav-link text-info"
+                                               href="tel:@paginatedClientDTO.lstClient[i]?.TextPhoneNumber">
+                                                <b class="fas fa-phone"></b>
+                                                @paginatedClientDTO.lstClient[i]?.TextPhoneNumber
+                                            </a>
+                                        </td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.TextTag</td>
+                                        <td>
+                                            <a class="nav-link text-info"
+                                               href="@paginatedClientDTO.lstClient[i]?.TextURL"
+                                               target="_blank">
+                                                <b class="fas fa-link"></b>
+                                                @paginatedClientDTO.lstClient[i]?.TextURL
+                                            </a>
+                                        </td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.ClientStatusId</td>
+                                        
+                                        <td>
+                                            <div class="nav-item">
+                                                <button class="btn btn-sm btn-outline-danger"
+                                                        onclick=@(() => Delete(deleteButton))>
+                                                    <span class="fas fa-trash" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="nav-item mt-2">
+                                                <a class="btn btn-sm btn-outline-info"
+                                                   href="EmptyProject/ClientPage/@paginatedClientDTO.lstClient[i]?.ClientId">
+                                                    <span class="fas fa-pen" aria-hidden="true"></span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    @if (paginatedClientDTO != null)      
+                    {
+                        @for (int i = 0; i < paginatedClientDTO.lstClient.Count(); i++)
+                        {
+                            int deleteButton = @paginatedClientDTO.lstClient[i]!.ClientId;
+
+                            <div class="card shadow-lg mt-2">
+                                <div class="card-body">
+                                        <p><b>ClientId: </b>@paginatedClientDTO.lstClient[i]?.ClientId</p>
+                                        @if (@paginatedClientDTO.lstClient[i]!.Active)
+                                        {
+                                            <p>
+                                                <b>Active: </b>
+                                                <span class="badge rounded-pill bg-success">
+                                                    Sí
+                                                </span>
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p>
+                                                <b>Active: </b>
+                                                <span class="badge rounded-pill bg-danger">
+                                                    No
+                                                </span>
+                                            </p>
+                                        }
+                                        <p><b>DateTimeCreation: </b>@paginatedClientDTO.lstClient[i]?.DateTimeCreation</p>
+                                        <p><b>DateTimeLastModification: </b>@paginatedClientDTO.lstClient[i]?.DateTimeLastModification</p>
+                                        <p><b>UserCreationId: </b>@paginatedClientDTO.lstClient[i]?.UserCreationId</p>
+                                        <p><b>UserLastModificationId: </b>@paginatedClientDTO.lstClient[i]?.UserLastModificationId</p>
+                                        @if (@paginatedClientDTO.lstClient[i]!.Boolean)
+                                        {
+                                            <p>
+                                                <b>Boolean: </b>
+                                                <span class="badge rounded-pill bg-success">
+                                                    Sí
+                                                </span>
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p>
+                                                <b>Boolean: </b>
+                                                <span class="badge rounded-pill bg-danger">
+                                                    No
+                                                </span>
+                                            </p>
+                                        }
+                                        <p><b>DateTime: </b>@paginatedClientDTO.lstClient[i]?.DateTime</p>
+                                        <p><b>Decimal: </b>@paginatedClientDTO.lstClient[i]?.Decimal</p>
+                                        <p><b>Integer: </b>@paginatedClientDTO.lstClient[i]?.Integer</p>
+                                        <div><b>TextArea: </b>@paginatedClientDTO.lstClient[i]?.TextArea</div>
+                                        <p><b>TextBasic: </b>@paginatedClientDTO.lstClient[i]?.TextBasic</p>
+                                        <div><b>TextEditor: </b>@paginatedClientDTO.lstClient[i]?.TextEditor</div>
+                                        <a class="nav-link text-info px-0"
+                                            href="mailto:@paginatedClientDTO.lstClient[i]?.TextEmail">
+                                            <b>TextEmail: </b>
+                                            <b class="fas fa-envelope"></b>
+                                            @paginatedClientDTO.lstClient[i]?.TextEmail
+                                        </a>
+                                        <a class="nav-link text-info px-0"
+                                            href="@paginatedClientDTO.lstClient[i]?.TextFile"
+                                            download>
+                                            <b>TextFile: </b>
+                                            <b class="fas fa-download"></b>
+                                            @paginatedClientDTO.lstClient[i]?.TextFile
+                                        </a>
+                                        <p style="color:@paginatedClientDTO.lstClient[i]?.TextHexColour;">
+                                            <b>TextHexColour: </b>
+                                            <b class="fas fa-palette"></b>
+                                            @paginatedClientDTO.lstClient[i]?.TextHexColour
+                                        </p>
+                                        <p><b>TextPassword: </b>@paginatedClientDTO.lstClient[i]?.TextPassword</p>
+                                        <a class="nav-link text-info px-0"
+                                            href="tel:@paginatedClientDTO.lstClient[i]?.TextPhoneNumber">
+                                            <b>TextPhoneNumber: </b>
+                                            <b class="fas fa-phone"></b>
+                                            @paginatedClientDTO.lstClient[i]?.TextPhoneNumber
+                                        </a>
+                                        <p><b>TextTag: </b>@paginatedClientDTO.lstClient[i]?.TextTag</p>
+                                        <a class="nav-link text-info px-0"
+                                            href="@paginatedClientDTO.lstClient[i]?.TextURL"
+                                            target="_blank">
+                                            <b>TextURL: </b>
+                                            <b class="fas fa-link"></b>
+                                            @paginatedClientDTO.lstClient[i]?.TextURL
+                                        </a>
+                                        <p><b>ClientStatusId: </b>@paginatedClientDTO.lstClient[i]?.ClientStatusId</p>
+                                        
+                                </div>
+                                <div class="card-footer text-body-secondary">
+                                    <div class="row">
+                                        <div class="col-10">
+                                            &nbsp;
+                                        </div>
+                                        <div class="col-2">
+                                            <button class="btn btn-lg btn-outline-danger"
+                                                    onclick=@(() => Delete(deleteButton))>
+                                                <span class="fas fa-trash" aria-hidden="true"></span>
+                                            </button>
+                                            <a class="btn btn-lg btn-outline-info"
+                                                href="EmptyProject/ClientPage/@paginatedClientDTO.lstClient[i]?.ClientId">
+                                                <span class="fas fa-pen" aria-hidden="true"></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item
+                        @(paginatedClientDTO!.HasPreviousPage ? "" : "disabled")">
+                            <button class="page-link"
+                                    disabled="@(!paginatedClientDTO.HasPreviousPage)"
+                                    @onclick="() => OnPreviousPage()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                        </li>
+                        @for (int i = 1; i <= paginatedClientDTO.TotalPages; i++)
+                        {
+                            int currentPage = i;
+                            <li class="page-item
+                            @(i == paginatedClientDTO.PageIndex ? "active" : "")">
+                                <button class="page-link"
+                                        onclick=@(() => OnPageSelected(currentPage))>
+                                    @i
+                                </button>
+                            </li>
+                        }
+                        <li class="page-item
+                        @(paginatedClientDTO.HasNextPage ? "" : "disabled")">
+                            <button class="page-link"
+                                    disabled="@(!paginatedClientDTO.HasNextPage)"
+                                    @onclick="() => OnNextPage()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <EmptyProject.Components.Layout.FooterDashboard></EmptyProject.Components.Layout.FooterDashboard>
+</div>
+
+@code {
+    #region Properties
+    public List<folderForDashboard> lstFoldersAndPages { get; set; } = [];
+
+    public int TotalRows { get; set; } = 0;
+
+    public string? ChosenView { get; set; }
+
+    public bool checkStrict { get; set; }
+
+    public string TextToSearch { get; set; } = "";
+
+    public string Message { get; set; } = "";
+
+    public bool ShowDownloadButtonForExcel { get; set; }
+    public bool ShowDownloadButtonForPDF { get; set; }
+    public bool ShowDownloadButtonForCSV { get; set; }
+
+    public string? DownloadPathForExcel { get; set; }
+    public string? DownloadPathForPDF { get; set; }
+    public string? DownloadPathForCSV { get; set; }
+
+    public User User = new();
+
+    public Client Client = new();
+
+    paginatedClientDTO paginatedClientDTO = new();
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //Look for saved user in shared component, simulates a session
+            User = StateContainer.User == null ? new() : StateContainer.User;
+
+            lstFoldersAndPages = [];
+
+            paginatedClientDTO = new();
+            paginatedClientDTO.lstClient = [];
+
+            if (User != null)
+            {
+                if (User.UserId != 0)
+                {
+                    //Logged user
+                    if (User.RoleId != 1) //Only Root can access
+                    {
+                        NavigationManager.NavigateTo("403");
+                    }
+
+                    List<Menu> lstMenu = menuRepository
+                                            .GetAll();
+
+                    lstFoldersAndPages = rolemenuRepository
+                                            .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
+
+                    paginatedClientDTO = clientRepository
+                                                .GetAllByClientIdPaginated(
+                                                    "",
+                                                    checkStrict,
+                                                    1,
+                                                    15);
+
+                    TotalRows = clientRepository
+                                    .Count();
+
+                    ChosenView = "list";
+                }
+                else
+                {
+                    //Not logged user
+
+                    //Redirect to...
+                    NavigationManager.NavigateTo("Login");
+                }
+            }
+            else
+            {
+                //Impossible
+            }
+
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+            {
+                Active = true,
+                DateTimeCreation = DateTime.Now,
+                DateTimeLastModification = DateTime.Now,
+                UserCreationId = 1,
+                UserLastModificationId = 1,
+                EmergencyLevel = 1,
+                Comment = "",
+                Message = ex.Message,
+                Source = ex.Source,
+                StackTrace = ex.StackTrace
+            };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+
+    }
+
+    #region Events
+    private async Task SearchText(ChangeEventArgs args)
+    {
+        try
+        {
+            //Basic configuration
+            Message = "";
+
+            TextToSearch = args.Value.ToString();
+
+            paginatedClientDTO = clientRepository
+                                        .GetAllByClientIdPaginated(
+                                            TextToSearch,
+                                            checkStrict,
+                                            1,
+                                            15);
+
+            TotalRows = clientRepository
+                            .Count();
+
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+            {
+                Active = true,
+                DateTimeCreation = DateTime.Now,
+                DateTimeLastModification = DateTime.Now,
+                UserCreationId = 1,
+                UserLastModificationId = 1,
+                EmergencyLevel = 1,
+                Comment = "",
+                Message = ex.Message,
+                Source = ex.Source,
+                StackTrace = ex.StackTrace
+            };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+
+    }
+
+    private async Task OnPreviousPage()
+    {
+        if (paginatedClientDTO.HasPreviousPage)
+        {
+            paginatedClientDTO = clientRepository
+                                        .GetAllByClientIdPaginated(
+                                            TextToSearch,
+                                            checkStrict,
+                                            (paginatedClientDTO.PageIndex - 1),
+                                            paginatedClientDTO.PageSize);
+        }
+
+        TotalRows = clientRepository
+                            .Count();
+
+        //Re-render the page
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+
+    private async Task OnPageSelected(int pageIndex)
+    {
+        paginatedClientDTO = clientRepository
+                                            .GetAllByClientIdPaginated(
+                                                TextToSearch,
+                                                checkStrict,
+                                                pageIndex,
+                                                paginatedClientDTO.PageSize);
+
+        TotalRows = clientRepository
+                        .Count();
+
+        //Re-render the page
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+
+    private async Task OnNextPage()
+    {
+        if (paginatedClientDTO.HasNextPage)
+        {
+            paginatedClientDTO = clientRepository
+                                        .GetAllByClientIdPaginated(
+                                            TextToSearch,
+                                            checkStrict,
+                                            (paginatedClientDTO.PageIndex + 1),
+                                            paginatedClientDTO.PageSize);
+        }
+
+        TotalRows = clientRepository
+                            .Count();
+
+        //Re-render the page
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+
+    private async Task ChangeView(string chosenView)
+    {
+        ChosenView = chosenView;
+
+        //Re-render the page
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+
+    private async Task Delete(int clientId)
+    {
+        try
+        {
+            clientRepository.DeleteByClientId(clientId);
+
+            paginatedClientDTO = clientRepository
+                                        .GetAllByClientIdPaginated(
+                                            TextToSearch,
+                                            checkStrict,
+                                            1,
+                                            15);
+
+            TotalRows = clientRepository
+                                .Count();
+
+            TextToSearch = "";
+
+            Message = $@"<div class=""alert alert-success text-white font-weight-bold"" role=""alert"">
+                                Register deleted correctly
+                            </div>";
+
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+            {
+                Active = true,
+                DateTimeCreation = DateTime.Now,
+                DateTimeLastModification = DateTime.Now,
+                UserCreationId = 1,
+                UserLastModificationId = 1,
+                EmergencyLevel = 1,
+                Comment = "",
+                Message = ex.Message,
+                Source = ex.Source,
+                StackTrace = ex.StackTrace
+            };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+    }
+    #endregion
+
+    #region Conversions
+    private async Task ConvertToExcel()
+    {
+        try
+        {
+            //Set initial state
+            Message = "";
+
+            using var Book = new XLWorkbook();
+
+            DataTable dtClient = new DataTable();
+            dtClient.TableName = "Client";
+
+            //We define another DataTable dtClientCopy to avoid issue related to DateTime conversion
+            DataTable dtClientCopy = new DataTable();
+            dtClientCopy.TableName = "Client";
+
+            #region Define columns for dtClientCopy
+            DataColumn dtColumnClientIdFordtClientCopy = new DataColumn();
+            dtColumnClientIdFordtClientCopy.DataType = typeof(string);
+            dtColumnClientIdFordtClientCopy.ColumnName = "ClientId";
+            dtClientCopy.Columns.Add(dtColumnClientIdFordtClientCopy);
+
+            DataColumn dtColumnActiveFordtClientCopy = new DataColumn();
+            dtColumnActiveFordtClientCopy.DataType = typeof(string);
+            dtColumnActiveFordtClientCopy.ColumnName = "Active";
+            dtClientCopy.Columns.Add(dtColumnActiveFordtClientCopy);
+
+            DataColumn dtColumnDateTimeCreationFordtClientCopy = new DataColumn();
+            dtColumnDateTimeCreationFordtClientCopy.DataType = typeof(string);
+            dtColumnDateTimeCreationFordtClientCopy.ColumnName = "DateTimeCreation";
+            dtClientCopy.Columns.Add(dtColumnDateTimeCreationFordtClientCopy);
+
+            DataColumn dtColumnDateTimeLastModificationFordtClientCopy = new DataColumn();
+            dtColumnDateTimeLastModificationFordtClientCopy.DataType = typeof(string);
+            dtColumnDateTimeLastModificationFordtClientCopy.ColumnName = "DateTimeLastModification";
+            dtClientCopy.Columns.Add(dtColumnDateTimeLastModificationFordtClientCopy);
+
+            DataColumn dtColumnUserCreationIdFordtClientCopy = new DataColumn();
+            dtColumnUserCreationIdFordtClientCopy.DataType = typeof(string);
+            dtColumnUserCreationIdFordtClientCopy.ColumnName = "UserCreationId";
+            dtClientCopy.Columns.Add(dtColumnUserCreationIdFordtClientCopy);
+
+            DataColumn dtColumnUserLastModificationIdFordtClientCopy = new DataColumn();
+            dtColumnUserLastModificationIdFordtClientCopy.DataType = typeof(string);
+            dtColumnUserLastModificationIdFordtClientCopy.ColumnName = "UserLastModificationId";
+            dtClientCopy.Columns.Add(dtColumnUserLastModificationIdFordtClientCopy);
+
+            DataColumn dtColumnBooleanFordtClientCopy = new DataColumn();
+            dtColumnBooleanFordtClientCopy.DataType = typeof(string);
+            dtColumnBooleanFordtClientCopy.ColumnName = "Boolean";
+            dtClientCopy.Columns.Add(dtColumnBooleanFordtClientCopy);
+
+            DataColumn dtColumnDateTimeFordtClientCopy = new DataColumn();
+            dtColumnDateTimeFordtClientCopy.DataType = typeof(string);
+            dtColumnDateTimeFordtClientCopy.ColumnName = "DateTime";
+            dtClientCopy.Columns.Add(dtColumnDateTimeFordtClientCopy);
+
+            DataColumn dtColumnDecimalFordtClientCopy = new DataColumn();
+            dtColumnDecimalFordtClientCopy.DataType = typeof(string);
+            dtColumnDecimalFordtClientCopy.ColumnName = "Decimal";
+            dtClientCopy.Columns.Add(dtColumnDecimalFordtClientCopy);
+
+            DataColumn dtColumnIntegerFordtClientCopy = new DataColumn();
+            dtColumnIntegerFordtClientCopy.DataType = typeof(string);
+            dtColumnIntegerFordtClientCopy.ColumnName = "Integer";
+            dtClientCopy.Columns.Add(dtColumnIntegerFordtClientCopy);
+
+            DataColumn dtColumnTextAreaFordtClientCopy = new DataColumn();
+            dtColumnTextAreaFordtClientCopy.DataType = typeof(string);
+            dtColumnTextAreaFordtClientCopy.ColumnName = "TextArea";
+            dtClientCopy.Columns.Add(dtColumnTextAreaFordtClientCopy);
+
+            DataColumn dtColumnTextBasicFordtClientCopy = new DataColumn();
+            dtColumnTextBasicFordtClientCopy.DataType = typeof(string);
+            dtColumnTextBasicFordtClientCopy.ColumnName = "TextBasic";
+            dtClientCopy.Columns.Add(dtColumnTextBasicFordtClientCopy);
+
+            DataColumn dtColumnTextEditorFordtClientCopy = new DataColumn();
+            dtColumnTextEditorFordtClientCopy.DataType = typeof(string);
+            dtColumnTextEditorFordtClientCopy.ColumnName = "TextEditor";
+            dtClientCopy.Columns.Add(dtColumnTextEditorFordtClientCopy);
+
+            DataColumn dtColumnTextEmailFordtClientCopy = new DataColumn();
+            dtColumnTextEmailFordtClientCopy.DataType = typeof(string);
+            dtColumnTextEmailFordtClientCopy.ColumnName = "TextEmail";
+            dtClientCopy.Columns.Add(dtColumnTextEmailFordtClientCopy);
+
+            DataColumn dtColumnTextFileFordtClientCopy = new DataColumn();
+            dtColumnTextFileFordtClientCopy.DataType = typeof(string);
+            dtColumnTextFileFordtClientCopy.ColumnName = "TextFile";
+            dtClientCopy.Columns.Add(dtColumnTextFileFordtClientCopy);
+
+            DataColumn dtColumnTextHexColourFordtClientCopy = new DataColumn();
+            dtColumnTextHexColourFordtClientCopy.DataType = typeof(string);
+            dtColumnTextHexColourFordtClientCopy.ColumnName = "TextHexColour";
+            dtClientCopy.Columns.Add(dtColumnTextHexColourFordtClientCopy);
+
+            DataColumn dtColumnTextPasswordFordtClientCopy = new DataColumn();
+            dtColumnTextPasswordFordtClientCopy.DataType = typeof(string);
+            dtColumnTextPasswordFordtClientCopy.ColumnName = "TextPassword";
+            dtClientCopy.Columns.Add(dtColumnTextPasswordFordtClientCopy);
+
+            DataColumn dtColumnTextPhoneNumberFordtClientCopy = new DataColumn();
+            dtColumnTextPhoneNumberFordtClientCopy.DataType = typeof(string);
+            dtColumnTextPhoneNumberFordtClientCopy.ColumnName = "TextPhoneNumber";
+            dtClientCopy.Columns.Add(dtColumnTextPhoneNumberFordtClientCopy);
+
+            DataColumn dtColumnTextTagFordtClientCopy = new DataColumn();
+            dtColumnTextTagFordtClientCopy.DataType = typeof(string);
+            dtColumnTextTagFordtClientCopy.ColumnName = "TextTag";
+            dtClientCopy.Columns.Add(dtColumnTextTagFordtClientCopy);
+
+            DataColumn dtColumnTextURLFordtClientCopy = new DataColumn();
+            dtColumnTextURLFordtClientCopy.DataType = typeof(string);
+            dtColumnTextURLFordtClientCopy.ColumnName = "TextURL";
+            dtClientCopy.Columns.Add(dtColumnTextURLFordtClientCopy);
+
+            DataColumn dtColumnClientStatusIdFordtClientCopy = new DataColumn();
+            dtColumnClientStatusIdFordtClientCopy.DataType = typeof(string);
+            dtColumnClientStatusIdFordtClientCopy.ColumnName = "ClientStatusId";
+            dtClientCopy.Columns.Add(dtColumnClientStatusIdFordtClientCopy);
+
+            
+            #endregion
+
+            dtClient = clientRepository.GetAllInDataTable();
+
+            foreach (DataRow DataRow in dtClient.Rows)
+            {
+                dtClientCopy.Rows.Add(DataRow.ItemArray);
+            }
+
+            var Sheet = Book.Worksheets.Add(dtClientCopy);
+
+            Sheet.ColumnsUsed().AdjustToContents();
+
+            DownloadPathForExcel = $@"wwwroot/Downloads/ExcelFiles/{DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff")}.xlsx";
+            Book.SaveAs(DownloadPathForExcel);
+
+            //Delete wwwroot from path to download correctly
+            DownloadPathForExcel = DownloadPathForExcel.Replace("wwwroot", "");
+
+            ShowDownloadButtonForExcel = true;
+
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+            {
+                Active = true,
+                DateTimeCreation = DateTime.Now,
+                DateTimeLastModification = DateTime.Now,
+                UserCreationId = 1,
+                UserLastModificationId = 1,
+                EmergencyLevel = 1,
+                Comment = "",
+                Message = ex.Message,
+                Source = ex.Source,
+                StackTrace = ex.StackTrace
+            };
+
+            failureRepository.Add(failure);
+                        
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+    }
+
+    private async Task ConvertToCSV()
+    {
+        try
+        {
+            //Set initial state
+            Message = "";
+
+            List<Client?> lstClient = clientRepository
+                                    .GetAll();
+
+            DownloadPathForCSV = $@"wwwroot/Downloads/CSVFiles/{DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff")}.csv";
+
+            using (var Writer = new StreamWriter(DownloadPathForCSV))
+            using (var CsvWriter = new CsvWriter(Writer,
+                CultureInfo.InvariantCulture))
+            {
+                CsvWriter.WriteRecords(lstClient);
+            }
+
+            //Delete wwwroot from path to download correctly
+            DownloadPathForCSV = DownloadPathForCSV.Replace("wwwroot", "");
+
+            ShowDownloadButtonForCSV = true;
+
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);             
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+            {
+                Active = true,
+                DateTimeCreation = DateTime.Now,
+                DateTimeLastModification = DateTime.Now,
+                UserCreationId = 1,
+                UserLastModificationId = 1,
+                EmergencyLevel = 1,
+                Comment = "",
+                Message = ex.Message,
+                Source = ex.Source,
+                StackTrace = ex.StackTrace
+            };
+
+            failureRepository.Add(failure);
+            
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+    }
+
+    private async Task ConvertToPDF()
+    {
+        try
+        {
+            //Set initial state
+            Message = "";
+            string ProjectName = "EmptyProject";
+            string Table = "Client";
+            var Renderer = new HtmlToPdf();
+            string RowsAsHTML = "";
+
+            List<Client> lstClient = clientRepository
+                                    .GetAll();
+
+            DownloadPathForPDF = $@"wwwroot/Downloads/PDFFiles/{DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff")}.pdf";
+
+            foreach (Client? Client in lstClient)
+            {
+                RowsAsHTML += $@"{Client?.ToStringOnlyValuesForHTML()}";
+            }
+
+            Renderer.RenderHtmlAsPdf($@"<table cellpadding=""0"" cellspacing=""0"" border=""0"" width=""88%"" style=""width: 88% !important; min-width: 88%; max-width: 88%;"">
+    <tr>
+    <td align=""left"" valign=""top"">
+        <font face=""'Source Sans Pro', sans-serif"" color=""#1a1a1a"" style=""font-size: 52px; line-height: 55px; font-weight: 300; letter-spacing: -1.5px;"">
+            <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #1a1a1a; font-size: 52px; line-height: 55px; font-weight: 300; letter-spacing: -1.5px;"">{ProjectName}</span>
+        </font>
+        <div style=""height: 25px; line-height: 25px; font-size: 23px;"">&nbsp;</div>
+        <font face=""'Source Sans Pro', sans-serif"" color=""#4c4c4c"" style=""font-size: 36px; line-height: 45px; font-weight: 300; letter-spacing: -1px;"">
+            <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #4c4c4c; font-size: 36px; line-height: 45px; font-weight: 300; letter-spacing: -1px;"">Registers of {Table}</span>
+        </font>
+        <div style=""height: 35px; line-height: 35px; font-size: 33px;"">&nbsp;</div>
+    </td>
+    </tr>
+</table>
+<br>
+<table cellpadding=""0"" cellspacing=""0"" border=""0"" width=""100%"" style=""width: 100% !important; min-width: 100%; max-width: 100%;"">
+    <tr>
+        <th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">ClientId&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">Active&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">DateTimeCreation&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">DateTimeLastModification&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">UserCreationId&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">UserLastModificationId&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">Boolean&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">DateTime&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">Decimal&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">Integer&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextArea&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextBasic&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextEditor&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextEmail&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextFile&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextHexColour&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextPassword&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextPhoneNumber&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextTag&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextURL&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
+            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
+                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">ClientStatusId&nbsp;&nbsp;&nbsp;</span>
+            </font>
+            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
+        </th>
+    </tr>
+    {RowsAsHTML}
+</table>
+<br>
+<font face=""'Source Sans Pro', sans-serif"" color=""#868686"" style=""font-size: 17px; line-height: 20px;"">
+    <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #868686; font-size: 17px; line-height: 20px;"">Printed on: {DateTime.Now}</span>
+</font>
+").SaveAs(DownloadPathForPDF);
+
+            ShowDownloadButtonForPDF = true;
+
+            //Delete wwwroot from path to download correctly
+            DownloadPathForPDF = DownloadPathForPDF.Replace("wwwroot", "");
+
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+            {
+                Active = true,
+                DateTimeCreation = DateTime.Now,
+                DateTimeLastModification = DateTime.Now,
+                UserCreationId = 1,
+                UserLastModificationId = 1,
+                EmergencyLevel = 1,
+                Comment = "",
+                Message = ex.Message,
+                Source = ex.Source,
+                StackTrace = ex.StackTrace
+            };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+
+    }
+    #endregion
+}
+

@@ -2,8 +2,8 @@
 using System.Text.RegularExpressions;
 using EmptyProject.Areas.CMSCore.DTOs;
 using EmptyProject.Areas.CMSCore.Entities;
-using EmptyProject.Areas.BasicCore;
 using EmptyProject.Areas.BasicCore.DTOs;
+using EmptyProject.DatabaseContexts;
 
 namespace EmptyProject.Areas.CMSCore.Repositories
 {

@@ -1,0 +1,550 @@
+
+@page "/EmptyProject/ClientPage/{ClientId:int}"
+
+@using EmptyProject.Areas.EmptyProject.Repositories;
+@using EmptyProject.Areas.EmptyProject.Entities;
+@using EmptyProject.Areas.EmptyProject.DTOs;
+@inject ClientRepository clientRepository;
+
+@if (ClientId == 0)
+{
+    <PageTitle>Agregar client - EmptyProject</PageTitle>
+}
+else
+{
+    <PageTitle>Editar client - EmptyProject</PageTitle>
+}
+
+<EmptyProject.Components.Layout.NavBarVerticalDashboard lstFoldersAndPages="lstFoldersAndPages"></EmptyProject.Components.Layout.NavBarVerticalDashboard>
+
+<div class="main-content position-relative max-height-vh-100 h-100">
+    <EmptyProject.Components.Layout.NavBarHorizontalDashboard></EmptyProject.Components.Layout.NavBarHorizontalDashboard>
+    <div class="container-fluid px-2 px-md-4">
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
+            <span class="mask bg-gradient-primary opacity-6"></span>
+        </div>
+        <div class="card card-body mx-3 mx-md-4 mt-n6">
+            <div class="card-header mb-0 pb-0 bg-white">
+                <h1 class="mb-3">
+                    @if(ClientId == 0)
+                    {
+                        <span>Agregar client</span>
+                    }
+                    else
+                    {
+                        <span>Editar client</span>
+                    }
+                </h1>
+                <NavLink class="btn btn-outline-info" href="EmptyProject/ClientPage">
+                    <span class="fas fa-chevron-left"></span>
+                    &nbsp;Volver
+                </NavLink>
+            </div>
+            <div class="card-body px-0">
+                <form method="post" @onsubmit="Submit"
+                      @formname="client-form" class="mb-4">
+                    <AntiforgeryToken />
+                    <!--Boolean-->
+                    <div class="form-check form-switch">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="strict-search"
+                               @bind="Client!.Boolean"
+                               id="boolean" />
+                        <label class="form-check-label"
+                               for="boolean">
+                            Boolean
+                        </label>
+                    </div>
+                    <!--DateTime-->
+                    <div class="mb-3">
+                        <label for="datetime"
+                                class="input-group input-group-static">
+                                DateTime
+                        </label>
+                        <input type="datetime-local"
+                               id="datetime"
+                               class="form-control"
+                               
+                               @bind="Client!.DateTime"/>
+                    </div>
+                    <!--Decimal-->
+                    <div class="mb-3">
+                        <label for="decimal"
+                               class="input-group input-group-static">
+                            Decimal
+                        </label>
+                        <input type="number"
+                               step="0.1"
+                               id="decimal"
+                               min="0" 
+                               max="999999999" 
+                               class="form-control"
+                               
+                               @bind="Client!.Decimal" />
+                    </div>
+                    <!--Integer-->
+                    <div class="mb-3">
+                        <label for="integer"
+                               class="input-group input-group-static">
+                            Integer
+                        </label>
+                        <input type="number"
+                               step="1"
+                               min="0" 
+                               max="999999999" 
+                               id="integer"
+                               class="form-control"
+                               required
+                               @bind="Client!.Integer" />
+                    </div>
+                    <!--TextArea-->
+                    <div class="mb-3">
+                        <label for="textarea"
+                               class="input-group input-group-static">
+                            TextArea
+                        </label>
+                        <textarea rows="10"
+                            class="form-control"
+                            @bind="Client!.TextArea"
+                            
+                            id="textarea">
+                        </textarea>
+                    </div>
+                    <!--TextBasic-->
+                    <div class="mb-3">
+                        <label for="textbasic"
+                               class="input-group input-group-static">
+                            TextBasic
+                        </label>
+                        <input type="text"
+                               id="textbasic"
+                               class="form-control"
+                               
+                               @bind="Client!.TextBasic" />
+                    </div>
+                    
+                    <!--TextEditor-->
+                    <div class="mb-3">
+                        <label for="quill-editor-texteditor"
+                               class="input-group input-group-static">
+                            TextEditor
+                        </label>
+                        <div id="quill-editor-texteditor">
+                        </div>
+                        <button id="button-quill-conversion-texteditor"
+                        type="button"
+                        class="btn btn-outline-primary my-2">
+                            Convertir a HTML
+                        </button>
+                        <input type="text"
+                               id="quill-result-texteditor"
+                               class="form-control"
+                               
+                               @bind="Client!.TextEditor" />
+                    </div>
+                    <link rel="stylesheet" href="assets/vendor/quill/dist/quill.snow.css">
+                    <script type="text/javascript">
+                        var quilleditortexteditor = new Quill("#quill-editor-texteditor", {
+                            theme: 'snow',
+                            modules: {
+                                toolbar: {
+                                    container: [
+                                        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+                                        ["bold", "italic", "underline", "strike"],
+                                        [{ list: "ordered" }, { list: "bullet" }],
+                                        ["link", "image", "video"],
+                                        ["clean"]
+                                    ],
+                                    handlers: {
+                                        image: imageHandlerTextEditor,
+                                        video: videoHandlerTextEditor
+                                    }
+                                }
+                            }
+                        });
+
+                        function imageHandlerTextEditor() {
+                            var range = this.quill.getSelection();
+                            var value = prompt('Por favor, ingrese la URL de la imagen');
+                            if (value) {
+                                this.quill.insertEmbed(range.index, 'image', value, Quill.sources.USER);
+                            }
+                        }
+
+                        function videoHandlerTextEditor() {
+                            var range = this.quill.getSelection();
+                            var value = prompt('Por favor, ingrese la URL del video');
+                            if (value) {
+                                this.quill.insertEmbed(range.index, 'video', value, Quill.sources.USER);
+                            }
+                        }
+
+                        $("#button-quill-conversion-texteditor").on("click", function () {
+                            var htmltexteditor = quilleditortexteditor.root.innerHTML;
+                            $("#quill-result-texteditor").val(htmltexteditor)
+                        });
+
+                        $(document).ready(function () {
+                            quilleditortexteditor.container.childNodes[0].innerHTML = quilleditortexteditor.getText();
+                        });
+                    </script>
+                    <script src="assets/vendor/quill/dist/quill.min.js"></script>
+                    <!--TextEmail-->
+                    <div class="mb-3">
+                        <label for="textemail"
+                               class="input-group input-group-static">
+                            TextEmail
+                        </label>
+                        <input type="email"
+                               id="textemail"
+                               class="form-control"
+                               
+                               @bind="Client!.TextEmail" />
+                    </div>
+                    <!--TextFile-->
+                    <div class="mb-3">
+                        <label for="textfile"
+                               class="input-group input-group-static">
+                            TextFile
+                        </label>
+                        <InputFile type="file"
+                               id="textfile"
+                               class="form-control"
+                               
+                               OnChange="@UploadTextFile" />
+                        @{
+                            var ProgressCssForTextFile = "progress" + (DisplayProgressForTextFile ? "" : "d-none");
+                            var ProgressWidthStyleForTextFile = ProgressPercentForTextFile + "%";
+                        }
+                        <!--Progress bar-->
+                        <div class="@ProgressCssForTextFile">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated @ProgressBarColourForTextFile"
+                                 role="progressbar" style="width:@ProgressWidthStyleForTextFile"
+                                 area-valuenow="@ProgressPercentForTextFile" 
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+                    <!--TextHexColour-->
+                    <div class="mb-3">
+                        <label for="texthexcolour"
+                               class="input-group input-group-static">
+                            TextHexColour
+                        </label>
+                        <input type="color"
+                               id="texthexcolour"
+                               class="form-control"
+                               
+                               @bind="Client!.TextHexColour" />
+                    </div>
+                    <!--TextPassword-->
+                    <div class="mb-3">
+                        <label for="textpassword"
+                               class="input-group input-group-static">
+                            TextPassword
+                        </label>
+                        <input type="password"
+                               id="textpassword"
+                               
+                               class="form-control"
+                               @bind="Client!.TextPassword" />
+                    </div>
+                    <!--TextPhoneNumber-->
+                    <div class="mb-3">
+                        <label for="textphonenumber"
+                               class="input-group input-group-static">
+                            TextPhoneNumber
+                        </label>
+                        <input type="tel"
+                               id="textphonenumber"
+                               class="form-control"
+                               
+                               @bind="Client!.TextPhoneNumber" />
+                    </div>
+                    <!--TextTag-->
+                    <div class="mb-3">
+                        <label for="texttag"
+                               class="input-group input-group-static">
+                            TextTag
+                        </label>
+                        <input type="text"
+                               id="texttag"
+                               class="form-control"
+                               
+                               @bind="Client!.TextTag"
+                               data-toggle="tags" />
+                    </div>
+                    <!--TextURL-->
+                    <div class="mb-3">
+                        <label for="texturl"
+                               class="input-group input-group-static">
+                            TextURL
+                        </label>
+                        <input type="url"
+                               id="texturl"
+                               class="form-control"
+                               
+                               @bind="Client!.TextURL" />
+                    </div>
+                    <!--ClientStatusId-->
+                    <div class="mb-3">
+                        <label for="clientstatusid"
+                               class="input-group input-group-static">
+                            ClientStatusId
+                        </label>
+                        <select id="clientstatusid"
+                            class="form-control"
+                            @bind=Client.ClientStatusId>
+                        </select>
+                    </div>
+                    
+                    <hr />
+                    <button id="btn-submit" type="submit"
+                            class="btn bg-gradient-primary">
+                        <i class="fas fa-pen"></i>
+                        @if (ClientId == 0)
+                        {
+                            <span>Agregar</span>
+                        }
+                        else
+                        {
+                            <span>Editar</span>
+                        }
+                    </button>
+                    <NavLink class="btn btn-outline-info" href="EmptyProject/ClientPage">
+                        <span class="fas fa-chevron-left"></span>
+                        &nbsp;Volver
+                    </NavLink>
+                </form>
+                @((MarkupString)Message)
+            </div>
+        </div>
+    </div>
+
+    <EmptyProject.Components.Layout.FooterDashboard></EmptyProject.Components.Layout.FooterDashboard>
+</div>
+
+@code {
+    #region Properties
+    public List<folderForDashboard> lstFoldersAndPages = [];
+
+    public List<Role> lstRole { get; set; } = [];
+
+    [Parameter]
+    public int ClientId { get; set; }
+
+    public string Message { get; set; } = "";
+
+    [SupplyParameterFromForm]
+    public Client Client { get; set; } = new();
+
+    public User User { get; set; } = new();
+
+    //Progress bar for TextFile
+    public bool DisplayProgressForTextFile { get; set; } = false;
+    public int ProgressPercentForTextFile { get; set; } = 0;
+    public string ProgressTextForTextFile { get; set; } = "";
+    public string ProgressBarColourForTextFile { get; set; } = "bg-info";
+    
+    
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //Look for saved user in shared component, simulates a session
+            User = StateContainer.User == null ? new() : StateContainer.User;
+
+            lstFoldersAndPages = [];
+            Client = new();
+
+            if (User != null)
+            {
+                if (User.UserId != 0)
+                {
+                    //Logged user
+                    if (User.RoleId != 1) //Only Root can access
+                    {
+                        NavigationManager.NavigateTo("403");
+                    }
+
+                    List<Menu> lstMenu = menuRepository
+                                        .GetAll();
+
+                    lstFoldersAndPages = rolemenuRepository
+                                            .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
+
+                    lstRole = roleRepository.GetAll();
+
+                    if (ClientId == 0)
+                    {
+                        //Create new Client
+                        Client = new();
+                    }
+                    else
+                    {
+                        //Edit Client
+                        
+                        Client = clientRepository
+                                    .GetByClientId(ClientId);
+                    }
+                }
+                else
+                {
+                    //Not logged user
+
+                    //Redirect to...
+                    NavigationManager.NavigateTo("Login");
+                }
+            }
+            else
+            {
+                //Impossible
+            }
+
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            if (ClientId == 0)
+            {
+                //Create new Client
+                Client.Active = true;
+                Client.UserCreationId = User.UserId;
+                Client.UserLastModificationId = User.UserId;
+                Client.DateTimeCreation = DateTime.Now;
+                Client.DateTimeLastModification = DateTime.Now;
+
+                clientRepository
+                        .Add(Client);
+            }
+            else
+            {
+                //Update data
+                Client.DateTimeLastModification = DateTime.Now;
+                Client.UserLastModificationId = User.UserId;
+
+                clientRepository
+                            .Update(Client);
+            }
+
+            //Redirect to users page
+            NavigationManager.NavigateTo("EmptyProject/ClientPage");
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    private async void UploadTextFile(InputFileChangeEventArgs e)
+    {
+
+        try
+        {
+            DisplayProgressForTextFile = true;
+            ProgressPercentForTextFile = 80;
+            ProgressBarColourForTextFile = "bg-info";
+
+            string path = Path.Combine(
+                Environment.CurrentDirectory,
+                "wwwroot",
+                "Uploads",
+                "EmptyProject",
+                "Client",
+                e.File.Name);
+
+            long MaxFileSize = 1024L * 1024L; //3MB max.
+
+            await using FileStream FileStream = new(path, FileMode.Create);
+            await e.File.OpenReadStream(MaxFileSize).CopyToAsync(FileStream);
+
+            FileStream.Close();
+
+            string Limitator = "\\wwwroot";
+            int StartIndex = path.IndexOf(Limitator);
+            string Result = "";
+
+            if (StartIndex != -1)
+            {
+                Result = path.Substring(StartIndex + Limitator.Length);
+            }
+
+            Client!.TextFile = Result;
+
+            ProgressPercentForTextFile = 100;
+            ProgressBarColourForTextFile = "bg-success";
+            DisplayProgressForTextFile = false;
+        }
+        catch (Exception ex)
+        {
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                            Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                         </div>";
+
+            ProgressPercentForTextFile = 100;
+            ProgressBarColourForTextFile = "bg-danger";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    
+}
+

@@ -5,6 +5,7 @@ using EmptyProject.Areas.BasicCore.DTOs;
 using EmptyProject.Areas.BasicCore.Interfaces;
 using System.Data;
 using EmptyProject.Areas.CMSCore.Entities;
+using EmptyProject.DatabaseContexts;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
