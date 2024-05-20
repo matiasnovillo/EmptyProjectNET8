@@ -15,10 +15,10 @@ else
     <PageTitle>Editar client - EmptyProject</PageTitle>
 }
 
-<EmptyProject.Components.Layout.NavBarVerticalDashboard lstFoldersAndPages="lstFoldersAndPages"></EmptyProject.Components.Layout.NavBarVerticalDashboard>
+<EmptyProject.Components.Layout.SideNav lstFoldersAndPages="lstFoldersAndPages"></EmptyProject.Components.Layout.SideNav>
 
 <div class="main-content position-relative max-height-vh-100 h-100">
-    <EmptyProject.Components.Layout.NavBarHorizontalDashboard></EmptyProject.Components.Layout.NavBarHorizontalDashboard>
+    <EmptyProject.Components.Layout.NavBarDashboard Pagina="Client"></EmptyProject.Components.Layout.NavBarDashboard>
     <div class="container-fluid px-2 px-md-4">
         <div class="page-header min-height-300 border-radius-xl mt-4"
              style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
@@ -26,7 +26,7 @@ else
         </div>
         <div class="card card-body mx-3 mx-md-4 mt-n6">
             <div class="card-header mb-0 pb-0 bg-white">
-                <h1 class="mb-3">
+                <h3 class="mb-3">
                     @if(ClientId == 0)
                     {
                         <span>Agregar client</span>
@@ -35,11 +35,12 @@ else
                     {
                         <span>Editar client</span>
                     }
-                </h1>
-                <NavLink class="btn btn-outline-info" href="EmptyProject/ClientPage">
+                </h3>
+                <NavLink class="btn btn-outline-dark" href="EmptyProject/ClientPage">
                     <span class="fas fa-chevron-left"></span>
                     &nbsp;Volver
                 </NavLink>
+                <hr />
             </div>
             <div class="card-body px-0">
                 <form method="post" @onsubmit="Submit"
@@ -58,21 +59,18 @@ else
                         </label>
                     </div>
                     <!--DateTime-->
-                    <div class="mb-3">
-                        <label for="datetime"
-                                class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="datetime">
                                 DateTime
                         </label>
                         <input type="datetime-local"
                                id="datetime"
                                class="form-control"
-                               
                                @bind="Client!.DateTime"/>
                     </div>
                     <!--Decimal-->
-                    <div class="mb-3">
-                        <label for="decimal"
-                               class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="decimal">
                             Decimal
                         </label>
                         <input type="number"
@@ -81,13 +79,11 @@ else
                                min="0" 
                                max="999999999" 
                                class="form-control"
-                               
                                @bind="Client!.Decimal" />
                     </div>
                     <!--Integer-->
-                    <div class="mb-3">
-                        <label for="integer"
-                               class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="integer">
                             Integer
                         </label>
                         <input type="number"
@@ -100,9 +96,8 @@ else
                                @bind="Client!.Integer" />
                     </div>
                     <!--TextArea-->
-                    <div class="mb-3">
-                        <label for="textarea"
-                               class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="textarea">
                             TextArea
                         </label>
                         <textarea rows="10"
@@ -113,9 +108,8 @@ else
                         </textarea>
                     </div>
                     <!--TextBasic-->
-                    <div class="mb-3">
-                        <label for="textbasic"
-                               class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="textbasic">
                             TextBasic
                         </label>
                         <input type="text"
@@ -127,8 +121,7 @@ else
                     
                     <!--TextEditor-->
                     <div class="mb-3">
-                        <label for="quill-editor-texteditor"
-                               class="input-group input-group-static">
+                        <label for="quill-editor-texteditor">
                             TextEditor
                         </label>
                         <div id="quill-editor-texteditor">
@@ -192,9 +185,8 @@ else
                     </script>
                     <script src="assets/vendor/quill/dist/quill.min.js"></script>
                     <!--TextEmail-->
-                    <div class="mb-3">
-                        <label for="textemail"
-                               class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="textemail">
                             TextEmail
                         </label>
                         <input type="email"
@@ -204,9 +196,8 @@ else
                                @bind="Client!.TextEmail" />
                     </div>
                     <!--TextFile-->
-                    <div class="mb-3">
-                        <label for="textfile"
-                               class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="textfile">
                             TextFile
                         </label>
                         <InputFile type="file"
@@ -229,9 +220,8 @@ else
                         </div>
                     </div>
                     <!--TextHexColour-->
-                    <div class="mb-3">
-                        <label for="texthexcolour"
-                               class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="texthexcolour">
                             TextHexColour
                         </label>
                         <input type="color"
@@ -241,9 +231,8 @@ else
                                @bind="Client!.TextHexColour" />
                     </div>
                     <!--TextPassword-->
-                    <div class="mb-3">
-                        <label for="textpassword"
-                               class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="textpassword">
                             TextPassword
                         </label>
                         <input type="password"
@@ -253,9 +242,8 @@ else
                                @bind="Client!.TextPassword" />
                     </div>
                     <!--TextPhoneNumber-->
-                    <div class="mb-3">
-                        <label for="textphonenumber"
-                               class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="textphonenumber">
                             TextPhoneNumber
                         </label>
                         <input type="tel"
@@ -265,9 +253,8 @@ else
                                @bind="Client!.TextPhoneNumber" />
                     </div>
                     <!--TextTag-->
-                    <div class="mb-3">
-                        <label for="texttag"
-                               class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="texttag">
                             TextTag
                         </label>
                         <input type="text"
@@ -278,9 +265,8 @@ else
                                data-toggle="tags" />
                     </div>
                     <!--TextURL-->
-                    <div class="mb-3">
-                        <label for="texturl"
-                               class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="texturl">
                             TextURL
                         </label>
                         <input type="url"
@@ -290,9 +276,8 @@ else
                                @bind="Client!.TextURL" />
                     </div>
                     <!--ClientStatusId-->
-                    <div class="mb-3">
-                        <label for="clientstatusid"
-                               class="input-group input-group-static">
+                    <div class="input-group input-group-static mb-3">
+                        <label for="clientstatusid">
                             ClientStatusId
                         </label>
                         <select id="clientstatusid"
@@ -303,7 +288,7 @@ else
                     
                     <hr />
                     <button id="btn-submit" type="submit"
-                            class="btn bg-gradient-primary">
+                            class="btn btn-success">
                         <i class="fas fa-pen"></i>
                         @if (ClientId == 0)
                         {
@@ -314,7 +299,7 @@ else
                             <span>Editar</span>
                         }
                     </button>
-                    <NavLink class="btn btn-outline-info" href="EmptyProject/ClientPage">
+                    <NavLink class="btn btn-outline-dark mx-3" href="EmptyProject/ClientPage">
                         <span class="fas fa-chevron-left"></span>
                         &nbsp;Volver
                     </NavLink>

@@ -4,7 +4,7 @@ using EmptyProject.Areas.CMSCore.Entities.EntitiesConfiguration;
 using EmptyProject.Areas.BasicCore.Entities.EntitiesConfiguration;
 using EmptyProject.Areas.BasicCore.Entities;
 using EmptyProject.Areas.EmptyProject.Entities;
-using EmptyProject.Areas.EmptyProject.Entities.EntitiesConfiguration;
+using EmptyProject.Areas.EmptyProject.EntitiesConfiguration;
 
 namespace EmptyProject.DatabaseContexts
 {

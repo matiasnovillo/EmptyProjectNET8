@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using EmptyProject.Areas.EmptyProject.Entities;
+
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -12,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
  * 
  */
 
-namespace EmptyProject.Areas.EmptyProject.Entities.EntitiesConfiguration
+namespace EmptyProject.Areas.EmptyProject.EntitiesConfiguration
 {
     public class ClientConfiguration : IEntityTypeConfiguration<Client>
     {
@@ -125,7 +127,7 @@ namespace EmptyProject.Areas.EmptyProject.Entities.EntitiesConfiguration
                     .HasColumnType("int")
                     .IsRequired(true);
 
-                
+
             }
             catch (Exception) { throw; }
         }

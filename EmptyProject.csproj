@@ -10,16 +10,12 @@
 
   <ItemGroup>
     <Compile Remove="CommonFunctions\**" />
-    <Compile Remove="wwwroot\Downloads\**" />
     <Compile Remove="wwwroot\Uploads\**" />
     <Content Remove="CommonFunctions\**" />
-    <Content Remove="wwwroot\Downloads\**" />
     <Content Remove="wwwroot\Uploads\**" />
     <EmbeddedResource Remove="CommonFunctions\**" />
-    <EmbeddedResource Remove="wwwroot\Downloads\**" />
     <EmbeddedResource Remove="wwwroot\Uploads\**" />
     <None Remove="CommonFunctions\**" />
-    <None Remove="wwwroot\Downloads\**" />
     <None Remove="wwwroot\Uploads\**" />
   </ItemGroup>
 
@@ -43,6 +39,9 @@
     <Folder Include="Areas\CMSCore\Interfaces\" />
     <Folder Include="Migrations\" />
     <Folder Include="DatabaseBackups\" />
+    <Folder Include="wwwroot\Downloads\ExcelFiles\" />
+    <Folder Include="wwwroot\Downloads\CSVFiles\" />
+    <Folder Include="wwwroot\Downloads\PDFFiles\" />
     <Folder Include="wwwroot\img\EmptyProject\" />
   </ItemGroup>
 
