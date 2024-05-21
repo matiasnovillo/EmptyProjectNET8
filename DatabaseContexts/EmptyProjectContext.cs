@@ -42,11 +42,11 @@ namespace EmptyProject.DatabaseContexts
                     "App=EntityFramework;" +
                     "TrustServerCertificate=True;";
 #else
-                ConnectionString = "Password=[Password];" +
+                ConnectionString = "Password=!a8248Sjt;" +
                     "Persist Security Info=True;" +
-                    "User ID=[User];" +
-                    "Initial Catalog=[Database];" +
-                    "Data Source=[Server];" +
+                    "User ID=fiyista1_EmptyProjectAdmin;" +
+                    "Initial Catalog=fiyista1_EmptyProject;" +
+                    "Data Source=sql4.baehost.com;" +
                     "TrustServerCertificate=True";
 #endif
 
