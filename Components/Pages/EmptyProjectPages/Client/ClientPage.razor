@@ -20,6 +20,7 @@
             <span class="mask bg-gradient-dark opacity-6"></span>
         </div>
         <div class="card card-body mx-3 mx-md-4 mt-n6">
+            <!--CARD HEADER-->
             <div class="card-header mb-0 pb-0 bg-white">
                 <h3 class="mb-3">
                     Buscar client
@@ -34,6 +35,7 @@
                 </NavLink>
                 <hr />
             </div>
+            <!--CARD BODY-->
             <div class="card-body px-0">
                 @((MarkupString)Message)
                 <div class="row">
@@ -77,6 +79,7 @@
                             </div>
                         </div>
                         <br/>
+                        <!--View type-->
                         <h6>
                             <b>
                                 Tipo de vista
@@ -96,10 +99,49 @@
                                 Lista
                             </button>
                         </div>
+                        <br />
+                        <!--Registers per page-->
+                        <h6>
+                            <b>
+                                Registros por página
+                            </b>
+                        </h6>
+                        <div class="dropdown">
+                            <button class="btn btn-dark dropdown-toggle"
+                                    type="button"
+                                    id="dropdown-registers-per-page"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                Ver @RegistersPerPage
+                            </button>
+                            <ul class="dropdown-menu px-2 py-3" aria-labelledby="dropdown-registers-per-page">
+                                <li>
+                                    <a class="dropdown-item border-radius-md"
+                                       href="javascript:;"
+                                       @onclick="(() => ChangeRegistersPerPage(50))">
+                                        50
+                                    </a>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item border-radius-md"
+                                            @onclick="(() => ChangeRegistersPerPage(500))">
+                                        500
+                                    </button>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item border-radius-md"
+                                       href="javascript:;"
+                                       @onclick="(() => ChangeRegistersPerPage(5000))">
+                                        5.000
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="col-12 col-md-8">
                         <div class="row">
                             <div class="d-flex justify-content-start">
+                                <!--Import function-->
                                 <button type="button" 
                                 class="btn btn-outline-dark mx-2" 
                                 data-bs-toggle="modal"
@@ -123,23 +165,43 @@
                                             </div>
                                             <div class="modal-body">
                                                 <form role="form">
+                                                    <div class="input-group input-group-static mb-3">
+                                                        <label for="importingfile">
+                                                            Archivo a importar
+                                                        </label>
+                                                        <InputFile type="file"
+                                                                   id="importingfile"
+                                                                   class="form-control"
+                                                                   OnChange="@UploadImportingFile" />
+                                                        @{
+                                                            var ProgressCssForImportingFile = "progress" + (DisplayProgressForImportingFile ? "" : "d-none");
+                                                            var ProgressWidthStyleForImportingFile = ProgressPercentForImportingFile + "%";
+                                                        }
+                                                        <!--Progress bar-->
+                                                        <div class="@ProgressCssForImportingFile">
+                                                            <div class="progress-bar progress-bar-striped progress-bar-animated @ProgressBarColourForImportingFile"
+                                                                 role="progressbar" style="width:@ProgressWidthStyleForImportingFile"
+                                                                 area-valuenow="@ProgressPercentForImportingFile"
+                                                                 aria-valuemin="0"
+                                                                 aria-valuemax="100">
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <div class="form-group mb-3">
                                                         <!-- Import from Excel button -->
                                                         <button class="btn btn-icon btn-dark"
-                                                                type="button">
-                                                            <span class="btn-inner--icon"><i class="fas fa-file-excel"></i></span>
-                                                            <span class="btn-inner--text">Importar de archivo Excel</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="form-group mb-3">
-                                                        <!-- Import from CSV button -->
-                                                        <button class="btn btn-icon btn-dark"
-                                                                type="button">
-                                                            <span class="btn-inner--icon"><i class="fas fa-file-csv"></i></span>
-                                                            <span class="btn-inner--text">Importar de archivo CSV</span>
+                                                        type="button"
+                                                        @onclick="ImportExcel">
+                                                            <span class="btn-inner--icon">
+                                                                <i class="fas fa-file-excel"></i>
+                                                            </span>
+                                                            <span class="btn-inner--text">
+                                                                Importar de archivo Excel
+                                                            </span>
                                                         </button>
                                                     </div>
                                                 </form>
+                                                @((MarkupString)ImportingMessage)
                                             </div>
                                             <div class="modal-footer justify-content-end">
                                                 <button type="button" class="btn btn-outline-dark mb-0" data-bs-dismiss="modal">Cerrar</button>
@@ -147,6 +209,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!--Export function-->
                                 <button type="button"
                                 class="btn btn-outline-dark mx-2"
                                 data-bs-toggle="modal"
@@ -262,6 +325,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!--Massive actions-->
                                 <button type="button"
                                 class="btn btn-outline-dark mx-2"
                                 data-bs-toggle="modal"
@@ -342,18 +406,20 @@
                         </div>
                     </div>
                 </div>
-                <!--Table-->
+                <!--Number of registers-->
                 <h6 class="mt-3">
                     <b>
                         Nº de registros: @TotalRows
                     </b>
                 </h6>
+                <!--Table-->
                 @if (ChosenView == "table")
                 {
                     <div class="table-responsive">
                         <table class="table table-striped table-hover table-bordered mt-4">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>ClientId</th>
                                     <th>Active</th>
                                     <th>DateTimeCreation</th>
@@ -384,9 +450,13 @@
                                 {
                                     @for (int i = 0; i < paginatedClientDTO.lstClient.Count(); i++)
                                     {
-                                        int deleteButton = @paginatedClientDTO.lstClient[i]!.ClientId;
+                                        int clientId = @paginatedClientDTO.lstClient[i]!.ClientId;
 
                                         <tr>
+                                            <td>
+                                                <input type="checkbox"
+                                                @onchange="(() => CheckList(clientId))" />
+                                            </td>
                                             <td>@paginatedClientDTO.lstClient[i]?.ClientId</td>
                                             @if (@paginatedClientDTO.lstClient[i]!.Active)
                                             {
@@ -465,7 +535,7 @@
                                             <td>
                                                 <div class="nav-item">
                                                     <button class="btn btn-sm btn-outline-danger"
-                                                            onclick=@(() => Delete(deleteButton))>
+                                                            onclick=@(() => Delete(clientId))>
                                                         <span class="fas fa-trash" aria-hidden="true"></span>
                                                     </button>
                                                 </div>
@@ -485,6 +555,7 @@
                 }
                 else
                 {
+                    <!--List-->
                     @if (paginatedClientDTO != null)      
                     {
                         @for (int i = 0; i < paginatedClientDTO.lstClient.Count(); i++)
@@ -578,19 +649,22 @@
                                 </div>
                                 <div class="card-footer text-body-secondary">
                                     <div class="d-flex justify-content-end">
-                                        <input type="checkbox"
-                                               @onchange="(() => CheckList(clientId))"/>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   @onchange="(() => CheckList(clientId))" />
+                                        </div>
                                         <button class="btn btn-outline-danger mx-3"
                                                 onclick=@(() => Delete(clientId))>
                                             <span class="fas fa-trash" aria-hidden="true"></span>
                                         </button>
-                                        <button class="btn btn-success toast-delete">Mostrar toast</button>
+                                        <button class="btn btn-success toast-delete showToastBtn">Mostrar toast</button>
                                         <div class="toast bg-gradient-dark fade  p-2 mx-auto" role="alert" aria-live="assertive" aria-atomic="true">
                                             <div class="toast-header border-0 bg-transparent">
                                                 <i class="material-icons me-2 text-white">diamond</i>
                                                 <span class="me-auto font-weight-bold text-white">Material Design</span>
                                                 <small class="text-white">11 mins ago</small>
-                                                <i class="fas fa-times text-md ms-3 cursor-pointer text-white" data-bs-dismiss="toast" aria-label="Close"></i>
+                                                <i class="fas fa-times text-md ms-3 cursor-pointer text-white closeToastBtn" data-bs-dismiss="toast" aria-label="Close"></i>
                                             </div>
                                             <hr class="horizontal light m-0">
                                             <div class="toast-body text-white">
@@ -607,7 +681,7 @@
                         }
                     }
                 }
-
+                <!--Pagination-->
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center mt-3">
                         <li class="page-item
@@ -682,6 +756,16 @@
     paginatedClientDTO paginatedClientDTO = new();
 
     public List<int> lstClientChecked = [];
+
+    public int RegistersPerPage { get; set; } = 50;
+
+    //Data for importing file
+    public bool DisplayProgressForImportingFile { get; set; } = false;
+    public int ProgressPercentForImportingFile { get; set; } = 0;
+    public string ProgressTextForTextFile { get; set; } = "";
+    public string ProgressBarColourForImportingFile { get; set; } = "bg-info";
+    public string UploadPath { get; set; } = "";
+    public string ImportingMessage { get; set; } = "";
     #endregion
 
     protected override void OnInitialized()
@@ -717,7 +801,7 @@
                                                     "",
                                                     CheckStrict,
                                                     1,
-                                                    15);
+                                                    RegistersPerPage);
 
                     TotalRows = clientRepository
                                     .Count();
@@ -765,6 +849,138 @@
     }
 
     #region Events
+    private async Task ImportExcel()
+    {
+        try
+        {
+            UploadPath = $@"wwwroot/{UploadPath.Replace("\\","/")}";
+
+            List<Client> lstClient = clientService.ImportExcel(UploadPath);
+
+            foreach (Client Client in lstClient)
+            {
+                clientRepository.Add(Client);
+            }
+
+            paginatedClientDTO = clientRepository
+                                                .GetAllByClientIdPaginated(
+                                                    "",
+                                                    CheckStrict,
+                                                    1,
+                                                    RegistersPerPage);
+
+            TotalRows = clientRepository
+                            .Count();
+
+            ChosenView = "list";
+
+            ImportingMessage = $@"<div class=""alert alert-success text-white font-weight-bold"" role=""alert"">
+                            Importación finalizada correctamente.
+                         </div>";
+        }
+        catch (Exception ex)
+        {
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                            Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                         </div>";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    private async void UploadImportingFile(InputFileChangeEventArgs e)
+    {
+
+        try
+        {
+            DisplayProgressForImportingFile = true;
+            ProgressPercentForImportingFile = 80;
+            ProgressBarColourForImportingFile = "bg-info";
+
+            string path = Path.Combine(
+                Environment.CurrentDirectory,
+                "wwwroot",
+                "Uploads",
+                "Client",
+                e.File.Name);
+
+            long MaxFileSize = 1024L * 1024L; //3MB max.
+
+            await using FileStream FileStream = new(path, FileMode.Create);
+            await e.File.OpenReadStream(MaxFileSize).CopyToAsync(FileStream);
+
+            FileStream.Close();
+
+            string Limitator = "\\wwwroot";
+            int StartIndex = path.IndexOf(Limitator);
+            string Result = "";
+
+            if (StartIndex != -1)
+            {
+                Result = path.Substring(StartIndex + Limitator.Length);
+            }
+
+            UploadPath = Result;
+
+            ProgressPercentForImportingFile = 100;
+            ProgressBarColourForImportingFile = "bg-success";
+            DisplayProgressForImportingFile = false;
+        }
+        catch (Exception ex)
+        {
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                            Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                         </div>";
+
+            ProgressPercentForImportingFile = 100;
+            ProgressBarColourForImportingFile = "bg-danger";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    private async Task ChangeRegistersPerPage(int registersPerPage)
+    {
+        try
+        {
+            //Basic configuration
+            Message = "";
+
+            RegistersPerPage = registersPerPage;
+
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+    }
+
     private async Task SearchText(ChangeEventArgs args)
     {
         try
@@ -779,7 +995,7 @@
                                             TextToSearch,
                                             CheckStrict,
                                             1,
-                                            15);
+                                            RegistersPerPage);
 
             TotalRows = clientRepository
                             .Count();
@@ -809,7 +1025,6 @@
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
         }
-
     }
 
     private async Task OnPreviousPage()
@@ -885,7 +1100,7 @@
                                             TextToSearch,
                                             CheckStrict,
                                             1,
-                                            15);
+                                            RegistersPerPage);
 
             TotalRows = clientRepository
                                 .Count();

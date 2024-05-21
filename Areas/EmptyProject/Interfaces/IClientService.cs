@@ -22,5 +22,7 @@ namespace EmptyProject.Areas.EmptyProject.Interfaces
         void ExportToCSV(string Path, List<Client> lstClient);
 
         void ExportToPDF(string Path, List<Client> lstClient);
+
+        List<Client> ImportExcel(string Path);
     }
 }

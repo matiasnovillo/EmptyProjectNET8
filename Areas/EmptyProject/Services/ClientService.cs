@@ -10,6 +10,7 @@ namespace EmptyProject.Areas.EmptyProject.Services
 {
     public class ClientService : IClientService
     {
+        #region Exportations
         public void ExportToExcel(string Path, DataTable dtClient)
         {
             using var Book = new XLWorkbook();
@@ -153,7 +154,7 @@ namespace EmptyProject.Areas.EmptyProject.Services
             CsvWriter.WriteRecords(lstClient);
         }
 
-        public void ExportToPDF(string Path, List<Client> lstClient) 
+        public void ExportToPDF(string Path, List<Client> lstClient)
         {
             string ProjectName = "EmptyProject";
             string Table = "Client";
@@ -298,5 +299,69 @@ namespace EmptyProject.Areas.EmptyProject.Services
 </font>
 ").SaveAs(Path);
         }
+        #endregion
+
+        #region Importations
+        public List<Client> ImportExcel(string Path)
+        {
+            List<Client> lstClient = [];
+
+            var WorkBook = new XLWorkbook(Path);
+            var Rows = WorkBook.Worksheet(1).RangeUsed().RowsUsed();
+
+            foreach (var row in Rows)
+            {
+                var rowNumber = row.RowNumber();
+
+                if (rowNumber > 1)
+                {
+                    bool Boolean= Convert.ToBoolean(row.Cell(7).GetString());
+                    DateTime DateTime = Convert.ToDateTime(row.Cell(8).GetString());
+                    decimal Decimal = Convert.ToDecimal(row.Cell(9).GetString());
+                    int Integer = Convert.ToInt32(row.Cell(10).GetString());
+                    string TextArea = row.Cell(11).GetString();
+                    string TextBasic = row.Cell(12).GetString();
+                    string TextEditor = row.Cell(13).GetString();
+                    string TextEmail = row.Cell(14).GetString();
+                    string TextFile = row.Cell(15).GetString();
+                    string TextHexColour = row.Cell(16).GetString();
+                    string TextPassword = row.Cell(17).GetString();
+                    string TextPhoneNumber = row.Cell(18).GetString();
+                    string TextTag = row.Cell(19).GetString();
+                    string TextURL = row.Cell(20).GetString();
+                    int ClientStatusId = Convert.ToInt32(row.Cell(21).GetString());
+
+                    Client Client = new()
+                    {
+                        ClientId = 0,
+                        Active = true,
+                        DateTimeCreation = DateTime.Now,
+                        DateTimeLastModification = DateTime.Now,
+                        UserCreationId = 1,
+                        UserLastModificationId = 1,
+                        Boolean = Boolean,
+                        DateTime = DateTime,
+                        Decimal = Decimal,
+                        Integer = Integer,
+                        TextArea = TextArea,
+                        TextBasic = TextBasic,
+                        TextEditor = TextEditor,
+                        TextEmail = TextEmail,
+                        TextFile = TextFile,
+                        TextHexColour = TextHexColour,
+                        TextPassword = TextPassword,
+                        TextPhoneNumber = TextPhoneNumber,
+                        TextTag = TextTag,
+                        TextURL = TextURL,
+                        ClientStatusId = ClientStatusId
+                    };
+
+                    lstClient.Add(Client);
+                }
+            }
+
+            return lstClient;
+        }
+        #endregion
     }
 }

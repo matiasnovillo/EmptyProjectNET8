@@ -46,16 +46,21 @@ $(window).on('load', function () {
 
         },true );
 
+
         //evento onclick modal "save changes button"
-        document.querySelector('.modal-footer .btn:nth-of-type(2)').addEventListener('click', function () {
-            $(document.querySelector('.modal-footer .btn:nth-of-type(1)')).trigger('click');
-        });
+        var btnModalSave = document.querySelector('.modal-footer .btn:nth-of-type(2)');
+        if (btnModalSave !== null) {
+            btnModalSave.addEventListener('click', function () {
+                $(document.querySelector('.modal-footer .btn:nth-of-type(1)')).trigger('click');
+            });
+        }
+
 
         // notification toast show/hide
-        $('button:contains("Mostrar toast")').on('click', function () {
+        $('.showToastBtn').on('click', function () {
             $('.toast.bg-gradient-dark').addClass('show');
         });
-        $('[data-bs-dismiss="toast"][aria-label="Close"]').on('click', function () {
+        $('.closeToastBtn').on('click', function () {
             $('.toast.bg-gradient-dark').removeClass('show')
         });
 
