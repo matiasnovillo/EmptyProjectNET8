@@ -67,6 +67,27 @@ namespace EmptyProject.Areas.EmptyProject.Repositories
             catch (Exception) { throw; }
         }
 
+        public List<Client?> GetAllByClientId(List<int> lstClientChecked)
+        {
+            try
+            {
+                List<Client?> lstClient = [];
+
+                foreach (int ClientId in lstClientChecked)
+                {
+                    Client client = _context.Client.Where(x => x.ClientId == ClientId).FirstOrDefault();
+
+                    if (client != null)
+                    {
+                        lstClient.Add(client);
+                    }
+                }
+
+                return lstClient;
+            }
+            catch (Exception) { throw; }
+        }
+
         public paginatedClientDTO GetAllByClientIdPaginated(string textToSearch,
             bool strictSearch,
             int pageIndex, 
@@ -149,6 +170,70 @@ namespace EmptyProject.Areas.EmptyProject.Repositories
         #endregion
 
         #region Other methods
+        public DataTable GetAllByClientIdInDataTable(List<int> lstClientChecked)
+        {
+            try
+            {
+                DataTable DataTable = new();
+                DataTable.Columns.Add("ClientId", typeof(string));
+                DataTable.Columns.Add("Active", typeof(string));
+                DataTable.Columns.Add("DateTimeCreation", typeof(string));
+                DataTable.Columns.Add("DateTimeLastModification", typeof(string));
+                DataTable.Columns.Add("UserCreationId", typeof(string));
+                DataTable.Columns.Add("UserLastModificationId", typeof(string));
+                DataTable.Columns.Add("Boolean", typeof(string));
+                DataTable.Columns.Add("DateTime", typeof(string));
+                DataTable.Columns.Add("Decimal", typeof(string));
+                DataTable.Columns.Add("Integer", typeof(string));
+                DataTable.Columns.Add("TextArea", typeof(string));
+                DataTable.Columns.Add("TextBasic", typeof(string));
+                DataTable.Columns.Add("TextEditor", typeof(string));
+                DataTable.Columns.Add("TextEmail", typeof(string));
+                DataTable.Columns.Add("TextFile", typeof(string));
+                DataTable.Columns.Add("TextHexColour", typeof(string));
+                DataTable.Columns.Add("TextPassword", typeof(string));
+                DataTable.Columns.Add("TextPhoneNumber", typeof(string));
+                DataTable.Columns.Add("TextTag", typeof(string));
+                DataTable.Columns.Add("TextURL", typeof(string));
+                DataTable.Columns.Add("ClientStatusId", typeof(string));
+
+                foreach (int ClientId in lstClientChecked)
+                {
+                    Client client = _context.Client.Where(x => x.ClientId == ClientId).FirstOrDefault();
+
+                    if (client != null)
+                    {
+                        DataTable.Rows.Add(
+                        client.ClientId,
+                        client.Active,
+                        client.DateTimeCreation,
+                        client.DateTimeLastModification,
+                        client.UserCreationId,
+                        client.UserLastModificationId,
+                        client.Boolean,
+                        client.DateTime,
+                        client.Decimal,
+                        client.Integer,
+                        client.TextArea,
+                        client.TextBasic,
+                        client.TextEditor,
+                        client.TextEmail,
+                        client.TextFile,
+                        client.TextHexColour,
+                        client.TextPassword,
+                        client.TextPhoneNumber,
+                        client.TextTag,
+                        client.TextURL,
+                        client.ClientStatusId
+                        );
+                    }
+                }
+
+                return DataTable;
+            }
+            catch (Exception) { throw; }
+        }
+
         public DataTable GetAllInDataTable()
         {
             try

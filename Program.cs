@@ -4,6 +4,7 @@ using EmptyProject.Components.Shared;
 using EmptyProject.Components;
 using EmptyProject.DatabaseContexts;
 using EmptyProject.Areas.EmptyProject.Repositories;
+using EmptyProject.Areas.EmptyProject.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,9 @@ builder.Services.AddScoped<ParameterRepository>();
 
 //Set access to repositories: EmptyProject
 builder.Services.AddScoped<ClientRepository>();
+
+//Set access to services: EmptyProject
+builder.Services.AddScoped<ClientService>();
 
 //Set access to StateContainer to share data between Blazor components
 builder.Services.AddScoped<StateContainer>();

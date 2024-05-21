@@ -2,9 +2,11 @@
 @page "/EmptyProject/ClientPage"
 
 @using EmptyProject.Areas.EmptyProject.Repositories;
+@using EmptyProject.Areas.EmptyProject.Services;
 @using EmptyProject.Areas.EmptyProject.Entities;
 @using EmptyProject.Areas.EmptyProject.DTOs;
 @inject ClientRepository clientRepository;
+@inject ClientService clientService;
 
 <PageTitle>Buscar Client - EmptyProject</PageTitle>
 
@@ -66,7 +68,7 @@
                                 <input class="form-check-input"
                                        type="checkbox"
                                        name="strict-search"
-                                       @bind="checkStrict"
+                                       @bind="CheckStrict"
                                        id="strict-search" />
                                 <label class="form-check-label"
                                        for="strict-search">
@@ -177,7 +179,9 @@
                                                                 type="radio" 
                                                                 class="custom-control-input" 
                                                                 checked
-                                                                id="export-just">
+                                                                id="export-just"
+                                                                value="just"
+                                                                @onchange="@(() => ExportationType = "just")">
                                                             <label class="custom-control-label" 
                                                             for="export-just">
                                                                 Sólo los registros seleccionados
@@ -187,7 +191,9 @@
                                                             <input name="export"
                                                                 type="radio" 
                                                                 class="custom-control-input"
-                                                                id="export-all">
+                                                                id="export-all"
+                                                                value="all"
+                                                                @onchange="@(() => ExportationType = "all")">
                                                             <label class="custom-control-label" 
                                                             for="export-all">
                                                                 Todo
@@ -197,30 +203,56 @@
                                                     <h6>
                                                         Formatos
                                                     </h6>
-                                                    <div class="form-group mb-3">
-                                                        <!-- Export as PDF file button -->
+                                                    <!-- Export as PDF file button -->
+                                                    <div class="d-flex justify-content-start">
                                                         <button class="btn btn-icon btn-dark"
-                                                                type="button">
+                                                                type="button"
+                                                                @onclick="ConvertToPDF">
                                                             <span class="btn-inner--icon"><i class="fas fa-file-pdf"></i></span>
-                                                            <span class="btn-inner--text">Exportar como PDF (.pdf)</span>
+                                                            <span class="btn-inner--text">Exportar como PDF</span>
                                                         </button>
+                                                        @if (DownloadPathForPDF != "")
+                                                        {
+                                                            <a class="btn btn-icon btn-success mx-3"
+                                                               download
+                                                               href="@DownloadPathForPDF">
+                                                                Descargar
+                                                            </a>
+                                                        }
                                                     </div>
-                                                    <div class="form-group mb-3">
-                                                        <!-- Export as Excel file button -->
-                                                        <button 
-                                                            class="btn btn-icon btn-dark" 
-                                                            type="button">
-                                                            <span class="btn-inner--icon"><i class="fas fa-file-excel"></i></span>
-                                                            <span class="btn-inner--text">Exportar como Excel (.xlsx)</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="form-group mb-3">
-                                                        <!-- Export as CSV file button -->
+                                                    <!-- Export as Excel file button -->
+                                                    <div class="d-flex justify-content-start">
                                                         <button class="btn btn-icon btn-dark"
-                                                                type="button">
-                                                            <span class="btn-inner--icon"><i class="fas fa-file-csv"></i></span>
-                                                            <span class="btn-inner--text">Exportar como CSV (.csv)</span>
+                                                        type="button"
+                                                        @onclick="ConvertToExcel">
+                                                            <span class="btn-inner--icon"><i class="fas fa-file-excel"></i></span>
+                                                            <span class="btn-inner--text">Exportar como Excel</span>
                                                         </button>
+                                                        @if (DownloadPathForExcel != "")
+                                                        {
+                                                            <a class="btn btn-icon btn-success mx-3"
+                                                            download
+                                                            href="@DownloadPathForExcel">
+                                                                Descargar
+                                                            </a>
+                                                        }
+                                                    </div>
+                                                    <!-- Export as CSV file button -->
+                                                    <div class="d-flex justify-content-start">
+                                                        <button class="btn btn-icon btn-dark"
+                                                                type="button"
+                                                                @onclick="ConvertToCSV">
+                                                            <span class="btn-inner--icon"><i class="fas fa-file-csv"></i></span>
+                                                            <span class="btn-inner--text">Exportar como CSV</span>
+                                                        </button>
+                                                        @if (DownloadPathForCSV != "")
+                                                        {
+                                                            <a class="btn btn-icon btn-success mx-3"
+                                                               download
+                                                               href="@DownloadPathForCSV">
+                                                                Descargar
+                                                            </a>
+                                                        }
                                                     </div>
                                                 </form>
                                             </div>
@@ -457,7 +489,7 @@
                     {
                         @for (int i = 0; i < paginatedClientDTO.lstClient.Count(); i++)
                         {
-                            int deleteButton = @paginatedClientDTO.lstClient[i]!.ClientId;
+                            int clientId = @paginatedClientDTO.lstClient[i]!.ClientId;
 
                             <div class="card shadow-lg mt-2">
                                 <div class="card-body">
@@ -546,8 +578,10 @@
                                 </div>
                                 <div class="card-footer text-body-secondary">
                                     <div class="d-flex justify-content-end">
+                                        <input type="checkbox"
+                                               @onchange="(() => CheckList(clientId))"/>
                                         <button class="btn btn-outline-danger mx-3"
-                                                onclick=@(() => Delete(deleteButton))>
+                                                onclick=@(() => Delete(clientId))>
                                             <span class="fas fa-trash" aria-hidden="true"></span>
                                         </button>
                                         <button class="btn btn-success toast-delete">Mostrar toast</button>
@@ -629,25 +663,25 @@
 
     public string? ChosenView { get; set; }
 
-    public bool checkStrict { get; set; }
+    public bool CheckStrict { get; set; }
 
-    public string TextToSearch { get; set; } = "";
+    public string? TextToSearch { get; set; } = "";
 
-    public string Message { get; set; } = "";
+    public string? Message { get; set; } = "";
 
-    public bool ShowDownloadButtonForExcel { get; set; }
-    public bool ShowDownloadButtonForPDF { get; set; }
-    public bool ShowDownloadButtonForCSV { get; set; }
+    public string? ExportationType { get; set; } = "just";
 
-    public string? DownloadPathForExcel { get; set; }
-    public string? DownloadPathForPDF { get; set; }
-    public string? DownloadPathForCSV { get; set; }
+    public string? DownloadPathForExcel { get; set; } = "";
+    public string? DownloadPathForPDF { get; set; } = "";
+    public string? DownloadPathForCSV { get; set; } = "";
 
     public User User = new();
 
     public Client Client = new();
 
     paginatedClientDTO paginatedClientDTO = new();
+
+    public List<int> lstClientChecked = [];
     #endregion
 
     protected override void OnInitialized()
@@ -681,7 +715,7 @@
                     paginatedClientDTO = clientRepository
                                                 .GetAllByClientIdPaginated(
                                                     "",
-                                                    checkStrict,
+                                                    CheckStrict,
                                                     1,
                                                     15);
 
@@ -743,7 +777,7 @@
             paginatedClientDTO = clientRepository
                                         .GetAllByClientIdPaginated(
                                             TextToSearch,
-                                            checkStrict,
+                                            CheckStrict,
                                             1,
                                             15);
 
@@ -785,7 +819,7 @@
             paginatedClientDTO = clientRepository
                                         .GetAllByClientIdPaginated(
                                             TextToSearch,
-                                            checkStrict,
+                                            CheckStrict,
                                             (paginatedClientDTO.PageIndex - 1),
                                             paginatedClientDTO.PageSize);
         }
@@ -802,7 +836,7 @@
         paginatedClientDTO = clientRepository
                                             .GetAllByClientIdPaginated(
                                                 TextToSearch,
-                                                checkStrict,
+                                                CheckStrict,
                                                 pageIndex,
                                                 paginatedClientDTO.PageSize);
 
@@ -820,7 +854,7 @@
             paginatedClientDTO = clientRepository
                                         .GetAllByClientIdPaginated(
                                             TextToSearch,
-                                            checkStrict,
+                                            CheckStrict,
                                             (paginatedClientDTO.PageIndex + 1),
                                             paginatedClientDTO.PageSize);
         }
@@ -849,7 +883,7 @@
             paginatedClientDTO = clientRepository
                                         .GetAllByClientIdPaginated(
                                             TextToSearch,
-                                            checkStrict,
+                                            CheckStrict,
                                             1,
                                             15);
 
@@ -888,6 +922,51 @@
                             </div>";
         }
     }
+
+    private async Task CheckList(int clientId)
+    {
+        try
+        {
+            int[] lstClientId = { clientId };
+
+            foreach (int ClientId in lstClientId)
+            {
+                if (lstClientChecked.Contains(ClientId))
+                {
+                    lstClientChecked.Remove(ClientId);
+                }
+                else
+                {
+                    lstClientChecked.Add(ClientId);
+                }
+            }
+
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+    }
     #endregion
 
     #region Conversions
@@ -898,142 +977,24 @@
             //Set initial state
             Message = "";
 
-            using var Book = new XLWorkbook();
+            DownloadPathForExcel = $@"wwwroot/Downloads/ExcelFiles/{DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff")}.xlsx";
 
-            DataTable dtClient = new DataTable();
-            dtClient.TableName = "Client";
+            DataTable dtClient = new();
 
-            //We define another DataTable dtClientCopy to avoid issue related to DateTime conversion
-            DataTable dtClientCopy = new DataTable();
-            dtClientCopy.TableName = "Client";
-
-            #region Define columns for dtClientCopy
-            DataColumn dtColumnClientIdFordtClientCopy = new DataColumn();
-            dtColumnClientIdFordtClientCopy.DataType = typeof(string);
-            dtColumnClientIdFordtClientCopy.ColumnName = "ClientId";
-            dtClientCopy.Columns.Add(dtColumnClientIdFordtClientCopy);
-
-            DataColumn dtColumnActiveFordtClientCopy = new DataColumn();
-            dtColumnActiveFordtClientCopy.DataType = typeof(string);
-            dtColumnActiveFordtClientCopy.ColumnName = "Active";
-            dtClientCopy.Columns.Add(dtColumnActiveFordtClientCopy);
-
-            DataColumn dtColumnDateTimeCreationFordtClientCopy = new DataColumn();
-            dtColumnDateTimeCreationFordtClientCopy.DataType = typeof(string);
-            dtColumnDateTimeCreationFordtClientCopy.ColumnName = "DateTimeCreation";
-            dtClientCopy.Columns.Add(dtColumnDateTimeCreationFordtClientCopy);
-
-            DataColumn dtColumnDateTimeLastModificationFordtClientCopy = new DataColumn();
-            dtColumnDateTimeLastModificationFordtClientCopy.DataType = typeof(string);
-            dtColumnDateTimeLastModificationFordtClientCopy.ColumnName = "DateTimeLastModification";
-            dtClientCopy.Columns.Add(dtColumnDateTimeLastModificationFordtClientCopy);
-
-            DataColumn dtColumnUserCreationIdFordtClientCopy = new DataColumn();
-            dtColumnUserCreationIdFordtClientCopy.DataType = typeof(string);
-            dtColumnUserCreationIdFordtClientCopy.ColumnName = "UserCreationId";
-            dtClientCopy.Columns.Add(dtColumnUserCreationIdFordtClientCopy);
-
-            DataColumn dtColumnUserLastModificationIdFordtClientCopy = new DataColumn();
-            dtColumnUserLastModificationIdFordtClientCopy.DataType = typeof(string);
-            dtColumnUserLastModificationIdFordtClientCopy.ColumnName = "UserLastModificationId";
-            dtClientCopy.Columns.Add(dtColumnUserLastModificationIdFordtClientCopy);
-
-            DataColumn dtColumnBooleanFordtClientCopy = new DataColumn();
-            dtColumnBooleanFordtClientCopy.DataType = typeof(string);
-            dtColumnBooleanFordtClientCopy.ColumnName = "Boolean";
-            dtClientCopy.Columns.Add(dtColumnBooleanFordtClientCopy);
-
-            DataColumn dtColumnDateTimeFordtClientCopy = new DataColumn();
-            dtColumnDateTimeFordtClientCopy.DataType = typeof(string);
-            dtColumnDateTimeFordtClientCopy.ColumnName = "DateTime";
-            dtClientCopy.Columns.Add(dtColumnDateTimeFordtClientCopy);
-
-            DataColumn dtColumnDecimalFordtClientCopy = new DataColumn();
-            dtColumnDecimalFordtClientCopy.DataType = typeof(string);
-            dtColumnDecimalFordtClientCopy.ColumnName = "Decimal";
-            dtClientCopy.Columns.Add(dtColumnDecimalFordtClientCopy);
-
-            DataColumn dtColumnIntegerFordtClientCopy = new DataColumn();
-            dtColumnIntegerFordtClientCopy.DataType = typeof(string);
-            dtColumnIntegerFordtClientCopy.ColumnName = "Integer";
-            dtClientCopy.Columns.Add(dtColumnIntegerFordtClientCopy);
-
-            DataColumn dtColumnTextAreaFordtClientCopy = new DataColumn();
-            dtColumnTextAreaFordtClientCopy.DataType = typeof(string);
-            dtColumnTextAreaFordtClientCopy.ColumnName = "TextArea";
-            dtClientCopy.Columns.Add(dtColumnTextAreaFordtClientCopy);
-
-            DataColumn dtColumnTextBasicFordtClientCopy = new DataColumn();
-            dtColumnTextBasicFordtClientCopy.DataType = typeof(string);
-            dtColumnTextBasicFordtClientCopy.ColumnName = "TextBasic";
-            dtClientCopy.Columns.Add(dtColumnTextBasicFordtClientCopy);
-
-            DataColumn dtColumnTextEditorFordtClientCopy = new DataColumn();
-            dtColumnTextEditorFordtClientCopy.DataType = typeof(string);
-            dtColumnTextEditorFordtClientCopy.ColumnName = "TextEditor";
-            dtClientCopy.Columns.Add(dtColumnTextEditorFordtClientCopy);
-
-            DataColumn dtColumnTextEmailFordtClientCopy = new DataColumn();
-            dtColumnTextEmailFordtClientCopy.DataType = typeof(string);
-            dtColumnTextEmailFordtClientCopy.ColumnName = "TextEmail";
-            dtClientCopy.Columns.Add(dtColumnTextEmailFordtClientCopy);
-
-            DataColumn dtColumnTextFileFordtClientCopy = new DataColumn();
-            dtColumnTextFileFordtClientCopy.DataType = typeof(string);
-            dtColumnTextFileFordtClientCopy.ColumnName = "TextFile";
-            dtClientCopy.Columns.Add(dtColumnTextFileFordtClientCopy);
-
-            DataColumn dtColumnTextHexColourFordtClientCopy = new DataColumn();
-            dtColumnTextHexColourFordtClientCopy.DataType = typeof(string);
-            dtColumnTextHexColourFordtClientCopy.ColumnName = "TextHexColour";
-            dtClientCopy.Columns.Add(dtColumnTextHexColourFordtClientCopy);
-
-            DataColumn dtColumnTextPasswordFordtClientCopy = new DataColumn();
-            dtColumnTextPasswordFordtClientCopy.DataType = typeof(string);
-            dtColumnTextPasswordFordtClientCopy.ColumnName = "TextPassword";
-            dtClientCopy.Columns.Add(dtColumnTextPasswordFordtClientCopy);
-
-            DataColumn dtColumnTextPhoneNumberFordtClientCopy = new DataColumn();
-            dtColumnTextPhoneNumberFordtClientCopy.DataType = typeof(string);
-            dtColumnTextPhoneNumberFordtClientCopy.ColumnName = "TextPhoneNumber";
-            dtClientCopy.Columns.Add(dtColumnTextPhoneNumberFordtClientCopy);
-
-            DataColumn dtColumnTextTagFordtClientCopy = new DataColumn();
-            dtColumnTextTagFordtClientCopy.DataType = typeof(string);
-            dtColumnTextTagFordtClientCopy.ColumnName = "TextTag";
-            dtClientCopy.Columns.Add(dtColumnTextTagFordtClientCopy);
-
-            DataColumn dtColumnTextURLFordtClientCopy = new DataColumn();
-            dtColumnTextURLFordtClientCopy.DataType = typeof(string);
-            dtColumnTextURLFordtClientCopy.ColumnName = "TextURL";
-            dtClientCopy.Columns.Add(dtColumnTextURLFordtClientCopy);
-
-            DataColumn dtColumnClientStatusIdFordtClientCopy = new DataColumn();
-            dtColumnClientStatusIdFordtClientCopy.DataType = typeof(string);
-            dtColumnClientStatusIdFordtClientCopy.ColumnName = "ClientStatusId";
-            dtClientCopy.Columns.Add(dtColumnClientStatusIdFordtClientCopy);
-
-            
-            #endregion
-
-            dtClient = clientRepository.GetAllInDataTable();
-
-            foreach (DataRow DataRow in dtClient.Rows)
+            if (ExportationType == "just")
             {
-                dtClientCopy.Rows.Add(DataRow.ItemArray);
+                dtClient = clientRepository.GetAllByClientIdInDataTable(lstClientChecked);
+            }
+            else
+            {
+                dtClient = clientRepository.GetAllInDataTable();
             }
 
-            var Sheet = Book.Worksheets.Add(dtClientCopy);
-
-            Sheet.ColumnsUsed().AdjustToContents();
-
-            DownloadPathForExcel = $@"wwwroot/Downloads/ExcelFiles/{DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff")}.xlsx";
-            Book.SaveAs(DownloadPathForExcel);
+            clientService.ExportToExcel(DownloadPathForExcel,
+            dtClient);
 
             //Delete wwwroot from path to download correctly
             DownloadPathForExcel = DownloadPathForExcel.Replace("wwwroot", "");
-
-            ShowDownloadButtonForExcel = true;
 
             //Re-render the page
             await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
@@ -1056,7 +1017,7 @@
             };
 
             failureRepository.Add(failure);
-                        
+
             Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
@@ -1070,22 +1031,23 @@
             //Set initial state
             Message = "";
 
-            List<Client?> lstClient = clientRepository
-                                    .GetAll();
-
             DownloadPathForCSV = $@"wwwroot/Downloads/CSVFiles/{DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff")}.csv";
 
-            using (var Writer = new StreamWriter(DownloadPathForCSV))
-            using (var CsvWriter = new CsvWriter(Writer,
-                CultureInfo.InvariantCulture))
+            List<Client?> lstClient = [];
+
+            if (ExportationType == "just")
             {
-                CsvWriter.WriteRecords(lstClient);
+                lstClient = clientRepository.GetAllByClientId(lstClientChecked);
             }
+            else
+            {
+                lstClient = clientRepository.GetAll();
+            }
+
+            clientService.ExportToCSV(DownloadPathForCSV, lstClient);
 
             //Delete wwwroot from path to download correctly
             DownloadPathForCSV = DownloadPathForCSV.Replace("wwwroot", "");
-
-            ShowDownloadButtonForCSV = true;
 
             //Re-render the page
             await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);             
@@ -1107,7 +1069,7 @@
             };
 
             failureRepository.Add(failure);
-            
+
             Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
@@ -1120,154 +1082,21 @@
         {
             //Set initial state
             Message = "";
-            string ProjectName = "EmptyProject";
-            string Table = "Client";
-            var Renderer = new HtmlToPdf();
-            string RowsAsHTML = "";
 
-            List<Client> lstClient = clientRepository
-                                    .GetAll();
+            List<Client?> lstClient = [];
+
+            if (ExportationType == "just")
+            {
+                lstClient = clientRepository.GetAllByClientId(lstClientChecked);
+            }
+            else
+            {
+                lstClient = clientRepository.GetAll();
+            }
 
             DownloadPathForPDF = $@"wwwroot/Downloads/PDFFiles/{DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff")}.pdf";
 
-            foreach (Client? Client in lstClient)
-            {
-                RowsAsHTML += $@"{Client?.ToStringOnlyValuesForHTML()}";
-            }
-
-            Renderer.RenderHtmlAsPdf($@"<table cellpadding=""0"" cellspacing=""0"" border=""0"" width=""88%"" style=""width: 88% !important; min-width: 88%; max-width: 88%;"">
-    <tr>
-    <td align=""left"" valign=""top"">
-        <font face=""'Source Sans Pro', sans-serif"" color=""#1a1a1a"" style=""font-size: 52px; line-height: 55px; font-weight: 300; letter-spacing: -1.5px;"">
-            <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #1a1a1a; font-size: 52px; line-height: 55px; font-weight: 300; letter-spacing: -1.5px;"">{ProjectName}</span>
-        </font>
-        <div style=""height: 25px; line-height: 25px; font-size: 23px;"">&nbsp;</div>
-        <font face=""'Source Sans Pro', sans-serif"" color=""#4c4c4c"" style=""font-size: 36px; line-height: 45px; font-weight: 300; letter-spacing: -1px;"">
-            <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #4c4c4c; font-size: 36px; line-height: 45px; font-weight: 300; letter-spacing: -1px;"">Registers of {Table}</span>
-        </font>
-        <div style=""height: 35px; line-height: 35px; font-size: 33px;"">&nbsp;</div>
-    </td>
-    </tr>
-</table>
-<br>
-<table cellpadding=""0"" cellspacing=""0"" border=""0"" width=""100%"" style=""width: 100% !important; min-width: 100%; max-width: 100%;"">
-    <tr>
-        <th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">ClientId&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">Active&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">DateTimeCreation&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">DateTimeLastModification&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">UserCreationId&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">UserLastModificationId&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">Boolean&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">DateTime&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">Decimal&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">Integer&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextArea&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextBasic&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextEditor&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextEmail&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextFile&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextHexColour&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextPassword&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextPhoneNumber&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextTag&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">TextURL&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th><th align=""left"" valign=""top"" style=""border-width: 1px; border-style: solid; border-color: #e8e8e8; border-top: none; border-left: none; border-right: none;"">
-            <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px; font-weight: 600;"">
-                <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px; font-weight: 600;"">ClientStatusId&nbsp;&nbsp;&nbsp;</span>
-            </font>
-            <div style=""height: 10px; line-height: 10px; font-size: 8px;"">&nbsp;</div>
-        </th>
-    </tr>
-    {RowsAsHTML}
-</table>
-<br>
-<font face=""'Source Sans Pro', sans-serif"" color=""#868686"" style=""font-size: 17px; line-height: 20px;"">
-    <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #868686; font-size: 17px; line-height: 20px;"">Printed on: {DateTime.Now}</span>
-</font>
-").SaveAs(DownloadPathForPDF);
-
-            ShowDownloadButtonForPDF = true;
+            clientService.ExportToPDF(DownloadPathForPDF, lstClient);
 
             //Delete wwwroot from path to download correctly
             DownloadPathForPDF = DownloadPathForPDF.Replace("wwwroot", "");

@@ -26,6 +26,8 @@ namespace EmptyProject.Areas.EmptyProject.Interfaces
 
         List<Client?> GetAll();
 
+        List<Client?> GetAllByClientId(List<int> lstClientChecked);
+
         paginatedClientDTO GetAllByClientIdPaginated(string textToSearch,
             bool strictSearch,
             int pageIndex,
@@ -41,6 +43,8 @@ namespace EmptyProject.Areas.EmptyProject.Interfaces
         #endregion
 
         #region Other methods
+        DataTable GetAllByClientIdInDataTable(List<int> lstClientChecked);
+
         DataTable GetAllInDataTable();
         #endregion
     }
