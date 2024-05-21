@@ -1,11 +1,17 @@
-$(window).on('load', function () {
+window.addEventListener('load', function () {
 
      
 
     setTimeout(function () {
 
+        console.log('cargadop')
+        var btn = document.querySelector('.sidenav-toggler .sidenav-toggler-inner');
+        if (btn === null || typeof btn === "undefined") {
+            console.log('btn no existe')
+        } else { console.log('btnEXISTE') }
         // click hamburger => show /hide left navbar
         document.querySelector('.sidenav-toggler .sidenav-toggler-inner').addEventListener('click', function (event) {
+            console.log('clickeado')
             $('body').toggleClass('g-sidenav-show g-sidenav-hidden');
         }, true);
 
@@ -57,10 +63,10 @@ $(window).on('load', function () {
 
 
         // notification toast show/hide
-        $('.showToastBtn').on('click', function () {
+        $('.showtoast').on('click', function () {
             $('.toast.bg-gradient-dark').addClass('show');
         });
-        $('.closeToastBtn').on('click', function () {
+        $('.closetoast').on('click', function () {
             $('.toast.bg-gradient-dark').removeClass('show')
         });
 

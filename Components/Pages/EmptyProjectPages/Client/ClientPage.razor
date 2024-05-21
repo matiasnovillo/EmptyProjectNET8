@@ -33,6 +33,19 @@
                     <span class="fas fa-plus" aria-hidden="true"></span>
                     &nbsp;Crear client
                 </NavLink>
+                <button class="btn btn-success toast-delete showtoast">Mostrar toast</button>
+                <div class="toast bg-gradient-dark fade  p-2 mx-auto" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header border-0 bg-transparent">
+                        <i class="material-icons me-2 text-white">diamond</i>
+                        <span class="me-auto font-weight-bold text-white">Material Design</span>
+                        <small class="text-white">11 mins ago</small>
+                        <i class="fas fa-times text-md ms-3 cursor-pointer text-white closeToastBtn" data-bs-dismiss="toast" aria-label="Close"></i>
+                    </div>
+                    <hr class="horizontal light m-0">
+                    <div class="toast-body text-white">
+                        Hello, world! This is a notification message.
+                    </div>
+                </div>
                 <hr />
             </div>
             <!--CARD BODY-->
@@ -658,19 +671,7 @@
                                                 onclick=@(() => Delete(clientId))>
                                             <span class="fas fa-trash" aria-hidden="true"></span>
                                         </button>
-                                        <button class="btn btn-success toast-delete showToastBtn">Mostrar toast</button>
-                                        <div class="toast bg-gradient-dark fade  p-2 mx-auto" role="alert" aria-live="assertive" aria-atomic="true">
-                                            <div class="toast-header border-0 bg-transparent">
-                                                <i class="material-icons me-2 text-white">diamond</i>
-                                                <span class="me-auto font-weight-bold text-white">Material Design</span>
-                                                <small class="text-white">11 mins ago</small>
-                                                <i class="fas fa-times text-md ms-3 cursor-pointer text-white closeToastBtn" data-bs-dismiss="toast" aria-label="Close"></i>
-                                            </div>
-                                            <hr class="horizontal light m-0">
-                                            <div class="toast-body text-white">
-                                                Hello, world! This is a notification message.
-                                            </div>
-                                        </div>
+                                        <!--TODO Poner toast-->
                                         <a class="btn btn-outline-info"
                                            href="EmptyProject/ClientPage/@paginatedClientDTO.lstClient[i]?.ClientId">
                                             <span class="fas fa-pen" aria-hidden="true"></span>
@@ -727,7 +728,13 @@
 
     <EmptyProject.Components.Layout.FixedPlugin></EmptyProject.Components.Layout.FixedPlugin>
     <EmptyProject.Components.Layout.FooterDashboard></EmptyProject.Components.Layout.FooterDashboard>
+
+    <!-- Custom JS -->
+<script src="assets/js/custom.js"></script>
+
 </div>
+
+
 
 @code {
     #region Properties
