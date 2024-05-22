@@ -9,23 +9,11 @@ namespace EmptyProject.Library.ModelAttributeValidator
         private TimeSpan _MinimumTimeSpan;
         private TimeSpan _MaximumTimeSpan;
         private bool _Required;
-        public TimeSpanAttribute(string PropertyName, bool Required, string TimeSpanMin = "0:00:00.000", string TimeSpanMax = "23:59:59.999")
+        public TimeSpanAttribute(string PropertyName, bool Required, string TimeSpanMin, string TimeSpanMax)
         {
             try
             {
-                if (PropertyName == null)
-                { throw new Exception("The property name is empty"); }
-                if (PropertyName.Length < 0)
-                { throw new Exception($"The length of property name must be equal or greater than 0"); }
-                if (PropertyName.Length > int.MaxValue)
-                { throw new Exception($"The length of property name must be equal or less than int.MaxValue"); }
-
                 _PropertyName = PropertyName;
-
-                if (TimeSpanMin == null)
-                { throw new Exception("The minimum TimeSpan validator is empty"); }
-                if (TimeSpanMax == null)
-                { throw new Exception("The maximum TimeSpan validator is empty"); }
 
                 _MinimumTimeSpan = TimeSpan.Parse(TimeSpanMin);
                 _MaximumTimeSpan = TimeSpan.Parse(TimeSpanMax);

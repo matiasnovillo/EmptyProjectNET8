@@ -9,12 +9,8 @@ namespace EmptyProject.Library.ModelAttributeValidator
         private int _MinimumInt;
         private int _MaximumInt;
         private bool _Required;
-        public IntAttribute(string PropertyName, bool Required, int IntMin = int.MinValue, int IntMax = int.MaxValue)
+        public IntAttribute(string PropertyName, bool Required, int IntMin, int IntMax)
         {
-            if (PropertyName == null) { throw new Exception("The property name is empty"); }
-            if (PropertyName.Length < 0) { throw new Exception($"The length of property name must be equal or greater than 0"); }
-            if (PropertyName.Length > int.MaxValue) { throw new Exception($"The length of property name must be equal or less than int.MaxValue"); }
-
             _PropertyName = PropertyName;
 
             if (IntMin < int.MinValue || IntMin > int.MaxValue)

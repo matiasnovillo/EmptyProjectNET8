@@ -10,14 +10,10 @@ namespace EmptyProject.Library.ModelAttributeValidator
         private int _MaximumLength;
         private string _RegexString;
         private bool _Required;
-        public StringAttribute(string PropertyName, bool Required, int MinimumLength = 0, int MaximumLength = int.MaxValue, string RegexString = "")
+        public StringAttribute(string PropertyName, bool Required, int MinimumLength, int MaximumLength, string RegexString)
         {
             try
             {
-                if (PropertyName == null) { throw new Exception("The property name is empty"); }
-                if (PropertyName.Length < 0) { throw new Exception($"The length of property name must be equal or greater than 0"); }
-                if (PropertyName.Length > int.MaxValue) { throw new Exception($"The length of property name must be equal or less than int.MaxValue"); }
-
                 _PropertyName = PropertyName;
 
                 if (MinimumLength < 0)

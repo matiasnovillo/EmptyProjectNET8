@@ -4,6 +4,7 @@
 @using EmptyProject.Areas.EmptyProject.Repositories;
 @using EmptyProject.Areas.EmptyProject.Entities;
 @using EmptyProject.Areas.EmptyProject.DTOs;
+@using System.ComponentModel.DataAnnotations;
 @inject ClientRepository clientRepository;
 
 @if (ClientId == 0)
@@ -371,10 +372,12 @@ else
                     else
                     {
                         //Edit Client
-                        
+
                         Client = clientRepository
                                     .GetByClientId(ClientId);
-                    }
+                    }                    
+
+                    Check();
                 }
                 else
                 {
@@ -412,6 +415,27 @@ else
             Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
+        }
+    }
+
+    private async Task Check()
+    {
+        var lstValidationResult = new List<ValidationResult>();
+        var ValidationContext = new ValidationContext(Client);
+
+        bool IsValid = Validator.TryValidateObject(Client, ValidationContext, lstValidationResult, true);
+
+        if (!IsValid)
+        {
+            //TODO
+            foreach (var validationResult in lstValidationResult)
+            {
+                Console.WriteLine(validationResult.ErrorMessage);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Model is valid");
         }
     }
 

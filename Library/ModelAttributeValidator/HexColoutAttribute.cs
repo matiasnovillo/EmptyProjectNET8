@@ -9,7 +9,7 @@ namespace EmptyProject.Library.ModelAttributeValidator
         private string _MinimumHexColourInStringFormat;
         private string _MaximumHexColourInStringFormat;
         private bool _Required;
-        public HexColourAttribute(string PropertyName, bool Required, string HexColourMinInStringFormat = "000000", string HexColourMaxInStringFormat = "FFFFFF")
+        public HexColourAttribute(string PropertyName, bool Required, string HexColourMinInStringFormat, string HexColourMaxInStringFormat)
         {
             if (PropertyName == null) { throw new Exception("The property name is empty"); }
             if (PropertyName.Length < 0) { throw new Exception($"The length of property name must be equal or greater than 0"); }

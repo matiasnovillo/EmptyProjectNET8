@@ -9,14 +9,10 @@ namespace EmptyProject.Library.ModelAttributeValidator
         private decimal _MinimumDecimalNumber;
         private decimal _MaximumDecimalNumber;
         private bool _Required;
-        public DecimalAttribute(string PropertyName, bool Required, double DecimalMin = (double)decimal.MinValue, double DecimalMax = (double)decimal.MaxValue)
+        public DecimalAttribute(string PropertyName, bool Required, double DecimalMin, double DecimalMax)
         {
             try
             {
-                if (PropertyName == null) { throw new Exception("The property name is empty"); }
-                if (PropertyName.Length < 0) { throw new Exception($"The length of property name must be equal or greater than 0"); }
-                if (PropertyName.Length > int.MaxValue) { throw new Exception($"The length of property name must be equal or less than int.MaxValue"); }
-
                 _PropertyName = PropertyName;
 
                 if (DecimalMin < (double)decimal.MinValue || DecimalMin > (double)decimal.MaxValue)

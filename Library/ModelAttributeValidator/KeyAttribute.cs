@@ -10,10 +10,6 @@ namespace EmptyProject.Library.ModelAttributeValidator
         {
             try
             {
-                if (PropertyName == null) { throw new Exception("The property name is empty"); }
-                if (PropertyName.Length < 0) { throw new Exception($"The length of property name must be equal or greater than 0"); }
-                if (PropertyName.Length > int.MaxValue) { throw new Exception($"The length of property name must be equal or less than int.MaxValue"); }
-
                 _PropertyName = PropertyName;
             }
             catch (Exception) { throw; }

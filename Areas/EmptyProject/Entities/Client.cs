@@ -55,7 +55,7 @@ namespace EmptyProject.Areas.EmptyProject.Entities
         [Library.ModelAttributeValidator.Decimal("Decimal", false, 0D, 999999999D)]
         public decimal Decimal { get; set; }
 
-        [Library.ModelAttributeValidator.Int("Integer", true, 0, 999999999)]
+        [Library.ModelAttributeValidator.Int("Integer", true, 0, 800)]
         public int Integer { get; set; }
 
         public string? TextArea { get; set; }
