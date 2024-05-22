@@ -15,7 +15,7 @@ namespace EmptyProject.Areas.BasicCore.Entities
 {
     public class Failure
     {
-        [Library.ModelAttributeValidator.Key("FailureId")]
+        [Library.ModelAttributeValidator.Key()]
         public int FailureId { get; set; }
 
         ///<summary>
@@ -26,32 +26,32 @@ namespace EmptyProject.Areas.BasicCore.Entities
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.DateTime("DateTimeCreation", false, "1753-01-01T00:00", "9998-12-30T23:59")]
+        [Library.ModelAttributeValidator.DateTime(false, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime 
         DateTimeCreation { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.DateTime("DateTimeLastModification", false, "1753-01-01T00:00", "9998-12-30T23:59")]
+        [Library.ModelAttributeValidator.DateTime(false, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime 
         DateTimeLastModification { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.Key("UserCreationId")]
+        [Library.ModelAttributeValidator.Key()]
         public int UserCreationId { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.Key("UserLastModificationId")]
+        [Library.ModelAttributeValidator.Key()]
         public int UserLastModificationId { get; set; }
 
         public string? Message { get; set; }
 
-        [Library.ModelAttributeValidator.Int("EmergencyLevel", false, 0, 10)]
+        [Library.ModelAttributeValidator.Int(false, 0, 10)]
         public int EmergencyLevel { get; set; }
 
         public string? StackTrace { get; set; }

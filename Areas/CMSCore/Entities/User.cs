@@ -15,7 +15,7 @@ namespace EmptyProject.Areas.CMSCore.Entities
 {
     public class User
     {
-        [Library.ModelAttributeValidator.Key("UserId")]
+        [Library.ModelAttributeValidator.Key()]
         public int UserId { get; set; }
 
         ///<summary>
@@ -26,36 +26,36 @@ namespace EmptyProject.Areas.CMSCore.Entities
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.DateTime("DateTimeCreation", false, "1753-01-01T00:00", "9998-12-30T23:59")]
+        [Library.ModelAttributeValidator.DateTime(false, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime 
         DateTimeCreation { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.DateTime("DateTimeLastModification", false, "1753-01-01T00:00", "9998-12-30T23:59")]
+        [Library.ModelAttributeValidator.DateTime(false, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime 
         DateTimeLastModification { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.Key("UserCreationId")]
+        [Library.ModelAttributeValidator.Key()]
         public int UserCreationId { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.Key("UserLastModificationId")]
+        [Library.ModelAttributeValidator.Key()]
         public int UserLastModificationId { get; set; }
 
-        [Library.ModelAttributeValidator.String("Email", false, 1, 380, "")]
+        [Library.ModelAttributeValidator.String(false, 1, 380, "")]
         public string? Email { get; set; }
 
-        [Library.ModelAttributeValidator.String("Password", false, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String(false, 1, 8000, "")]
         public string? Password { get; set; }
 
-        [Library.ModelAttributeValidator.Key("RoleId")]
+        [Library.ModelAttributeValidator.Key()]
         public int RoleId { get; set; }
 
         public string ProfilePicture { get; set; }

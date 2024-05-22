@@ -15,7 +15,7 @@ namespace EmptyProject.Areas.CMSCore.Entities
 {
     public class Menu
     {
-        [Library.ModelAttributeValidator.Key("MenuId")]
+        [Library.ModelAttributeValidator.Key()]
         public int MenuId { get; set; }
 
         ///<summary>
@@ -26,42 +26,42 @@ namespace EmptyProject.Areas.CMSCore.Entities
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.DateTime("DateTimeCreation", false, "1753-01-01T00:00", "9998-12-30T23:59")]
+        [Library.ModelAttributeValidator.DateTime(false, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime 
         DateTimeCreation { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.DateTime("DateTimeLastModification", false, "1753-01-01T00:00", "9998-12-30T23:59")]
+        [Library.ModelAttributeValidator.DateTime(false, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime 
         DateTimeLastModification { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.Key("UserCreationId")]
+        [Library.ModelAttributeValidator.Key()]
         public int UserCreationId { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.Key("UserLastModificationId")]
+        [Library.ModelAttributeValidator.Key()]
         public int UserLastModificationId { get; set; }
 
-        [Library.ModelAttributeValidator.String("Name", false, 1, 200, "")]
+        [Library.ModelAttributeValidator.String(false, 1, 200, "")]
         public string? Name { get; set; }
 
-        [Library.ModelAttributeValidator.Int("MenuFatherId", false, 0, 5000)]
+        [Library.ModelAttributeValidator.Int(false, 0, 5000)]
         public int MenuFatherId { get; set; }
 
-        [Library.ModelAttributeValidator.Int("Order", false, 0, 5000)]
+        [Library.ModelAttributeValidator.Int(false, 0, 5000)]
         public int Order { get; set; }
 
-        [Library.ModelAttributeValidator.String("URLPath", false, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String(false, 1, 8000, "")]
         public string? URLPath { get; set; }
 
-        [Library.ModelAttributeValidator.String("IconURLPath", false, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String(false, 1, 8000, "")]
         public string? IconURLPath { get; set; }
     
         public string ToStringOnlyValuesForHTML()

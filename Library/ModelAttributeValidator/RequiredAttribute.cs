@@ -5,20 +5,23 @@ namespace EmptyProject.Library.ModelAttributeValidator
 {
     public class RequiredAttribute : ValidationAttribute
     {
-        private string _PropertyName;
-        public RequiredAttribute(string PropertyName)
+        
+        public RequiredAttribute()
         {
-            _PropertyName = PropertyName;
         }
 
-        public override bool IsValid(object? obj)
+        protected override ValidationResult IsValid(object obj, ValidationContext validationContext)
         {
             try
             {
                 if (obj == null)
-                { throw new Exception($"{_PropertyName} is empty"); }
-
-                return true;
+                {
+                    return new ValidationResult($"La variable {validationContext.DisplayName} es requerida");
+                }
+                else
+                {
+                    return ValidationResult.Success;
+                }
             }
             catch (Exception) { throw; }
         }

@@ -28,13 +28,13 @@ namespace EmptyProject.Library.ModelAttributeValidator
                 {
                     if (objDateTime == null)
                     {
-                        return new ValidationResult($"El valor {validationContext.DisplayName} es requerido");
+                        return new ValidationResult($"La variable {validationContext.DisplayName} es requerida");
                     }
                     else
                     {
                         if ((DateTime)objDateTime < _MinimumDateTime || (DateTime)objDateTime > _MaximumDateTime)
                         {
-                            return new ValidationResult($@"El valor {validationContext.DisplayName} 
+                            return new ValidationResult($@"La variable {validationContext.DisplayName} 
 debe estar entre {_MinimumDateTime.ToString("dd/MM/yyyy HH:mm:ss")} y 
 {_MaximumDateTime.ToString("dd/MM/yyyy HH:mm:ss")}.");
                         }

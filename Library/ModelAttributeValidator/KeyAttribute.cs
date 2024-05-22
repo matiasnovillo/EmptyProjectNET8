@@ -5,24 +5,27 @@ namespace EmptyProject.Library.ModelAttributeValidator
 {
     public class KeyAttribute : ValidationAttribute
     {
-        private string _PropertyName;
-        public KeyAttribute(string PropertyName)
+        
+        public KeyAttribute()
         {
             try
             {
-                _PropertyName = PropertyName;
             }
             catch (Exception) { throw; }
         }
 
-        public override bool IsValid(object? objPrimaryKey)
+        protected override ValidationResult IsValid(object objPrimaryKey, ValidationContext validationContext)
         {
             try
             {
-                if (objPrimaryKey == null) { throw new Exception($"{_PropertyName} not found"); }
-                if (Convert.ToInt32(objPrimaryKey) < 0) { throw new Exception($"{_PropertyName} must be equal or better than 0"); }
-                if (Convert.ToInt32(objPrimaryKey) > int.MaxValue) { throw new Exception($"{_PropertyName} must be equal or less than int.MaxValue"); }
-                return true;
+                if (objPrimaryKey == null) 
+                {
+                    return new ValidationResult($"La variable {validationContext.DisplayName} es requerida");
+                }
+                else
+                {
+                    return ValidationResult.Success;
+                }
             }
             catch (Exception) { throw; }
         }
