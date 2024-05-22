@@ -1,4 +1,3 @@
-
 @page "/EmptyProject/ClientPage"
 
 @using EmptyProject.Areas.EmptyProject.Repositories;
@@ -367,23 +366,25 @@
                                                     </h6>
                                                     <div class="form-group mb-3">
                                                         <div class="custom-control custom-radio">
-                                                            <input name="export"
+                                                            <input name="massiveactions"
                                                                    type="radio"
                                                                    class="custom-control-input"
                                                                    checked
-                                                                   id="export-just">
+                                                                   id="massiveactions-just"
+                                                                   @onchange="@(() => MassiveActionType = "just")">
                                                             <label class="custom-control-label"
-                                                                   for="export-just">
+                                                                   for="massiveactions-just">
                                                                 Sólo los registros seleccionados
                                                             </label>
                                                         </div>
                                                         <div class="custom-control custom-radio">
-                                                            <input name="export"
+                                                            <input name="massiveactions"
                                                                    type="radio"
                                                                    class="custom-control-input"
-                                                                   id="export-all">
+                                                                   id="massiveactions-all"
+                                                                   @onchange="@(() => MassiveActionType = "all")">
                                                             <label class="custom-control-label"
-                                                                   for="export-all">
+                                                                   for="massiveactions-all">
                                                                 Todo
                                                             </label>
                                                         </div>
@@ -394,7 +395,8 @@
                                                     <div class="form-group">
                                                         <!-- Copy button -->
                                                         <button class="btn btn-icon btn-dark"
-                                                                type="button">
+                                                            type="button"
+                                                            @onclick="Copy">
                                                             <span class="btn-inner--icon"><i class="fas fa-copy"></i></span>
                                                             <span class="btn-inner--text">Copiar</span>
                                                         </button>
@@ -402,12 +404,14 @@
                                                     <div class="form-group">
                                                         <!-- Delete button -->
                                                         <button class="btn btn-icon btn-dark"
-                                                                type="button">
+                                                                type="button"
+                                                                @onclick="Delete">
                                                             <span class="btn-inner--icon"><i class="fas fa-trash"></i></span>
                                                             <span class="btn-inner--text">Eliminar</span>
                                                         </button>
                                                     </div>
                                                 </form>
+                                                @((MarkupString)MassiveActionMessage)
                                             </div>
                                             <div class="modal-footer justify-content-end">
                                                 <button type="button" class="btn btn-outline-dark mb-0" data-bs-dismiss="modal">Cerrar</button>
@@ -751,6 +755,7 @@
     public string? Message { get; set; } = "";
 
     public string? ExportationType { get; set; } = "just";
+    public string? MassiveActionType { get; set; } = "just";
 
     public string? DownloadPathForExcel { get; set; } = "";
     public string? DownloadPathForPDF { get; set; } = "";
@@ -773,6 +778,8 @@
     public string ProgressBarColourForImportingFile { get; set; } = "bg-info";
     public string UploadPath { get; set; } = "";
     public string ImportingMessage { get; set; } = "";
+
+    public string MassiveActionMessage { get; set; } = "";
     #endregion
 
     protected override void OnInitialized()
@@ -833,18 +840,18 @@
         catch (Exception ex)
         {
             Failure failure = new()
-            {
-                Active = true,
-                DateTimeCreation = DateTime.Now,
-                DateTimeLastModification = DateTime.Now,
-                UserCreationId = 1,
-                UserLastModificationId = 1,
-                EmergencyLevel = 1,
-                Comment = "",
-                Message = ex.Message,
-                Source = ex.Source,
-                StackTrace = ex.StackTrace
-            };
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
 
             failureRepository.Add(failure);
 
@@ -852,7 +859,10 @@
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
         }
+        finally
+        {
 
+        }
     }
 
     #region Events
@@ -860,6 +870,14 @@
     {
         try
         {
+            if (!UploadPath.EndsWith(".xlsx"))
+            {
+                ImportingMessage = $@"<div class=""alert alert-warning text-white font-weight-bold"" role=""alert"">
+                            Solo se permiten archivos Excel (.xlsx)
+                         </div>";
+                return;
+            }
+
             UploadPath = $@"wwwroot/{UploadPath.Replace("\\","/")}";
 
             List<Client> lstClient = clientService.ImportExcel(UploadPath);
@@ -986,6 +1004,11 @@
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
         }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
     }
 
     private async Task SearchText(ChangeEventArgs args)
@@ -1013,18 +1036,18 @@
         catch (Exception ex)
         {
             Failure failure = new()
-            {
-                Active = true,
-                DateTimeCreation = DateTime.Now,
-                DateTimeLastModification = DateTime.Now,
-                UserCreationId = 1,
-                UserLastModificationId = 1,
-                EmergencyLevel = 1,
-                Comment = "",
-                Message = ex.Message,
-                Source = ex.Source,
-                StackTrace = ex.StackTrace
-            };
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
 
             failureRepository.Add(failure);
 
@@ -1032,60 +1055,146 @@
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
         }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
     }
 
     private async Task OnPreviousPage()
     {
-        if (paginatedClientDTO.HasPreviousPage)
+        try
         {
-            paginatedClientDTO = clientRepository
-                                        .GetAllByClientIdPaginated(
-                                            TextToSearch,
-                                            CheckStrict,
-                                            (paginatedClientDTO.PageIndex - 1),
-                                            paginatedClientDTO.PageSize);
+            if (paginatedClientDTO.HasPreviousPage)
+            {
+                paginatedClientDTO = clientRepository
+                                            .GetAllByClientIdPaginated(
+                                                TextToSearch,
+                                                CheckStrict,
+                                                (paginatedClientDTO.PageIndex - 1),
+                                                paginatedClientDTO.PageSize);
+            }
+
+            TotalRows = clientRepository
+                                .Count();
         }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
 
-        TotalRows = clientRepository
-                            .Count();
+            failureRepository.Add(failure);
 
-        //Re-render the page
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
     }
 
     private async Task OnPageSelected(int pageIndex)
     {
-        paginatedClientDTO = clientRepository
+        try
+        {
+            paginatedClientDTO = clientRepository
                                             .GetAllByClientIdPaginated(
                                                 TextToSearch,
                                                 CheckStrict,
                                                 pageIndex,
                                                 paginatedClientDTO.PageSize);
 
-        TotalRows = clientRepository
-                        .Count();
+            TotalRows = clientRepository
+                            .Count();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
 
-        //Re-render the page
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
     }
 
     private async Task OnNextPage()
     {
-        if (paginatedClientDTO.HasNextPage)
+        try
         {
-            paginatedClientDTO = clientRepository
-                                        .GetAllByClientIdPaginated(
-                                            TextToSearch,
-                                            CheckStrict,
-                                            (paginatedClientDTO.PageIndex + 1),
-                                            paginatedClientDTO.PageSize);
+            if (paginatedClientDTO.HasNextPage)
+            {
+                paginatedClientDTO = clientRepository
+                                            .GetAllByClientIdPaginated(
+                                                TextToSearch,
+                                                CheckStrict,
+                                                (paginatedClientDTO.PageIndex + 1),
+                                                paginatedClientDTO.PageSize);
+            }
+
+            TotalRows = clientRepository
+                                .Count();
         }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
 
-        TotalRows = clientRepository
-                            .Count();
+            failureRepository.Add(failure);
 
-        //Re-render the page
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
     }
 
     private async Task ChangeView(string chosenView)
@@ -1117,9 +1226,6 @@
             Message = $@"<div class=""alert alert-success text-white font-weight-bold"" role=""alert"">
                                 Register deleted correctly
                             </div>";
-
-            //Re-render the page
-            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -1143,6 +1249,11 @@
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
         }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
     }
 
     private async Task CheckList(int clientId)
@@ -1162,9 +1273,6 @@
                     lstClientChecked.Add(ClientId);
                 }
             }
-
-            //Re-render the page
-            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -1187,6 +1295,11 @@
             Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
+        }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
         }
     }
     #endregion
@@ -1217,10 +1330,6 @@
 
             //Delete wwwroot from path to download correctly
             DownloadPathForExcel = DownloadPathForExcel.Replace("wwwroot", "");
-
-            //Re-render the page
-            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-
         }
         catch (Exception ex)
         {
@@ -1243,6 +1352,11 @@
             Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
+        }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
         }
     }
 
@@ -1269,10 +1383,7 @@
             clientService.ExportToCSV(DownloadPathForCSV, lstClient);
 
             //Delete wwwroot from path to download correctly
-            DownloadPathForCSV = DownloadPathForCSV.Replace("wwwroot", "");
-
-            //Re-render the page
-            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);             
+            DownloadPathForCSV = DownloadPathForCSV.Replace("wwwroot", "");            
         }
         catch (Exception ex)
         {
@@ -1295,6 +1406,11 @@
             Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
+        }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
         }
     }
 
@@ -1322,10 +1438,6 @@
 
             //Delete wwwroot from path to download correctly
             DownloadPathForPDF = DownloadPathForPDF.Replace("wwwroot", "");
-
-            //Re-render the page
-            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-
         }
         catch (Exception ex)
         {
@@ -1349,7 +1461,150 @@
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
         }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+    #endregion
 
+    #region Massive actions
+    private async Task Copy()
+    {
+        try
+        {
+            //Set initial state
+            Message = "";
+
+            List<Client?> lstClient = [];
+
+            if (MassiveActionType == "just")
+            {
+                lstClient = clientRepository.GetAllByClientId(lstClientChecked);
+            }
+            else
+            {
+                lstClient = clientRepository.GetAll();
+            }
+
+            foreach (Client client in lstClient)
+            {
+                client.ClientId = 0;
+                clientRepository.Add(client);
+            }
+
+            paginatedClientDTO = clientRepository
+                                                .GetAllByClientIdPaginated(
+                                                    "",
+                                                    CheckStrict,
+                                                    1,
+                                                    RegistersPerPage);
+
+            TotalRows = clientRepository
+                            .Count();
+
+            ChosenView = "list";
+
+            MassiveActionMessage = $@"<div class=""alert alert-success text-white font-weight-bold"" role=""alert"">
+                            Proceso de copiado finalizado correctamente
+                         </div>";
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    private async Task Delete()
+    {
+        try
+        {
+            //Set initial state
+            Message = "";
+
+            List<Client?> lstClient = [];
+
+            if (MassiveActionType == "just")
+            {
+                lstClient = clientRepository.GetAllByClientId(lstClientChecked);
+            }
+            else
+            {
+                lstClient = clientRepository.GetAll();
+            }
+
+            foreach (Client client in lstClient)
+            {
+                clientRepository.DeleteByClientId(client.ClientId);
+            }
+
+            paginatedClientDTO = clientRepository
+                                                .GetAllByClientIdPaginated(
+                                                    "",
+                                                    CheckStrict,
+                                                    1,
+                                                    RegistersPerPage);
+
+            TotalRows = clientRepository
+                            .Count();
+
+            ChosenView = "list";
+
+            MassiveActionMessage = $@"<div class=""alert alert-success text-white font-weight-bold"" role=""alert"">
+                            Proceso de eliminado finalizado correctamente
+                         </div>";
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
     }
     #endregion
 }
