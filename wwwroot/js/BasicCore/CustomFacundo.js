@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let functionInterval;
 
     function verificarCargadoYEjecutar() {
-        var hamburgerIcon = document.querySelector('.sidenav-toggler .sidenav-toggler-inner');
         var body = document.getElementsByTagName('body')[0];
 
         // Si encuentra el botón de hamburguesa y los eventos no están asignados
@@ -22,17 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             }, false);
-
-          /*  hamburgerIcon.addEventListener('click', function (event) {
-                console.log('clickeado')
-                if (!body.classList.contains('g-sidenav-hidden')) {
-                    body.classList.add('g-sidenav-hidden');
-                    body.classList.remove('g-sidenav-show');
-                } else {
-                    body.classList.remove('g-sidenav-hidden');
-                    body.classList.add('g-sidenav-show');
-                }
-            }, true);*/
 
             var fixedRightNavbarButton = document.querySelector('.fixed-plugin-button-nav');
             var fixedRightNavbarButton2 = document.querySelector('.fixed-plugin .fixed-plugin-button');

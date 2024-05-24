@@ -5,6 +5,7 @@ using EmptyProject.Components;
 using EmptyProject.DatabaseContexts;
 using EmptyProject.Areas.EmptyProject.Repositories;
 using EmptyProject.Areas.EmptyProject.Services;
+using EmptyProject.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +64,8 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
