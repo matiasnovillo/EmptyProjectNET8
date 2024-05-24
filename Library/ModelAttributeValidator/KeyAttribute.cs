@@ -5,11 +5,12 @@ namespace EmptyProject.Library.ModelAttributeValidator
 {
     public class KeyAttribute : ValidationAttribute
     {
-        
-        public KeyAttribute()
+        private string _Name;
+        public KeyAttribute(string Name)
         {
             try
             {
+                _Name = Name;
             }
             catch (Exception) { throw; }
         }
@@ -20,11 +21,18 @@ namespace EmptyProject.Library.ModelAttributeValidator
             {
                 if (objPrimaryKey == null) 
                 {
-                    return new ValidationResult($"La variable {validationContext.DisplayName} es requerida");
+                    return new ValidationResult($"La variable {_Name} es requerida");
                 }
                 else
                 {
-                    return ValidationResult.Success;
+                    if (Convert.ToInt32(objPrimaryKey) <= 0)
+                    {
+                        return new ValidationResult($"La variable {_Name} debe ser mayor a 0");
+                    }
+                    else
+                    {
+                        return ValidationResult.Success;
+                    }
                 }
             }
             catch (Exception) { throw; }

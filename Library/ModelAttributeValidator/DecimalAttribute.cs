@@ -5,13 +5,15 @@ namespace EmptyProject.Library.ModelAttributeValidator
 {
     public class DecimalAttribute : ValidationAttribute
     {
+        private string _Name;
         private decimal _MinimumDecimalNumber;
         private decimal _MaximumDecimalNumber;
         private bool _Required;
-        public DecimalAttribute(bool Required, double DecimalMin, double DecimalMax)
+        public DecimalAttribute(string Name, bool Required, double DecimalMin, double DecimalMax)
         {
             try
             {
+                _Name = Name;
                 _MinimumDecimalNumber = (decimal)DecimalMin;
                 _MaximumDecimalNumber = (decimal)DecimalMax;
 
@@ -28,13 +30,13 @@ namespace EmptyProject.Library.ModelAttributeValidator
                 {
                     if (objDecimal == null) 
                     {
-                        return new ValidationResult($"La variable {validationContext.DisplayName} es requerida");
+                        return new ValidationResult($"La variable {_Name} es requerida");
                     }
                     else
                     {
                         if (objDecimal is not decimal)
                         {
-                            return new ValidationResult($"La variable {validationContext.DisplayName} no es un número decimal válido");
+                            return new ValidationResult($"La variable {_Name} no es un número decimal válido");
                         }
                         else
                         {
@@ -43,7 +45,7 @@ namespace EmptyProject.Library.ModelAttributeValidator
                                 (decimal)objDecimal < _MinimumDecimalNumber ||
                                 (decimal)objDecimal > _MaximumDecimalNumber)
                             {
-                                return new ValidationResult($"La variable {validationContext.DisplayName} debe estar comprendida entre {_MinimumDecimalNumber} y {_MaximumDecimalNumber}");
+                                return new ValidationResult($"La variable {_Name} debe estar comprendida entre {_MinimumDecimalNumber} y {_MaximumDecimalNumber}");
                             }
                             else
                             {

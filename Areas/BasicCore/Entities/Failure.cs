@@ -15,43 +15,20 @@ namespace EmptyProject.Areas.BasicCore.Entities
 {
     public class Failure
     {
-        [Library.ModelAttributeValidator.Key()]
         public int FailureId { get; set; }
 
-        ///<summary>
-        /// For auditing purposes
-        ///</summary>
         public bool Active { get; set; }
 
-        ///<summary>
-        /// For auditing purposes
-        ///</summary>
-        [Library.ModelAttributeValidator.DateTime(false, "1753-01-01T00:00", "9998-12-30T23:59")]
-        public DateTime 
-        DateTimeCreation { get; set; }
+        public DateTime DateTimeCreation { get; set; }
 
-        ///<summary>
-        /// For auditing purposes
-        ///</summary>
-        [Library.ModelAttributeValidator.DateTime(false, "1753-01-01T00:00", "9998-12-30T23:59")]
-        public DateTime 
-        DateTimeLastModification { get; set; }
+        public DateTime DateTimeLastModification { get; set; }
 
-        ///<summary>
-        /// For auditing purposes
-        ///</summary>
-        [Library.ModelAttributeValidator.Key()]
         public int UserCreationId { get; set; }
 
-        ///<summary>
-        /// For auditing purposes
-        ///</summary>
-        [Library.ModelAttributeValidator.Key()]
         public int UserLastModificationId { get; set; }
 
         public string? Message { get; set; }
 
-        [Library.ModelAttributeValidator.Int(false, 0, 10)]
         public int EmergencyLevel { get; set; }
 
         public string? StackTrace { get; set; }

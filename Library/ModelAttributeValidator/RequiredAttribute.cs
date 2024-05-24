@@ -5,9 +5,11 @@ namespace EmptyProject.Library.ModelAttributeValidator
 {
     public class RequiredAttribute : ValidationAttribute
     {
+        private string _Name;
         
-        public RequiredAttribute()
+        public RequiredAttribute(string Name)
         {
+            _Name = Name;
         }
 
         protected override ValidationResult IsValid(object obj, ValidationContext validationContext)
@@ -16,7 +18,7 @@ namespace EmptyProject.Library.ModelAttributeValidator
             {
                 if (obj == null)
                 {
-                    return new ValidationResult($"La variable {validationContext.DisplayName} es requerida");
+                    return new ValidationResult($"La variable {_Name} es requerida");
                 }
                 else
                 {

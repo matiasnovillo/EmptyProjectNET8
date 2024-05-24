@@ -5,12 +5,14 @@ namespace EmptyProject.Library.ModelAttributeValidator
 {
     public class IntAttribute : ValidationAttribute
     {
+        private string _Name;
         private int _MinimumInt;
         private int _MaximumInt;
         private bool _Required;
 
-        public IntAttribute(bool Required, int IntMin, int IntMax)
+        public IntAttribute(string Name, bool Required, int IntMin, int IntMax)
         {
+            _Name = Name;
             _MinimumInt = IntMin;
             _MaximumInt = IntMax;
             _Required = Required;
@@ -24,13 +26,13 @@ namespace EmptyProject.Library.ModelAttributeValidator
                 {
                     if (objInt == null)
                     {
-                        return new ValidationResult($"La variable {validationContext.DisplayName} es requerida");
+                        return new ValidationResult($"La variable {_Name} es requerida");
                     }
                     else
                     {
-                        if (Convert.ToInt32(objInt) < int.MinValue || Convert.ToInt32(objInt) > int.MaxValue)
+                        if (Convert.ToInt32(objInt) <= _MinimumInt || Convert.ToInt32(objInt) >= _MaximumInt)
                         {
-                            return new ValidationResult($"La variable {validationContext.DisplayName} debe ser menor que {_MaximumInt} y mayor que {_MinimumInt}");
+                            return new ValidationResult($"La variable {_Name} debe ser mayor que {_MinimumInt} y menor que {_MaximumInt}");
                         }
                         else
                         {

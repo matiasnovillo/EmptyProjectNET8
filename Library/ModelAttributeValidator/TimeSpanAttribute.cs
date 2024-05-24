@@ -5,15 +5,16 @@ namespace EmptyProject.Library.ModelAttributeValidator
 {
     public class TimeSpanAttribute : ValidationAttribute
     {
+        private string _Name;
         private TimeSpan _MinimumTimeSpan;
         private TimeSpan _MaximumTimeSpan;
         private bool _Required;
 
-        public TimeSpanAttribute(bool Required, string TimeSpanMin, string TimeSpanMax)
+        public TimeSpanAttribute(string Name, bool Required, string TimeSpanMin, string TimeSpanMax)
         {
             try
             {
-
+                _Name = Name;
                 _MinimumTimeSpan = TimeSpan.Parse(TimeSpanMin);
                 _MaximumTimeSpan = TimeSpan.Parse(TimeSpanMax);
 
@@ -29,16 +30,25 @@ namespace EmptyProject.Library.ModelAttributeValidator
                 if (_Required)
                 {
                     if (objTimeSpan == null) 
-                    { 
-                        //throw new Exception($"{_PropertyName} is empty"); 
+                    {
+                        return new ValidationResult($"La variable {_Name} es requerida");
+                    }
+                    else
+                    {
+                        if ((TimeSpan)objTimeSpan < _MinimumTimeSpan || (TimeSpan)objTimeSpan > _MaximumTimeSpan)
+                        {
+                            return new ValidationResult($"La variable {_Name} debe estar entre {_MinimumTimeSpan} y {_MaximumTimeSpan}");
+                        }
+                        else
+                        {
+                            return ValidationResult.Success;
+                        }
                     }
                 }
-
-                if ((TimeSpan)objTimeSpan < _MinimumTimeSpan || (TimeSpan)objTimeSpan > _MaximumTimeSpan)
+                else
                 {
-                    //throw new Exception($"{_PropertyName} must be inside {_MinimumTimeSpan} and {_MaximumTimeSpan}");
+                    return ValidationResult.Success;
                 }
-                return true;
             }
             catch (Exception) { throw; }
         }

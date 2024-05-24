@@ -51,8 +51,8 @@ else
                     <div class="form-check form-switch">
                         <input class="form-check-input"
                                type="checkbox"
-                               name="strict-search"
-                               @bind="Client!.Boolean"
+                               value="@Client!.Boolean"
+                               @onchange="HandleBooleanChange"
                                id="boolean" />
                         <label class="form-check-label"
                                for="boolean">
@@ -64,10 +64,11 @@ else
                         <label for="datetime">
                                 DateTime
                         </label>
-                        <input type="datetime-local"
+                        <input type="datetime"
                                id="datetime"
                                class="form-control"
-                               @bind="Client!.DateTime"/>
+                               value="@Client!.DateTime"
+                               @onchange="HandleDateTimeChange"/>
                     </div>
                     <!--Decimal-->
                     <div class="input-group input-group-static mb-3">
@@ -80,7 +81,8 @@ else
                                min="0" 
                                max="999999999" 
                                class="form-control"
-                               @bind="Client!.Decimal" />
+                               value="@Client!.Decimal"
+                               @onchange="HandleDecimalChange" />
                     </div>
                     <!--Integer-->
                     <div class="input-group input-group-static mb-3">
@@ -89,12 +91,12 @@ else
                         </label>
                         <input type="number"
                                step="1"
-                               min="0" 
+                               min="10" 
                                max="999999999" 
                                id="integer"
                                class="form-control"
-                               required
-                               @bind="Client!.Integer" />
+                               value="@Client!.Integer"
+                               @onchange="HandleIntegerChange" />
                     </div>
                     <!--TextArea-->
                     <div class="input-group input-group-static mb-3">
@@ -103,8 +105,8 @@ else
                         </label>
                         <textarea rows="10"
                             class="form-control"
-                            @bind="Client!.TextArea"
-                            
+                            value="@Client!.TextArea"
+                            @onchange="HandleTextAreaChange"
                             id="textarea">
                         </textarea>
                     </div>
@@ -116,8 +118,8 @@ else
                         <input type="text"
                                id="textbasic"
                                class="form-control"
-                               
-                               @bind="Client!.TextBasic" />
+                               value="@Client!.TextBasic"
+                               @onchange="HandleTextBasicChange" />
                     </div>
                     
                     <!--TextEditor-->
@@ -135,8 +137,8 @@ else
                         <input type="text"
                                id="quill-result-texteditor"
                                class="form-control"
-                               
-                               @bind="Client!.TextEditor" />
+                               value="@Client!.TextEditor"
+                               @onchange="HandleTextEditorChange" />
                     </div>
                     <link rel="stylesheet" href="assets/vendor/quill/dist/quill.snow.css">
                     <script type="text/javascript">
@@ -193,8 +195,8 @@ else
                         <input type="email"
                                id="textemail"
                                class="form-control"
-                               
-                               @bind="Client!.TextEmail" />
+                               value="@Client!.TextEmail"
+                               @onchange="HandleTextEmailChange" />
                     </div>
                     <!--TextFile-->
                     <div class="input-group input-group-static mb-3">
@@ -228,8 +230,8 @@ else
                         <input type="color"
                                id="texthexcolour"
                                class="form-control"
-                               
-                               @bind="Client!.TextHexColour" />
+                               value="@Client!.TextHexColour"
+                               @onchange="HandleTextHexColourChange" />
                     </div>
                     <!--TextPassword-->
                     <div class="input-group input-group-static mb-3">
@@ -238,9 +240,9 @@ else
                         </label>
                         <input type="password"
                                id="textpassword"
-                               
                                class="form-control"
-                               @bind="Client!.TextPassword" />
+                               value="@Client!.TextPassword"
+                               @onchange="HandleTextPasswordChange"/>
                     </div>
                     <!--TextPhoneNumber-->
                     <div class="input-group input-group-static mb-3">
@@ -250,8 +252,8 @@ else
                         <input type="tel"
                                id="textphonenumber"
                                class="form-control"
-                               
-                               @bind="Client!.TextPhoneNumber" />
+                               value="@Client!.TextPhoneNumber"
+                               @onchange="HandleTextPhoneNumberChange" />
                     </div>
                     <!--TextTag-->
                     <div class="input-group input-group-static mb-3">
@@ -261,8 +263,8 @@ else
                         <input type="text"
                                id="texttag"
                                class="form-control"
-                               
-                               @bind="Client!.TextTag"
+                               value="@Client!.TextTag"
+                               @onchange="HandleTextTagChange"
                                data-toggle="tags" />
                     </div>
                     <!--TextURL-->
@@ -273,8 +275,8 @@ else
                         <input type="url"
                                id="texturl"
                                class="form-control"
-                               
-                               @bind="Client!.TextURL" />
+                               value="@Client!.TextURL"
+                               @onchange="HandleTextURLChange" />
                     </div>
                     <!--ClientStatusId-->
                     <div class="input-group input-group-static mb-3">
@@ -283,29 +285,36 @@ else
                         </label>
                         <select id="clientstatusid"
                             class="form-control"
-                            @bind=Client.ClientStatusId>
+                            value="@Client!.ClientStatusId"
+                            @onchange="HandleClientStatusIdChange">
+                            <option value="0">Valor 0</option>
+                            <option value="1">Valor 1</option>
+                            <option value="2">Valor 2</option>
                         </select>
                     </div>
                     
                     <hr />
-                    <button id="btn-submit" type="submit"
-                            class="btn btn-success">
-                        <i class="fas fa-pen"></i>
-                        @if (ClientId == 0)
-                        {
-                            <span>Agregar</span>
-                        }
-                        else
-                        {
-                            <span>Editar</span>
-                        }
-                    </button>
-                    <NavLink class="btn btn-outline-dark mx-3" href="EmptyProject/ClientPage">
-                        <span class="fas fa-chevron-left"></span>
-                        &nbsp;Volver
-                    </NavLink>
+                    @((MarkupString)Message)
+                    <div class="d-flex justify-content-between">
+                        <button id="btn-submit" type="submit"
+                                class="btn btn-success">
+                            <i class="fas fa-pen"></i>
+                            @if (ClientId == 0)
+                            {
+                                <span>Agregar</span>
+                            }
+                            else
+                            {
+                                <span>Editar</span>
+                            }
+                        </button>
+                        <NavLink class="btn btn-outline-dark mx-3" href="EmptyProject/ClientPage">
+                            <span class="fas fa-chevron-left"></span>
+                            &nbsp;Volver
+                        </NavLink>
+                    </div>
                 </form>
-                @((MarkupString)Message)
+                
             </div>
         </div>
     </div>
@@ -376,8 +385,6 @@ else
                         Client = clientRepository
                                     .GetByClientId(ClientId);
                     }                    
-
-                    Check();
                 }
                 else
                 {
@@ -418,27 +425,6 @@ else
         }
     }
 
-    private async Task Check()
-    {
-        var lstValidationResult = new List<ValidationResult>();
-        var ValidationContext = new ValidationContext(Client);
-
-        bool IsValid = Validator.TryValidateObject(Client, ValidationContext, lstValidationResult, true);
-
-        if (!IsValid)
-        {
-            //TODO
-            foreach (var validationResult in lstValidationResult)
-            {
-                Console.WriteLine(validationResult.ErrorMessage);
-            }
-        }
-        else
-        {
-            Console.WriteLine("Model is valid");
-        }
-    }
-
     private async Task Submit()
     {
         try
@@ -452,8 +438,13 @@ else
                 Client.DateTimeCreation = DateTime.Now;
                 Client.DateTimeLastModification = DateTime.Now;
 
-                clientRepository
+                if(Check())
+                {
+                    clientRepository
                         .Add(Client);
+                }
+
+
             }
             else
             {
@@ -461,8 +452,11 @@ else
                 Client.DateTimeLastModification = DateTime.Now;
                 Client.UserLastModificationId = User.UserId;
 
-                clientRepository
+                if(Check())
+                {
+                    clientRepository
                             .Update(Client);
+                }
             }
 
             //Redirect to users page
@@ -494,6 +488,154 @@ else
         {
             //Re-render the page to show ScannedText
             await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    #region Handlers
+    private void HandleBooleanChange(ChangeEventArgs e)
+    {
+        Client.Boolean = Convert.ToBoolean(e.Value?.ToString());
+        Check();
+    }
+
+    private void HandleDateTimeChange(ChangeEventArgs e)
+    {
+        Client.DateTime = Convert.ToDateTime(e.Value?.ToString());
+        Check();
+    }
+
+    private void HandleDecimalChange(ChangeEventArgs e)
+    {
+        Client.Decimal = Convert.ToDecimal(e.Value?.ToString());
+        Check();
+    }
+
+    private void HandleIntegerChange(ChangeEventArgs e)
+    {
+        Client.Integer = Convert.ToInt32(e.Value?.ToString());
+        Check();
+    }
+
+    private void HandleTextAreaChange(ChangeEventArgs e)
+    {
+        Client.TextArea = e.Value?.ToString();
+        Check();
+    }
+
+    private void HandleTextBasicChange(ChangeEventArgs e)
+    {
+        Client.TextBasic = e.Value?.ToString();
+        Check();
+    }
+
+    private void HandleTextEditorChange(ChangeEventArgs e)
+    {
+        Client.TextEditor = e.Value?.ToString();
+        Check();
+    }
+
+    private void HandleTextEmailChange(ChangeEventArgs e)
+    {
+        Client.TextEmail = e.Value?.ToString();
+        Check();
+    }
+
+    private void HandleTextHexColourChange(ChangeEventArgs e)
+    {
+        Client.TextHexColour = e.Value?.ToString();
+        Check();
+    }
+
+    private void HandleTextPasswordChange(ChangeEventArgs e)
+    {
+        Client.TextPassword = e.Value?.ToString();
+        Check();
+    }
+
+    private void HandleTextPhoneNumberChange(ChangeEventArgs e)
+    {
+        Client.TextPhoneNumber = e.Value?.ToString();
+        Check();
+    }
+
+    private void HandleTextTagChange(ChangeEventArgs e)
+    {
+        Client.TextTag = e.Value?.ToString();
+        Check();
+    }
+
+    private void HandleTextURLChange(ChangeEventArgs e)
+    {
+        Client.TextURL = e.Value?.ToString();
+        Check();
+    }
+
+    private void HandleClientStatusIdChange(ChangeEventArgs e)
+    {
+        Client.ClientStatusId = Convert.ToInt32(e.Value?.ToString());
+        Check();
+    }
+    #endregion
+
+    private bool Check()
+    {
+        try
+        {
+            var lstValidationResult = new List<ValidationResult>();
+            var ValidationContext = new ValidationContext(Client);
+
+            bool IsValid = Validator.TryValidateObject(Client, ValidationContext, lstValidationResult, true);
+
+            if (!IsValid)
+            {
+                Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Para guardar correctamente debe completar los siguientes puntos: <br/> <ul>";
+
+                foreach (var validationResult in lstValidationResult)
+                {
+                    Message += $@"<li>{validationResult}</li>";
+                }
+
+                Message = Message + "</ul></div>";
+
+                return false;
+            }
+            else
+            {
+                Message = $@"<div class=""alert alert-successs text-white font-weight-bold"" role=""alert"">
+                                Todos los datos ingresados son correctos
+                            </div>";
+
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+
+            return false;
+        }
+        finally
+        {
+
         }
     }
 
@@ -531,6 +673,8 @@ else
             }
 
             Client!.TextFile = Result;
+
+            Check();
 
             ProgressPercentForTextFile = 100;
             ProgressBarColourForTextFile = "bg-success";

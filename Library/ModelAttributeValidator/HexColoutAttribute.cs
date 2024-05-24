@@ -5,12 +5,13 @@ namespace EmptyProject.Library.ModelAttributeValidator
 {
     public class HexColourAttribute : ValidationAttribute
     {
-        
+        private string _Name;
         private string _MinimumHexColourInStringFormat;
         private string _MaximumHexColourInStringFormat;
         private bool _Required;
-        public HexColourAttribute(bool Required, string HexColourMinInStringFormat, string HexColourMaxInStringFormat)
+        public HexColourAttribute(string Name, bool Required, string HexColourMinInStringFormat, string HexColourMaxInStringFormat)
         {
+            _Name = Name;
             _MinimumHexColourInStringFormat = HexColourMinInStringFormat;
             _MaximumHexColourInStringFormat = HexColourMaxInStringFormat;
 
@@ -24,21 +25,21 @@ namespace EmptyProject.Library.ModelAttributeValidator
                 {
                     if (objHexColourInStringFormat == null)
                     {
-                        return new ValidationResult($"La variable {validationContext.DisplayName} es requerida");
+                        return new ValidationResult($"La variable {_Name} es requerida");
                     }
                     else
                     {
-                        if (Validator.IsHexColour(objHexColourInStringFormat.ToString()) == false)
+                        if (Validator.IsHexColour(objHexColourInStringFormat.ToString().Replace("#","")) == false)
                         {
-                            return new ValidationResult($"La variable {validationContext.DisplayName} no es un color válido");
+                            return new ValidationResult($"La variable {_Name} no es un color válido");
                         }
-                        if (Validator.CompareStrings(objHexColourInStringFormat.ToString(), _MinimumHexColourInStringFormat) == 'B')
+                        if (Validator.CompareStrings(objHexColourInStringFormat.ToString().Replace("#", ""), _MinimumHexColourInStringFormat) == 'B')
                         {
-                            return new ValidationResult($"La variable {validationContext.DisplayName} es menor que {_MinimumHexColourInStringFormat}");
+                            return new ValidationResult($"La variable {_Name} es menor que {_MinimumHexColourInStringFormat}");
                         }
-                        if (Validator.CompareStrings(objHexColourInStringFormat.ToString(), _MaximumHexColourInStringFormat) == 'A')
+                        if (Validator.CompareStrings(objHexColourInStringFormat.ToString().Replace("#", ""), _MaximumHexColourInStringFormat) == 'A')
                         {
-                            return new ValidationResult($"La variable {validationContext.DisplayName} es mayor que {_MaximumHexColourInStringFormat}");
+                            return new ValidationResult($"La variable {_Name} es mayor que {_MaximumHexColourInStringFormat}");
                         }
 
                         return ValidationResult.Success;
