@@ -27,20 +27,22 @@ else
         </div>
         <div class="card card-body mx-3 mx-md-4 mt-n6">
             <div class="card-header mb-0 pb-0 bg-white">
-                <h3 class="mb-3">
-                    @if(ClientId == 0)
-                    {
-                        <span>Agregar client</span>
-                    }
-                    else
-                    {
-                        <span>Editar client</span>
-                    }
-                </h3>
-                <NavLink class="btn btn-outline-dark" href="EmptyProject/ClientPage">
-                    <span class="fas fa-chevron-left"></span>
-                    &nbsp;Volver
-                </NavLink>
+                <div class="d-flex justify-content-between">
+                    <h3 class="mb-3">
+                        @if (ClientId == 0)
+                        {
+                            <span>Agregar client</span>
+                        }
+                        else
+                        {
+                            <span>Editar client</span>
+                        }
+                    </h3>
+                    <NavLink class="btn btn-outline-dark" href="EmptyProject/ClientPage">
+                        <span class="fas fa-chevron-left"></span>
+                        &nbsp;Volver
+                    </NavLink>
+                </div>
                 <hr />
             </div>
             <div class="card-body px-0">
