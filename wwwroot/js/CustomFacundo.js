@@ -1,4 +1,4 @@
-window.addEventListener('load', function () {
+document.addEventListener('DOMContentLoaded', function () {
     let functionInterval;
 
     function verificarCargadoYEjecutar() {
@@ -7,11 +7,24 @@ window.addEventListener('load', function () {
 
         // Si encuentra el botón de hamburguesa y los eventos no están asignados
         if (hamburgerIcon !== null && typeof hamburgerIcon !== "undefined" && !body.classList.contains('events-assigned')) {
+       
             clearInterval(functionInterval);
             body.classList.add('events-assigned');
             // click hamburger => show /hide left navbar
-            hamburgerIcon.addEventListener('click', function (event) {
-                
+            document.addEventListener('click', function (event) {
+                if (event.target.matches('.sidenav-toggler-inner') || event.target.matches('.sidenav-toggler-line') ) {
+                    if (!body.classList.contains('g-sidenav-hidden')) {
+                        body.classList.add('g-sidenav-hidden');
+                        body.classList.remove('g-sidenav-show');
+                    } else {
+                        body.classList.remove('g-sidenav-hidden');
+                        body.classList.add('g-sidenav-show');
+                    }
+                }
+            }, false);
+
+          /*  hamburgerIcon.addEventListener('click', function (event) {
+                console.log('clickeado')
                 if (!body.classList.contains('g-sidenav-hidden')) {
                     body.classList.add('g-sidenav-hidden');
                     body.classList.remove('g-sidenav-show');
@@ -19,11 +32,18 @@ window.addEventListener('load', function () {
                     body.classList.remove('g-sidenav-hidden');
                     body.classList.add('g-sidenav-show');
                 }
-            }, true);
+            }, true);*/
 
             var fixedRightNavbarButton = document.querySelector('.fixed-plugin-button-nav');
             var fixedRightNavbarButton2 = document.querySelector('.fixed-plugin .fixed-plugin-button');
             var fixedRightNavbar = document.querySelector('.fixed-plugin');
+
+
+            document.addEventListener('click', function (event) {
+                if (event.target.matches('.fixed-plugin-button-nav')) {
+                    document.querySelector('.fixed-plugin').classList.add('show')
+                }
+            }, false);
 
             // onclick top options button => show right fixed navbar
             if (fixedRightNavbarButton) {
@@ -76,6 +96,8 @@ window.addEventListener('load', function () {
             });
 
 
+        } else {
+            console.log('aun no lo encuentra')
         }
     }
 

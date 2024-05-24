@@ -43,4 +43,11 @@
     <Folder Include="wwwroot\Uploads\EmptyProject\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\js\CustomFacundo.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
