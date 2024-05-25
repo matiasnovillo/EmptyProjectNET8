@@ -1,0 +1,277 @@
+
+@page "/CMSCore/UserConfigurationUIPage/{UserConfigurationUIId:int}"
+
+@using EmptyProject.Areas.CMSCore.Repositories;
+@using EmptyProject.Areas.CMSCore.Entities;
+@using EmptyProject.Areas.CMSCore.DTOs;
+@inject UserConfigurationUIRepository userconfigurationuiRepository;
+
+@if (UserConfigurationUIId == 0)
+{
+    <PageTitle>Agregar userconfigurationui - EmptyProject</PageTitle>
+}
+else
+{
+    <PageTitle>Editar userconfigurationui - EmptyProject</PageTitle>
+}
+
+<EmptyProject.Components.Layout.NavBarVerticalDashboard lstFoldersAndPages="lstFoldersAndPages"></EmptyProject.Components.Layout.NavBarVerticalDashboard>
+
+<div class="main-content position-relative max-height-vh-100 h-100">
+    <EmptyProject.Components.Layout.NavBarHorizontalDashboard></EmptyProject.Components.Layout.NavBarHorizontalDashboard>
+    <div class="container-fluid px-2 px-md-4">
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
+            <span class="mask bg-gradient-primary opacity-6"></span>
+        </div>
+        <div class="card card-body mx-3 mx-md-4 mt-n6">
+            <div class="card-header mb-0 pb-0 bg-white">
+                <h1 class="mb-3">
+                    @if(UserConfigurationUIId == 0)
+                    {
+                        <span>Agregar userconfigurationui</span>
+                    }
+                    else
+                    {
+                        <span>Editar userconfigurationui</span>
+                    }
+                </h1>
+                <NavLink class="btn btn-outline-info" href="CMSCore/UserConfigurationUIPage">
+                    <span class="fas fa-chevron-left"></span>
+                    &nbsp;Volver
+                </NavLink>
+            </div>
+            <div class="card-body px-0">
+                <form method="post" @onsubmit="Submit"
+                      @formname="userconfigurationui-form" class="mb-4">
+                    <AntiforgeryToken />
+                    <!--Name-->
+                    <div class="mb-3">
+                        <label for="name"
+                               class="input-group input-group-static">
+                            Name
+                        </label>
+                        <input type="text"
+                               id="name"
+                               class="form-control"
+                               required
+                               @bind="UserConfigurationUI!.Name" />
+                    </div>
+                    <!--ValueAsText-->
+                    <div class="mb-3">
+                        <label for="valueastext"
+                               class="input-group input-group-static">
+                            ValueAsText
+                        </label>
+                        <textarea rows="10"
+                            class="form-control"
+                            @bind="UserConfigurationUI!.ValueAsText"
+                            
+                            id="valueastext">
+                        </textarea>
+                    </div>
+                    <!--UserId-->
+                    <div class="mb-3">
+                        <label for="userid"
+                               class="input-group input-group-static">
+                            UserId
+                        </label>
+                        <select id="userid"
+                            class="form-control"
+                            @bind=UserConfigurationUI.UserId>
+                            <option value="1">Matias Novillo HARDCODEADO</option>
+                        </select>
+                    </div>
+                    
+                    <hr />
+                    <button id="btn-submit" type="submit"
+                            class="btn bg-gradient-primary">
+                        <i class="fas fa-pen"></i>
+                        @if (UserConfigurationUIId == 0)
+                        {
+                            <span>Agregar</span>
+                        }
+                        else
+                        {
+                            <span>Editar</span>
+                        }
+                    </button>
+                    <NavLink class="btn btn-outline-info" href="CMSCore/UserConfigurationUIPage">
+                        <span class="fas fa-chevron-left"></span>
+                        &nbsp;Volver
+                    </NavLink>
+                </form>
+                @((MarkupString)Message)
+            </div>
+        </div>
+    </div>
+
+    <EmptyProject.Components.Layout.FooterDashboard></EmptyProject.Components.Layout.FooterDashboard>
+</div>
+
+@code {
+    #region Properties
+    public List<folderForDashboard> lstFoldersAndPages = [];
+
+    public List<Role> lstRole { get; set; } = [];
+
+    [Parameter]
+    public int UserConfigurationUIId { get; set; }
+
+    public string Message { get; set; } = "";
+
+    [SupplyParameterFromForm]
+    public UserConfigurationUI UserConfigurationUI { get; set; } = new();
+
+    public User User { get; set; } = new();
+
+    
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //Look for saved user in shared component, simulates a session
+            User = StateContainer.User == null ? new() : StateContainer.User;
+
+            lstFoldersAndPages = [];
+            UserConfigurationUI = new();
+
+            if (User != null)
+            {
+                if (User.UserId != 0)
+                {
+                    //Logged user
+                    if (User.RoleId != 1) //Only Root can access
+                    {
+                        NavigationManager.NavigateTo("403");
+                    }
+
+                    List<Menu> lstMenu = menuRepository
+                                        .GetAll();
+
+                    lstFoldersAndPages = rolemenuRepository
+                                            .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
+
+                    lstRole = roleRepository.GetAll();
+
+                    if (UserConfigurationUIId == 0)
+                    {
+                        //Create new UserConfigurationUI
+                        UserConfigurationUI = new();
+                    }
+                    else
+                    {
+                        //Edit UserConfigurationUI
+                        
+                        UserConfigurationUI = userconfigurationuiRepository
+                                    .GetByUserConfigurationUIId(UserConfigurationUIId);
+                    }
+                }
+                else
+                {
+                    //Not logged user
+
+                    //Redirect to...
+                    NavigationManager.NavigateTo("Login");
+                }
+            }
+            else
+            {
+                //Impossible
+            }
+
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            if (UserConfigurationUIId == 0)
+            {
+                //Create new UserConfigurationUI
+                UserConfigurationUI.UserCreationId = User.UserId;
+                UserConfigurationUI.UserLastModificationId = User.UserId;
+                UserConfigurationUI.DateTimeCreation = DateTime.Now;
+                UserConfigurationUI.DateTimeLastModification = DateTime.Now;
+
+                userconfigurationuiRepository
+                        .Add(UserConfigurationUI);
+            }
+            else
+            {
+                //Update data
+                UserConfigurationUI.DateTimeLastModification = DateTime.Now;
+                UserConfigurationUI.UserLastModificationId = User.UserId;
+
+                userconfigurationuiRepository
+                            .Update(UserConfigurationUI);
+            }
+
+            //Redirect to users page
+            NavigationManager.NavigateTo("CMSCore/UserConfigurationUIPage");
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    
+}
+
+Async(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    
+}
+

@@ -18,6 +18,7 @@ namespace EmptyProject.DatabaseContexts
         public DbSet<RoleMenu> RoleMenu { get; set; }
         public DbSet<Failure> Failure { get; set; }
         public DbSet<Parameter> Parameter { get; set; }
+        public DbSet<UserConfigurationUI> UserConfigurationUI { get; set; }
 
         //EmptyProject
         public DbSet<Client> Client { get; set; }
