@@ -1,3 +1,4 @@
+//Show/Hide left side-nav
 window.JsFunctions = {
     ShowOrHideSideNav: function (BoolAsString) {
 

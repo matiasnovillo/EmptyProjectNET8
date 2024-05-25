@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let functionInterval;
 
     function verificarCargadoYEjecutar() {
+
+        var hamburgerIcon = document.querySelector('.sidenav-toggler .sidenav-toggler-inner');
         var body = document.getElementsByTagName('body')[0];
 
         // Si encuentra el botón de hamburguesa y los eventos no están asignados
@@ -9,8 +11,13 @@ document.addEventListener('DOMContentLoaded', function () {
        
             clearInterval(functionInterval);
             body.classList.add('events-assigned');
-            // click hamburger => show /hide left navbar
+
+
             document.addEventListener('click', function (event) {
+
+                var fixedRightNavbar = document.querySelector('.fixed-plugin');
+
+                // click hamburger => show /hide left navbar
                 if (event.target.matches('.sidenav-toggler-inner') || event.target.matches('.sidenav-toggler-line') ) {
                     if (!body.classList.contains('g-sidenav-hidden')) {
                         body.classList.add('g-sidenav-hidden');
@@ -20,39 +27,23 @@ document.addEventListener('DOMContentLoaded', function () {
                         body.classList.add('g-sidenav-show');
                     }
                 }
-            }, false);
 
-            var fixedRightNavbarButton = document.querySelector('.fixed-plugin-button-nav');
-            var fixedRightNavbarButton2 = document.querySelector('.fixed-plugin .fixed-plugin-button');
-            var fixedRightNavbar = document.querySelector('.fixed-plugin');
-
-
-            document.addEventListener('click', function (event) {
+                // icono de opciones engranaje de arriba
                 if (event.target.matches('.fixed-plugin-button-nav')) {
                     document.querySelector('.fixed-plugin').classList.add('show')
                 }
-            }, false);
 
-            // onclick top options button => show right fixed navbar
-            if (fixedRightNavbarButton) {
-                fixedRightNavbarButton.addEventListener('click', function (event) {
-                    $(fixedRightNavbar).addClass('show');
-                }, true);
-            }
+                // icono de opciones engranaje de abajo
+                if (event.target.matches('.fixed-plugin-button')) {
+                    document.querySelector('.fixed-plugin').classList.add('show')
+                }
 
-            // onclick bottom options button => show right fixed navbar
-            if (fixedRightNavbarButton2) {
-                fixedRightNavbarButton2.addEventListener('click', function (event) {
-                    $(fixedRightNavbar).addClass('show');
-                });
-            }
+                // close right navbar button
+                if (event.target.matches('.fixed-plugin-close-button') || event.target.closest('.fixed-plugin-close-button') ) {
+                    document.querySelector('.fixed-plugin').classList.remove('show')
+                }
 
-            // close right navbar button
-            $('.fixed-plugin-close-button').on('click', function () {
-                $(fixedRightNavbar).removeClass('show');
-            });
 
-            document.addEventListener('click', function (event) {
                 // show/hide notification menu
                 var dropdownNotificationButton = document.querySelector('li.nav-item.dropdown.pe-2 > a.nav-link');
                 if (dropdownNotificationButton && dropdownNotificationButton.contains(event.target) && event.target.parentNode == dropdownNotificationButton) {
@@ -65,27 +56,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (fixedRightNavbar && !fixedRightNavbar.contains(event.target) && event.target.id !== 'fixedRightNavbarButton2' && event.target.id !== 'closeRightNavbar' && event.target.id !== 'fixedRightNavbarButton') {
                     $(fixedRightNavbar).removeClass('show');
                 }
-            }, true);
 
-            // evento onclick modal "save changes button"
-            var btnModalSave = document.querySelector('.modal-footer .btn:nth-of-type(2)');
-            if (btnModalSave) {
-                btnModalSave.addEventListener('click', function () {
+
+                // onclick modal btn "save changes"
+                var btnModalSave = document.querySelector('.modal-footer .btn:nth-of-type(2)');
+                if (event.target === btnModalSave) {
                     $(document.querySelector('.modal-footer .btn:nth-of-type(1)')).trigger('click');
-                });
-            }
-
-            // notification toast show/hide
-            $('.showtoast').on('click', function () {
-                $('.toast.bg-gradient-dark').addClass('show');
-            });
-            $('.closetoast').on('click', function () {
-                $('.toast.bg-gradient-dark').removeClass('show');
-            });
+                }
 
 
-        } else {
-            console.log('aun no lo encuentra')
+                // notification toast show/hide
+                if (event.target.matches('.showtoast')) {
+                    $('.toast.bg-gradient-dark').addClass('show');
+                }
+                if (event.target.matches('.closetoast')) {
+                    $('.toast.bg-gradient-dark').removeClass('show');
+                }
+
+            }, false);
+
         }
     }
 
