@@ -196,6 +196,7 @@ namespace EmptyProject.Areas.EmptyProject.Repositories
                 DataTable.Columns.Add("TextTag", typeof(string));
                 DataTable.Columns.Add("TextURL", typeof(string));
                 DataTable.Columns.Add("ClientStatusId", typeof(string));
+                DataTable.Columns.Add("TimeSpan", typeof(string));
 
                 foreach (int ClientId in lstClientChecked)
                 {
@@ -224,7 +225,8 @@ namespace EmptyProject.Areas.EmptyProject.Repositories
                         client.TextPhoneNumber,
                         client.TextTag,
                         client.TextURL,
-                        client.ClientStatusId
+                        client.ClientStatusId,
+                        client.TimeSpan
                         );
                     }
                 }

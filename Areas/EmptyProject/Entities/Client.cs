@@ -85,6 +85,9 @@ namespace EmptyProject.Areas.EmptyProject.Entities
 
         [Library.ModelAttributeValidator.Key("ClientStatusId")]
         public int ClientStatusId { get; set; }
+
+        [Library.ModelAttributeValidator.TimeSpan("TimeSpan", true, "00:00", "23:59")]
+        public TimeSpan TimeSpan { get; set; }
     
         public string ToStringOnlyValuesForHTML()
         {

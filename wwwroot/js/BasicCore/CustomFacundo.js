@@ -3,15 +3,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function verificarCargadoYEjecutar() {
 
-        var hamburgerIcon = document.querySelector('.sidenav-toggler .sidenav-toggler-inner');
         var body = document.getElementsByTagName('body')[0];
-
-        // Si encuentra el botón de hamburguesa y los eventos no están asignados
-        if (hamburgerIcon !== null && typeof hamburgerIcon !== "undefined" && !body.classList.contains('events-assigned')) {
-       
             clearInterval(functionInterval);
-            body.classList.add('events-assigned');
-
 
             document.addEventListener('click', function (event) {
 
@@ -74,8 +67,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
             }, false);
-
-        }
     }
 
     // Verificar si está cargado boton y ejecutar cada 0.5 segundos

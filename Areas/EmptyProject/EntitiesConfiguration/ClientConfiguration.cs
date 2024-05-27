@@ -127,7 +127,10 @@ namespace EmptyProject.Areas.EmptyProject.EntitiesConfiguration
                     .HasColumnType("int")
                     .IsRequired(true);
 
-
+                //TimeSpan
+                entity.Property(e => e.TimeSpan)
+                    .HasColumnType("time(7)")
+                    .IsRequired(true);
             }
             catch (Exception) { throw; }
         }

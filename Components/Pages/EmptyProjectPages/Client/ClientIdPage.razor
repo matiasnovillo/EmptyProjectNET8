@@ -294,7 +294,17 @@ else
                             <option value="2">Valor 2</option>
                         </select>
                     </div>
-                    
+                    <!--TimeSpan-->
+                    <div class="input-group input-group-static mb-3">
+                        <label for="timespan">
+                            TimeSpan
+                        </label>
+                        <input type="time"
+                               id="timespan"
+                               class="form-control"
+                               value="@Client!.TimeSpan"
+                               @onchange="HandleTextURLChange" />
+                    </div>
                     <hr />
                     @((MarkupString)Message)
                     <div class="d-flex justify-content-between">
@@ -575,6 +585,12 @@ else
     private void HandleClientStatusIdChange(ChangeEventArgs e)
     {
         Client.ClientStatusId = Convert.ToInt32(e.Value?.ToString());
+        Check();
+    }
+
+    private void HandleTimeSpanChange(ChangeEventArgs e)
+    {
+        Client.TimeSpan = TimeSpan.Parse(e.Value?.ToString());
         Check();
     }
     #endregion
