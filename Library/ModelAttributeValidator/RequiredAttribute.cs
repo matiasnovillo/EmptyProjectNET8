@@ -5,10 +5,12 @@ namespace EmptyProject.Library.ModelAttributeValidator
 {
     public class RequiredAttribute : ValidationAttribute
     {
+        private string _NameToShow;
         private string _Name;
         
-        public RequiredAttribute(string Name)
+        public RequiredAttribute(string NameToShow, string Name)
         {
+            _NameToShow = NameToShow;
             _Name = Name;
         }
 
@@ -18,7 +20,7 @@ namespace EmptyProject.Library.ModelAttributeValidator
             {
                 if (obj == null)
                 {
-                    return new ValidationResult($"La variable {_Name} es requerida");
+                    return new ValidationResult($"[{_Name}] La variable {_NameToShow} es requerida");
                 }
                 else
                 {

@@ -27,19 +27,19 @@ namespace EmptyProject.Areas.CMSCore.Entities
 
         public int UserLastModificationId { get; set; }
 
-        [Library.ModelAttributeValidator.String("Name", false, 1, 200, "")]
+        [Library.ModelAttributeValidator.String("Name", "Name", false, 1, 200, "")]
         public string? Name { get; set; }
 
-        [Library.ModelAttributeValidator.Int("MenuFatherId", false, 0, 5000)]
+        [Library.ModelAttributeValidator.Int("MenuFatherId", "MenuFatherId", false, 0, 5000)]
         public int MenuFatherId { get; set; }
 
-        [Library.ModelAttributeValidator.Int("Order", false, 0, 5000)]
+        [Library.ModelAttributeValidator.Int("Order", "Order", false, 0, 5000)]
         public int Order { get; set; }
 
-        [Library.ModelAttributeValidator.String("URLPath", false, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("URLPath", "URLPath", false, 1, 8000, "")]
         public string? URLPath { get; set; }
 
-        [Library.ModelAttributeValidator.String("IconURLPath", false, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("IconURLPath", "IconURLPath", false, 1, 8000, "")]
         public string? IconURLPath { get; set; }
     
         public string ToStringOnlyValuesForHTML()

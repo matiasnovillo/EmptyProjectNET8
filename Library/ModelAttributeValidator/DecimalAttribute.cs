@@ -5,14 +5,16 @@ namespace EmptyProject.Library.ModelAttributeValidator
 {
     public class DecimalAttribute : ValidationAttribute
     {
+        private string _NameToShow;
         private string _Name;
         private decimal _MinimumDecimalNumber;
         private decimal _MaximumDecimalNumber;
         private bool _Required;
-        public DecimalAttribute(string Name, bool Required, double DecimalMin, double DecimalMax)
+        public DecimalAttribute(string NameToShow, string Name, bool Required, double DecimalMin, double DecimalMax)
         {
             try
             {
+                _NameToShow = NameToShow;
                 _Name = Name;
                 _MinimumDecimalNumber = (decimal)DecimalMin;
                 _MaximumDecimalNumber = (decimal)DecimalMax;
@@ -30,13 +32,13 @@ namespace EmptyProject.Library.ModelAttributeValidator
                 {
                     if (objDecimal == null) 
                     {
-                        return new ValidationResult($"La variable {_Name} es requerida");
+                        return new ValidationResult($"[{_Name}] La variable {_NameToShow} es requerida");
                     }
                     else
                     {
                         if (objDecimal is not decimal)
                         {
-                            return new ValidationResult($"La variable {_Name} no es un número decimal válido");
+                            return new ValidationResult($"[{_Name}] La variable {_NameToShow} no es un número decimal válido");
                         }
                         else
                         {
@@ -45,7 +47,7 @@ namespace EmptyProject.Library.ModelAttributeValidator
                                 (decimal)objDecimal < _MinimumDecimalNumber ||
                                 (decimal)objDecimal > _MaximumDecimalNumber)
                             {
-                                return new ValidationResult($"La variable {_Name} debe estar comprendida entre {_MinimumDecimalNumber} y {_MaximumDecimalNumber}");
+                                return new ValidationResult($"[{_Name}] La variable {_NameToShow} debe estar comprendida entre {_MinimumDecimalNumber} y {_MaximumDecimalNumber}");
                             }
                             else
                             {

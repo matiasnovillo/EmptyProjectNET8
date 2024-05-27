@@ -27,7 +27,7 @@ namespace EmptyProject.Areas.CMSCore.Entities
 
         public int UserLastModificationId { get; set; }
 
-        [Library.ModelAttributeValidator.String("Name", false, 1, 100, "")]
+        [Library.ModelAttributeValidator.String("Name", "Name", false, 1, 100, "")]
         public string? Name { get; set; }
     
         public string ToStringOnlyValuesForHTML()

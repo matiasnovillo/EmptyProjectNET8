@@ -5,14 +5,16 @@ namespace EmptyProject.Library.ModelAttributeValidator
 {
     public class DateTimeAttribute : ValidationAttribute
     {
+        private string _NameToShow;
         private string _Name;
         private DateTime _MinimumDateTime;
         private DateTime _MaximumDateTime;
         private bool _Required;
-        public DateTimeAttribute(string Name, bool Required, string DateTimeMinValue, string DateTimeMaxValue)
+        public DateTimeAttribute(string NameToShow, string Name, bool Required, string DateTimeMinValue, string DateTimeMaxValue)
         {
             try
             {
+                _NameToShow = NameToShow;
                 _Name = Name;
                 _MinimumDateTime = System.Convert.ToDateTime(DateTimeMinValue);
                 _MaximumDateTime = System.Convert.ToDateTime(DateTimeMaxValue);
@@ -30,13 +32,13 @@ namespace EmptyProject.Library.ModelAttributeValidator
                 {
                     if (objDateTime == null)
                     {
-                        return new ValidationResult($"La variable {_Name} es requerida");
+                        return new ValidationResult($"[{_Name}] La variable {_NameToShow} es requerida");
                     }
                     else
                     {
                         if ((DateTime)objDateTime < _MinimumDateTime || (DateTime)objDateTime > _MaximumDateTime)
                         {
-                            return new ValidationResult($@"La variable {_Name} 
+                            return new ValidationResult($@"[{_Name}] La variable {_NameToShow} 
 debe estar entre {_MinimumDateTime.ToString("dd/MM/yyyy HH:mm:ss")} y 
 {_MaximumDateTime.ToString("dd/MM/yyyy HH:mm:ss")}.");
                         }

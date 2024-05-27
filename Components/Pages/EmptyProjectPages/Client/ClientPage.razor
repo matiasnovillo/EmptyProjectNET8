@@ -458,6 +458,7 @@
                                     <th>TextTag</th>
                                     <th>TextURL</th>
                                     <th>ClientStatusId</th>
+                                    <th>TimeSpan</th>
 
                                     <th>Acciones</th>
                                 </tr>
@@ -548,19 +549,18 @@
                                                 </a>
                                             </td>
                                             <td>@paginatedClientDTO.lstClient[i]?.ClientStatusId</td>
+                                            <td>@paginatedClientDTO.lstClient[i]?.TimeSpan</td>
 
                                             <td>
-                                                <div class="nav-item">
+                                                <div class="d-flex justify-content-start">
+                                                    <a class="btn btn-sm btn-outline-info mx-2"
+                                                       href="EmptyProject/ClientPage/@paginatedClientDTO.lstClient[i]?.ClientId">
+                                                        <span class="fas fa-pen" aria-hidden="true"></span>
+                                                    </a>
                                                     <button class="btn btn-sm btn-outline-danger"
                                                             onclick=@(() => Delete(clientId))>
                                                         <span class="fas fa-trash" aria-hidden="true"></span>
                                                     </button>
-                                                </div>
-                                                <div class="nav-item mt-2">
-                                                    <a class="btn btn-sm btn-outline-info"
-                                                       href="EmptyProject/ClientPage/@paginatedClientDTO.lstClient[i]?.ClientId">
-                                                        <span class="fas fa-pen" aria-hidden="true"></span>
-                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -662,24 +662,30 @@
                                             @paginatedClientDTO.lstClient[i]?.TextURL
                                         </a>
                                         <p><b>ClientStatusId: </b>@paginatedClientDTO.lstClient[i]?.ClientStatusId</p>
+                                        <p><b>TimeSpan: </b>@paginatedClientDTO.lstClient[i]?.TimeSpan</p>
                                         
                                 </div>
                                 <div class="card-footer text-body-secondary">
                                     <div class="d-flex justify-content-end">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input"
+                                        <style>
+                                            input.larger-checkbox {
+                                                width: 60px;
+                                                height: 30px;
+                                            }
+                                        </style>
+                                        <input class="larger-checkbox"
                                                    type="checkbox"
                                                    @onchange="(() => CheckList(clientId))" />
-                                        </div>
-                                        <button class="btn btn-outline-danger mx-3"
+                                        <a class="btn btn-outline-info mx-3"
+                                           href="EmptyProject/ClientPage/@paginatedClientDTO.lstClient[i]?.ClientId">
+                                            <span class="fas fa-pen" aria-hidden="true"></span>
+                                        </a>
+                                        <button class="btn btn-outline-danger"
                                                 onclick=@(() => Delete(clientId))>
                                             <span class="fas fa-trash" aria-hidden="true"></span>
                                         </button>
                                         <!--TODO Poner toast-->
-                                        <a class="btn btn-outline-info"
-                                           href="EmptyProject/ClientPage/@paginatedClientDTO.lstClient[i]?.ClientId">
-                                            <span class="fas fa-pen" aria-hidden="true"></span>
-                                        </a>
+                                        
                                     </div>
                                 </div>
                             </div>

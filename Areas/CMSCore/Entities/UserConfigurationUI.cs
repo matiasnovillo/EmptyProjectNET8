@@ -15,39 +15,38 @@ namespace EmptyProject.Areas.CMSCore.Entities
 {
     public class UserConfigurationUI
     {
-        [Library.ModelAttributeValidator.Key("UserConfigurationUIId")]
         public int UserConfigurationUIId { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-[Library.ModelAttributeValidator.DateTime("DateTimeCreation", false, "1753-01-01T00:00", "9998-12-30T23:59")]
+[Library.ModelAttributeValidator.DateTime("Fecha de creación", "DateTimeCreation", false, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime DateTimeCreation { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-[Library.ModelAttributeValidator.DateTime("DateTimeLastModification", false, "1753-01-01T00:00", "9998-12-30T23:59")]
+[Library.ModelAttributeValidator.DateTime("Fecha de última modificación", "DateTimeLastModification", false, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime DateTimeLastModification { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.Key("UserCreationId")]
+        [Library.ModelAttributeValidator.Key("UserCreationId", "UserCreationId")]
         public int UserCreationId { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.Key("UserLastModificationId")]
+        [Library.ModelAttributeValidator.Key("UserLastModificationId", "UserLastModificationId")]
         public int UserLastModificationId { get; set; }
 
-        [Library.ModelAttributeValidator.String("Name", true, 1, 200, "")]
+        [Library.ModelAttributeValidator.String("Name", "Name", true, 1, 200, "")]
         public string? Name { get; set; }
 
         public string? ValueAsText { get; set; }
 
-        [Library.ModelAttributeValidator.Key("UserId")]
+        [Library.ModelAttributeValidator.Key("UserId", "UserId")]
         public int UserId { get; set; }
     
         public string ToStringOnlyValuesForHTML()

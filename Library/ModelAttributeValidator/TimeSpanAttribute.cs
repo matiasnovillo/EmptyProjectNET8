@@ -5,15 +5,17 @@ namespace EmptyProject.Library.ModelAttributeValidator
 {
     public class TimeSpanAttribute : ValidationAttribute
     {
+        private string _NameToShow;
         private string _Name;
         private TimeSpan _MinimumTimeSpan;
         private TimeSpan _MaximumTimeSpan;
         private bool _Required;
 
-        public TimeSpanAttribute(string Name, bool Required, string TimeSpanMin, string TimeSpanMax)
+        public TimeSpanAttribute(string NameToShow, string Name, bool Required, string TimeSpanMin, string TimeSpanMax)
         {
             try
             {
+                _NameToShow = NameToShow;
                 _Name = Name;
                 _MinimumTimeSpan = TimeSpan.Parse(TimeSpanMin);
                 _MaximumTimeSpan = TimeSpan.Parse(TimeSpanMax);
@@ -31,13 +33,13 @@ namespace EmptyProject.Library.ModelAttributeValidator
                 {
                     if (objTimeSpan == null) 
                     {
-                        return new ValidationResult($"La variable {_Name} es requerida");
+                        return new ValidationResult($"[{_Name}] La variable {_NameToShow} es requerida");
                     }
                     else
                     {
                         if ((TimeSpan)objTimeSpan < _MinimumTimeSpan || (TimeSpan)objTimeSpan > _MaximumTimeSpan)
                         {
-                            return new ValidationResult($"La variable {_Name} debe estar entre {_MinimumTimeSpan} y {_MaximumTimeSpan}");
+                            return new ValidationResult($"[{_Name}] La variable {_NameToShow} debe estar entre {_MinimumTimeSpan} y {_MaximumTimeSpan}");
                         }
                         else
                         {

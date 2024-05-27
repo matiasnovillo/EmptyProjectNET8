@@ -27,13 +27,13 @@ namespace EmptyProject.Areas.CMSCore.Entities
 
         public int UserLastModificationId { get; set; }
 
-        [Library.ModelAttributeValidator.String("Email", false, 1, 380, "")]
+        [Library.ModelAttributeValidator.String("Email", "Email", false, 1, 380, "")]
         public string? Email { get; set; }
 
-        [Library.ModelAttributeValidator.String("Password", false, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("Password", "Password", false, 1, 8000, "")]
         public string? Password { get; set; }
 
-        [Library.ModelAttributeValidator.Key("RoleId")]
+        [Library.ModelAttributeValidator.Key("RoleId", "RoleId")]
         public int RoleId { get; set; }
 
         public string ProfilePicture { get; set; }

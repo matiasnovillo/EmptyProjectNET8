@@ -44,49 +44,49 @@ namespace EmptyProject.Areas.EmptyProject.Entities
 
         public bool Boolean { get; set; }
 
-        [Library.ModelAttributeValidator.DateTime("DateTime", true, "1753-01-01T00:00", "9998-12-30T23:59")]
+        [Library.ModelAttributeValidator.DateTime("Fecha y hora", "DateTime", true, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime DateTime { get; set; }
 
-        [Library.ModelAttributeValidator.Decimal("Decimal", true, 10D, 999999999D)]
+        [Library.ModelAttributeValidator.Decimal("Decimal", "Decimal", true, 10D, 999999999D)]
         public decimal Decimal { get; set; }
 
-        [Library.ModelAttributeValidator.Int("Integer", true, 10, 800)]
+        [Library.ModelAttributeValidator.Int("Integer", "Integer", true, 10, 800)]
         public int Integer { get; set; }
 
-        [Library.ModelAttributeValidator.Required("TextArea")]
+        [Library.ModelAttributeValidator.Required("TextArea", "TextArea")]
         public string? TextArea { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextBasic", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextBasic", "TextBasic", true, 1, 8000, "")]
         public string? TextBasic { get; set; }
 
-        [Library.ModelAttributeValidator.Required("TextEditor")]
+        [Library.ModelAttributeValidator.Required("TextEditor", "TextEditor")]
         public string? TextEditor { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextEmail", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextEmail", "TextEmail", true, 1, 8000, "")]
         public string? TextEmail { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextFile", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextFile", "TextFile", true, 1, 8000, "")]
         public string? TextFile { get; set; }
 
-        [Library.ModelAttributeValidator.HexColour("TextHexColour", true, "000000", "FFFFFF")]
+        [Library.ModelAttributeValidator.HexColour("TextHexColour", "TextHexColour", true, "000000", "FFFFFF")]
         public string? TextHexColour { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextPassword", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextPassword", "TextPassword", true, 1, 8000, "")]
         public string? TextPassword { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextPhoneNumber", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextPhoneNumber", "TextPhoneNumber", true, 1, 8000, "")]
         public string? TextPhoneNumber { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextTag", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextTag", "TextTag", true, 1, 8000, "")]
         public string? TextTag { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextURL", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextURL", "TextURL", true, 1, 8000, "")]
         public string? TextURL { get; set; }
 
-        [Library.ModelAttributeValidator.Key("ClientStatusId")]
+        [Library.ModelAttributeValidator.Key("ClientStatusId", "ClientStatusId")]
         public int ClientStatusId { get; set; }
 
-        [Library.ModelAttributeValidator.TimeSpan("TimeSpan", true, "00:00", "23:59")]
+        [Library.ModelAttributeValidator.TimeSpan("TimeSpan", "TimeSpan", true, "00:00", "23:59")]
         public TimeSpan TimeSpan { get; set; }
     
         public string ToStringOnlyValuesForHTML()
