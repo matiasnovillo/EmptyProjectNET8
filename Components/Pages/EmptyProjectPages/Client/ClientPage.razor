@@ -545,10 +545,32 @@
                                                        href="EmptyProject/ClientPage/@paginatedClientDTO.lstClient[i]?.ClientId">
                                                         <span class="fas fa-pen" aria-hidden="true"></span>
                                                     </a>
-                                                    <button class="btn btn-sm btn-outline-danger"
-                                                            onclick=@(() => Delete(clientId))>
+                                                    <button class="btn btn-outline-danger btn-sm toast-delete showtoast">
                                                         <span class="fas fa-trash" aria-hidden="true"></span>
                                                     </button>
+                                                    <div class="toast bg-gradient-dark fade p-2 mx-auto"
+                                                         role="alert"
+                                                         aria-live="assertive"
+                                                         aria-atomic="true">
+                                                        <div class="toast-header border-0 bg-transparent">
+                                                            <i class="fas fa-circle-xmark me-2 text-white"></i>
+                                                            <span class="me-auto font-weight-bold text-white">Confirmar eliminación</span>
+                                                            <i class="fas fa-times text-md ms-3 cursor-pointer text-white closetoast" data-bs-dismiss="toast" aria-label="Close"></i>
+                                                        </div>
+                                                        <hr class="horizontal light m-0">
+                                                        <div class="toast-body text-white">
+                                                            ¿Esta seguro que desea borrar 
+                                                            <br/>
+                                                            este registro con ID @clientId?
+                                                            <br />
+                                                            Presione SI para borrar
+                                                            <br />
+                                                            <button class="btn btn-outline-danger btn-sm mt-2 closetoast"
+                                                                    onclick=@(() => Delete(clientId))>
+                                                                SI
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </td>
                                         </tr>
