@@ -65,6 +65,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="datetime">
                                 DateTime
+                            @if (ErrorMessageDateTime != "")
+                            {
+                                @((MarkupString)ErrorMessageDateTime)
+                            }
                         </label>
                         <input type="datetime"
                                id="datetime"
@@ -76,11 +80,15 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="decimal">
                             Decimal
+                            @if (ErrorMessageDecimal != "")
+                            {
+                                @((MarkupString)ErrorMessageDecimal)
+                            }
                         </label>
                         <input type="number"
                                step="0.1"
                                id="decimal"
-                               min="0" 
+                               min="5" 
                                max="999999999" 
                                class="form-control"
                                value="@Client!.Decimal"
@@ -90,6 +98,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="integer">
                             Integer
+                            @if (ErrorMessageInteger != "")
+                            {
+                                @((MarkupString)ErrorMessageInteger)
+                            }
                         </label>
                         <input type="number"
                                step="1"
@@ -104,6 +116,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="textarea">
                             TextArea
+                            @if (ErrorMessageTextArea != "")
+                            {
+                                @((MarkupString)ErrorMessageTextArea)
+                            }
                         </label>
                         <textarea rows="10"
                             class="form-control"
@@ -116,6 +132,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="textbasic">
                             TextBasic
+                            @if(ErrorMessageTextBasic != "")
+                            {
+                            @((MarkupString)ErrorMessageTextBasic)
+                            }
                         </label>
                         <input type="text"
                                id="textbasic"
@@ -128,6 +148,10 @@ else
                     <div class="mb-3">
                         <label for="quill-editor-texteditor">
                             TextEditor
+                            @if (ErrorMessageTextEditor != "")
+                            {
+                                @((MarkupString)ErrorMessageTextEditor)
+                            }
                         </label>
                         <div id="quill-editor-texteditor">
                         </div>
@@ -193,6 +217,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="textemail">
                             TextEmail
+                            @if (ErrorMessageTextEmail != "")
+                            {
+                                @((MarkupString)ErrorMessageTextEmail)
+                            }
                         </label>
                         <input type="email"
                                id="textemail"
@@ -204,6 +232,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="textfile">
                             TextFile
+                            @if (ErrorMessageTextFile != "")
+                            {
+                                @((MarkupString)ErrorMessageTextFile)
+                            }
                         </label>
                         <InputFile type="file"
                                id="textfile"
@@ -228,6 +260,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="texthexcolour">
                             TextHexColour
+                            @if (ErrorMessageTextHexColour != "")
+                            {
+                                @((MarkupString)ErrorMessageTextHexColour)
+                            }
                         </label>
                         <input type="color"
                                id="texthexcolour"
@@ -239,6 +275,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="textpassword">
                             TextPassword
+                            @if (ErrorMessageTextPassword != "")
+                            {
+                                @((MarkupString)ErrorMessageTextPassword)
+                            }
                         </label>
                         <input type="password"
                                id="textpassword"
@@ -250,6 +290,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="textphonenumber">
                             TextPhoneNumber
+                            @if (ErrorMessageTextPhoneNumber != "")
+                            {
+                                @((MarkupString)ErrorMessageTextPhoneNumber)
+                            }
                         </label>
                         <input type="tel"
                                id="textphonenumber"
@@ -261,6 +305,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="texttag">
                             TextTag
+                            @if (ErrorMessageTextTag != "")
+                            {
+                                @((MarkupString)ErrorMessageTextTag)
+                            }
                         </label>
                         <input type="text"
                                id="texttag"
@@ -273,6 +321,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="texturl">
                             TextURL
+                            @if (ErrorMessageTextURL != "")
+                            {
+                                @((MarkupString)ErrorMessageTextURL)
+                            }
                         </label>
                         <input type="url"
                                id="texturl"
@@ -284,6 +336,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="clientstatusid">
                             ClientStatusId
+                            @if (ErrorMessageClientStatusId != "")
+                            {
+                                @((MarkupString)ErrorMessageClientStatusId)
+                            }
                         </label>
                         <select id="clientstatusid"
                             class="form-control"
@@ -298,6 +354,10 @@ else
                     <div class="input-group input-group-static mb-3">
                         <label for="timespan">
                             TimeSpan
+                            @if (ErrorMessageTimeSpan != "")
+                            {
+                                @((MarkupString)ErrorMessageTimeSpan)
+                            }
                         </label>
                         <input type="time"
                                id="timespan"
@@ -350,6 +410,23 @@ else
     public Client Client { get; set; } = new();
 
     public User User { get; set; } = new();
+
+    //Error messages for inputs
+    public string ErrorMessageDateTime { get; set; } = "";
+    public string ErrorMessageDecimal { get; set; } = "";
+    public string ErrorMessageInteger { get; set; } = "";
+    public string ErrorMessageTextEmail { get; set; } = "";
+    public string ErrorMessageClientStatusId { get; set; } = "";
+    public string ErrorMessageTextFile { get; set; } = "";
+    public string ErrorMessageTextHexColour { get; set; } = "";
+    public string ErrorMessageTextTag { get; set; } = "";
+    public string ErrorMessageTextPassword { get; set; } = "";
+    public string ErrorMessageTextURL { get; set; } = "";
+    public string ErrorMessageTextPhoneNumber { get; set; } = "";
+    public string ErrorMessageTimeSpan { get; set; } = "";
+    public string ErrorMessageTextArea { get; set; } = "";
+    public string ErrorMessageTextEditor { get; set; } = "";
+    public string ErrorMessageTextBasic { get; set; } = "";
 
     //Progress bar for TextFile
     public bool DisplayProgressForTextFile { get; set; } = false;
@@ -451,7 +528,7 @@ else
                 Client.DateTimeCreation = DateTime.Now;
                 Client.DateTimeLastModification = DateTime.Now;
 
-                if(Check())
+                if(Check("") == null)
                 {
                     clientRepository
                         .Add(Client);
@@ -465,7 +542,7 @@ else
                 Client.DateTimeLastModification = DateTime.Now;
                 Client.UserLastModificationId = User.UserId;
 
-                if(Check())
+                if(Check("") == null)
                 {
                     clientRepository
                             .Update(Client);
@@ -508,102 +585,330 @@ else
     private void HandleBooleanChange(ChangeEventArgs e)
     {
         Client.Boolean = Convert.ToBoolean(e.Value?.ToString());
-        Check();
+        ValidationResult ValidationResult = Check("[Boolean]");
+
+        if (ValidationResult == null)
+        {
+
+        }
+        else
+        {
+
+        }
     }
 
-    private void HandleDateTimeChange(ChangeEventArgs e)
+    private async Task HandleDateTimeChange(ChangeEventArgs e)
     {
         Client.DateTime = Convert.ToDateTime(e.Value?.ToString());
-        Check();
+        ValidationResult ValidationResult = Check("[DateTime]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageDateTime = $@"";
+        }
+        else
+        {
+            ErrorMessageDateTime = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleDecimalChange(ChangeEventArgs e)
+    private async Task HandleDecimalChange(ChangeEventArgs e)
     {
         Client.Decimal = Convert.ToDecimal(e.Value?.ToString());
-        Check();
+        ValidationResult ValidationResult = Check("[Decimal]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageDecimal = $@"";
+        }
+        else
+        {
+            ErrorMessageDecimal = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleIntegerChange(ChangeEventArgs e)
+    private async Task HandleIntegerChange(ChangeEventArgs e)
     {
         Client.Integer = Convert.ToInt32(e.Value?.ToString());
-        Check();
+        ValidationResult ValidationResult = Check("[Integer]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageInteger = $@"";
+        }
+        else
+        {
+            ErrorMessageInteger = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleTextAreaChange(ChangeEventArgs e)
+    private async Task HandleTextAreaChange(ChangeEventArgs e)
     {
         Client.TextArea = e.Value?.ToString();
-        Check();
+        ValidationResult ValidationResult = Check("[TextArea]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextArea = $@"";
+        }
+        else
+        {
+            ErrorMessageTextArea = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleTextBasicChange(ChangeEventArgs e)
+    private async Task HandleTextBasicChange(ChangeEventArgs e)
     {
         Client.TextBasic = e.Value?.ToString();
-        Check();
+        ValidationResult ValidationResult = Check("[TextBasic]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextBasic = $@"";
+        }
+        else
+        {
+            ErrorMessageTextBasic = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleTextEditorChange(ChangeEventArgs e)
+    private async Task HandleTextEditorChange(ChangeEventArgs e)
     {
         Client.TextEditor = e.Value?.ToString();
-        Check();
+        ValidationResult ValidationResult = Check("[TextEditor]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextEditor = $@"";
+        }
+        else
+        {
+            ErrorMessageTextEditor = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleTextEmailChange(ChangeEventArgs e)
+    private async Task HandleTextEmailChange(ChangeEventArgs e)
     {
         Client.TextEmail = e.Value?.ToString();
-        Check();
+        ValidationResult ValidationResult = Check("[TextEmail]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextEmail = $@"";
+        }
+        else
+        {
+            ErrorMessageTextEmail = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleTextHexColourChange(ChangeEventArgs e)
+    private async Task HandleTextHexColourChange(ChangeEventArgs e)
     {
         Client.TextHexColour = e.Value?.ToString();
-        Check();
+        ValidationResult ValidationResult = Check("[TextHexColour]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextHexColour = $@"";
+        }
+        else
+        {
+            ErrorMessageTextHexColour = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleTextPasswordChange(ChangeEventArgs e)
+    private async Task HandleTextPasswordChange(ChangeEventArgs e)
     {
         Client.TextPassword = e.Value?.ToString();
-        Check();
+        ValidationResult ValidationResult = Check("[TextPassword]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextPassword = $@"";
+        }
+        else
+        {
+            ErrorMessageTextPassword = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleTextPhoneNumberChange(ChangeEventArgs e)
+    private async Task HandleTextPhoneNumberChange(ChangeEventArgs e)
     {
         Client.TextPhoneNumber = e.Value?.ToString();
-        Check();
+        ValidationResult ValidationResult = Check("[TextPhoneNumber]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextPhoneNumber = $@"";
+        }
+        else
+        {
+            ErrorMessageTextPhoneNumber = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleTextTagChange(ChangeEventArgs e)
+    private async Task HandleTextTagChange(ChangeEventArgs e)
     {
         Client.TextTag = e.Value?.ToString();
-        Check();
+        ValidationResult ValidationResult = Check("[TextTag]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextTag = $@"";
+        }
+        else
+        {
+            ErrorMessageTextTag = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleTextURLChange(ChangeEventArgs e)
+    private async Task HandleTextURLChange(ChangeEventArgs e)
     {
         Client.TextURL = e.Value?.ToString();
-        Check();
+        ValidationResult ValidationResult = Check("[TextURL]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextURL = $@"";
+        }
+        else
+        {
+            ErrorMessageTextURL = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleClientStatusIdChange(ChangeEventArgs e)
+    private async Task HandleClientStatusIdChange(ChangeEventArgs e)
     {
         Client.ClientStatusId = Convert.ToInt32(e.Value?.ToString());
-        Check();
+        ValidationResult ValidationResult = Check("[ClientStatusId]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageClientStatusId = $@"";
+        }
+        else
+        {
+            ErrorMessageClientStatusId = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
-    private void HandleTimeSpanChange(ChangeEventArgs e)
+    private async Task HandleTimeSpanChange(ChangeEventArgs e)
     {
         Client.TimeSpan = TimeSpan.Parse(e.Value?.ToString());
-        Check();
+        ValidationResult ValidationResult = Check("[TimeSpan]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTimeSpan = $@"";
+        }
+        else
+        {
+            ErrorMessageTimeSpan = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
     #endregion
 
-    private bool Check()
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="attributeToValid">Debe estar encapsulado en []. Ejemplo: [Boolean]</param>
+    /// <returns></returns>
+    private ValidationResult Check(string attributeToValid)
     {
         try
         {
-            var lstValidationResult = new List<ValidationResult>();
-            var ValidationContext = new ValidationContext(Client);
+            List<ValidationResult> lstValidationResult = new List<ValidationResult>();
+            ValidationContext ValidationContext = new ValidationContext(Client);
 
             bool IsValid = Validator.TryValidateObject(Client, ValidationContext, lstValidationResult, true);
+
+            ValidationResult ValidationResult = lstValidationResult
+            .AsQueryable()
+            .FirstOrDefault(x => x.ErrorMessage.StartsWith(attributeToValid));
 
             if (!IsValid)
             {
@@ -612,21 +917,26 @@ else
 
                 foreach (var validationResult in lstValidationResult)
                 {
+                    validationResult.ErrorMessage = validationResult.ErrorMessage.Substring(validationResult.ErrorMessage.IndexOf(']') + 1);
                     Message += $@"<li>{validationResult}</li>";
                 }
 
                 Message = Message + "</ul></div>";
-
-                return false;
             }
             else
             {
                 Message = $@"<div class=""alert alert-successs text-white font-weight-bold"" role=""alert"">
                                 Todos los datos ingresados son correctos
                             </div>";
-
-                return true;
             }
+
+
+            if (ValidationResult != null)
+            {
+                ValidationResult.ErrorMessage = ValidationResult.ErrorMessage.Substring(ValidationResult.ErrorMessage.IndexOf(']') + 1);
+            }
+
+            return ValidationResult;
         }
         catch (Exception ex)
         {
@@ -650,7 +960,7 @@ else
                                 Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
                             </div>";
 
-            return false;
+            return null;
         }
         finally
         {
@@ -693,7 +1003,7 @@ else
 
             Client!.TextFile = Result;
 
-            Check();
+            Check("[TextFile]");
 
             ProgressPercentForTextFile = 100;
             ProgressBarColourForTextFile = "bg-success";
