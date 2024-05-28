@@ -412,6 +412,7 @@ else
     public User User { get; set; } = new();
 
     //Error messages for inputs
+    public string ErrorMessageBoolean { get; set; } = "";
     public string ErrorMessageDateTime { get; set; } = "";
     public string ErrorMessageDecimal { get; set; } = "";
     public string ErrorMessageInteger { get; set; } = "";
@@ -582,19 +583,25 @@ else
     }
 
     #region Handlers
-    private void HandleBooleanChange(ChangeEventArgs e)
+    private async Task HandleBooleanChange(ChangeEventArgs e)
     {
         Client.Boolean = Convert.ToBoolean(e.Value?.ToString());
         ValidationResult ValidationResult = Check("[Boolean]");
 
         if (ValidationResult == null)
         {
-
+            ErrorMessageBoolean = $@"";
         }
         else
         {
-
+            ErrorMessageBoolean = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
         }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
 
     private async Task HandleDateTimeChange(ChangeEventArgs e)
