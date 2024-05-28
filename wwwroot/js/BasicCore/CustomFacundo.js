@@ -59,12 +59,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 // notification toast show/hide
-                if (event.target.matches('.showtoast')) {
-                    $('.toast.bg-gradient-dark').addClass('show');
-                }
+                $(".showtoast").on("click", function () {
+                    $(this).next().addClass("show");
+                });
+
                 if (event.target.matches('.closetoast')) {
                     $('.toast.bg-gradient-dark').removeClass('show');
                 }
+
+                //if (event.target.matches('.showtoast')) {
+                //    $('.toast.bg-gradient-dark').addClass('show');
+                //}
 
             }, false);
     }
