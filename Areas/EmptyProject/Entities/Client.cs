@@ -15,6 +15,7 @@ namespace EmptyProject.Areas.EmptyProject.Entities
 {
     public class Client
     {
+        
         public int ClientId { get; set; }
 
         ///<summary>
@@ -25,62 +26,66 @@ namespace EmptyProject.Areas.EmptyProject.Entities
         ///<summary>
         /// For auditing purposes
         ///</summary>
+        [Library.ModelAttributeValidator.DateTime("DateTimeCreation", "DateTimeCreation", false, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime DateTimeCreation { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
+        [Library.ModelAttributeValidator.DateTime("DateTimeLastModification", "DateTimeLastModification", false, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime DateTimeLastModification { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
+        [Library.ModelAttributeValidator.Key("UserCreationId", "UserCreationId")]
         public int UserCreationId { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
+        [Library.ModelAttributeValidator.Key("UserLastModificationId", "UserLastModificationId")]
         public int UserLastModificationId { get; set; }
 
         public bool Boolean { get; set; }
 
-        [Library.ModelAttributeValidator.DateTime("Fecha y hora", "DateTime", true, "1753-01-01T00:00", "9998-12-30T23:59")]
+        [Library.ModelAttributeValidator.DateTime("DateTime", "DateTime", false, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime DateTime { get; set; }
 
-        [Library.ModelAttributeValidator.Decimal("Decimal", "Decimal", true, 10D, 999999999D)]
+        [Library.ModelAttributeValidator.Decimal("Decimal", "Decimal", false, 0D, 999999999D)]
         public decimal Decimal { get; set; }
 
-        [Library.ModelAttributeValidator.Int("Integer", "Integer", true, 10, 800)]
+        [Library.ModelAttributeValidator.Int("Integer", "Integer", true, 0, 999999999)]
         public int Integer { get; set; }
 
-        [Library.ModelAttributeValidator.Required("TextArea", "TextArea")]
+        
         public string? TextArea { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextBasic", "TextBasic", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextBasic", "TextBasic", false, 1, 8000, "")]
         public string? TextBasic { get; set; }
 
-        [Library.ModelAttributeValidator.Required("TextEditor", "TextEditor")]
+        
         public string? TextEditor { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextEmail", "TextEmail", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextEmail", "TextEmail", false, 1, 8000, "")]
         public string? TextEmail { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextFile", "TextFile", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextFile", "TextFile", false, 1, 8000, "")]
         public string? TextFile { get; set; }
 
-        [Library.ModelAttributeValidator.HexColour("TextHexColour", "TextHexColour", true, "000000", "FFFFFF")]
+        [Library.ModelAttributeValidator.HexColour("TextHexColour", "TextHexColour", false, "000000", "FFFFFF")]
         public string? TextHexColour { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextPassword", "TextPassword", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextPassword", "TextPassword", false, 1, 8000, "")]
         public string? TextPassword { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextPhoneNumber", "TextPhoneNumber", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextPhoneNumber", "TextPhoneNumber", false, 1, 8000, "")]
         public string? TextPhoneNumber { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextTag", "TextTag", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextTag", "TextTag", false, 1, 8000, "")]
         public string? TextTag { get; set; }
 
-        [Library.ModelAttributeValidator.String("TextURL", "TextURL", true, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("TextURL", "TextURL", false, 1, 8000, "")]
         public string? TextURL { get; set; }
 
         [Library.ModelAttributeValidator.Key("ClientStatusId", "ClientStatusId")]
@@ -216,6 +221,12 @@ namespace EmptyProject.Areas.EmptyProject.Entities
         <div style=""height: 12px; line-height: 12px; font-size: 10px;"">&nbsp;</div>
         <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px;"">
             <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px;"">{ClientStatusId}</span>
+        </font>
+        <div style=""height: 40px; line-height: 40px; font-size: 38px;"">&nbsp;</div>
+    </td><td align=""left"" valign=""top"">
+        <div style=""height: 12px; line-height: 12px; font-size: 10px;"">&nbsp;</div>
+        <font face=""'Source Sans Pro', sans-serif"" color=""#000000"" style=""font-size: 20px; line-height: 28px;"">
+            <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #000000; font-size: 20px; line-height: 28px;"">{TimeSpan}</span>
         </font>
         <div style=""height: 40px; line-height: 40px; font-size: 38px;"">&nbsp;</div>
     </td>
