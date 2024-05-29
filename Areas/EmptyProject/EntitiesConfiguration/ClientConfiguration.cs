@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using EmptyProject.Areas.EmptyProject.Entities;
 
-
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
  * 
@@ -131,6 +130,8 @@ namespace EmptyProject.Areas.EmptyProject.EntitiesConfiguration
                 entity.Property(e => e.TimeSpan)
                     .HasColumnType("time(7)")
                     .IsRequired(true);
+
+                
             }
             catch (Exception) { throw; }
         }
