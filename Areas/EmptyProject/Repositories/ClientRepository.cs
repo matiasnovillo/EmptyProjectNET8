@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.Areas.EmptyProject.Entities;
 using EmptyProject.Areas.EmptyProject.DTOs;
 using EmptyProject.Areas.EmptyProject.Interfaces;
-using System.Data;
 using EmptyProject.DatabaseContexts;
+using System.Text.RegularExpressions;
+using System.Data;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -169,7 +169,7 @@ namespace EmptyProject.Areas.EmptyProject.Repositories
         }
         #endregion
 
-        #region Other methods
+        #region Methods for DataTable
         public DataTable GetAllByClientIdInDataTable(List<int> lstClientChecked)
         {
             try
@@ -197,6 +197,7 @@ namespace EmptyProject.Areas.EmptyProject.Repositories
                 DataTable.Columns.Add("TextURL", typeof(string));
                 DataTable.Columns.Add("ClientStatusId", typeof(string));
                 DataTable.Columns.Add("TimeSpan", typeof(string));
+                
 
                 foreach (int ClientId in lstClientChecked)
                 {
@@ -227,9 +228,10 @@ namespace EmptyProject.Areas.EmptyProject.Repositories
                         client.TextURL,
                         client.ClientStatusId,
                         client.TimeSpan
+                        
                         );
                     }
-                }
+                }                
 
                 return DataTable;
             }
@@ -264,6 +266,7 @@ namespace EmptyProject.Areas.EmptyProject.Repositories
                 DataTable.Columns.Add("TextTag", typeof(string));
                 DataTable.Columns.Add("TextURL", typeof(string));
                 DataTable.Columns.Add("ClientStatusId", typeof(string));
+                DataTable.Columns.Add("TimeSpan", typeof(string));
                 
 
                 foreach (Client client in lstClient)
@@ -289,7 +292,8 @@ namespace EmptyProject.Areas.EmptyProject.Repositories
                         client.TextPhoneNumber,
                         client.TextTag,
                         client.TextURL,
-                        client.ClientStatusId
+                        client.ClientStatusId,
+                        client.TimeSpan
                         
                         );
                 }
