@@ -42,7 +42,7 @@ namespace EmptyProject.Areas.EmptyProject.Interfaces
         bool DeleteByClientId(int client);
         #endregion
 
-        #region Other methods
+        #region Methods for DataTable
         DataTable GetAllByClientIdInDataTable(List<int> lstClientChecked);
 
         DataTable GetAllInDataTable();

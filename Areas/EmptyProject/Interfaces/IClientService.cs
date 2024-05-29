@@ -1,5 +1,4 @@
 using EmptyProject.Areas.EmptyProject.Entities;
-using EmptyProject.Areas.EmptyProject.DTOs;
 using System.Data;
 
 /*
