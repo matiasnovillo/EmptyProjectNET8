@@ -20,7 +20,7 @@
         </div>
         <div class="card mx-3 mx-md-4 mt-n6">
             <!--CARD HEADER-->
-            <div class="card-header mb-0 pb-0 bg-white">
+            <div class="card-header mb-0 pb-0">
                 <h3 class="mb-3">
                     Buscar client
                 </h3>
@@ -35,7 +35,7 @@
                 <hr />
             </div>
             <!--CARD BODY-->
-            <div class="card-body px-0">
+            <div class="card-body px-3">
                 @((MarkupString)Message)
                 <div class="row">
                     <div class="col-12 col-md-4">
@@ -607,29 +607,7 @@
 
                             <div class="card shadow-lg mt-2">
                                 <div class="card-body">
-                                    <p><b>ClientId: </b>@paginatedClientDTO.lstClient[i]?.ClientId</p>
-                                        @if (@paginatedClientDTO.lstClient[i]!.Active)
-                                        {
-                                            <p>
-                                                <b>Active: </b>
-                                                <span class="badge rounded-pill bg-success">
-                                                    Sí
-                                                </span>
-                                            </p>
-                                        }
-                                        else
-                                        {
-                                            <p>
-                                                <b>Active: </b>
-                                                <span class="badge rounded-pill bg-danger">
-                                                    No
-                                                </span>
-                                            </p>
-                                        }
-                                        <p><b>DateTimeCreation: </b>@paginatedClientDTO.lstClient[i]?.DateTimeCreation</p>
-                                        <p><b>DateTimeLastModification: </b>@paginatedClientDTO.lstClient[i]?.DateTimeLastModification</p>
-                                        <p><b>UserCreationId: </b>@paginatedClientDTO.lstClient[i]?.UserCreationId</p>
-                                        <p><b>UserLastModificationId: </b>@paginatedClientDTO.lstClient[i]?.UserLastModificationId</p>
+                                    <p><b>ID: </b>@paginatedClientDTO.lstClient[i]?.ClientId</p>
                                         @if (@paginatedClientDTO.lstClient[i]!.Boolean)
                                         {
                                             <p>
