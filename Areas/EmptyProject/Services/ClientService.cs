@@ -1,4 +1,4 @@
-﻿using ClosedXML.Excel;
+using ClosedXML.Excel;
 using IronPdf;
 using CsvHelper;
 using EmptyProject.Areas.EmptyProject.Entities;
@@ -11,124 +11,177 @@ namespace EmptyProject.Areas.EmptyProject.Services
     public class ClientService : IClientService
     {
         #region Exportations
-        public void ExportToExcel(string Path, DataTable dtClient)
+        public void ExportToExcel(string path, DataTable dtClient)
         {
             using var Book = new XLWorkbook();
 
-            DataTable dtClientOriginal = new DataTable();
-            dtClientOriginal.TableName = "Client";
+            DataTable dtClientOriginal = new()
+            {
+                TableName = "Client"
+            };
 
             //We define another DataTable dtClientCopy to avoid issue related to DateTime conversion
-            DataTable dtClientCopy = new DataTable();
-            dtClientCopy.TableName = "Client";
+            DataTable dtClientCopy = new()
+            {
+                TableName = "Client"
+            };
 
             #region Define columns for dtClientCopy
-            DataColumn dtColumnClientIdFordtClientCopy = new DataColumn();
-            dtColumnClientIdFordtClientCopy.DataType = typeof(string);
-            dtColumnClientIdFordtClientCopy.ColumnName = "ClientId";
+            DataColumn dtColumnClientIdFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "ClientId"
+            };
             dtClientCopy.Columns.Add(dtColumnClientIdFordtClientCopy);
 
-            DataColumn dtColumnActiveFordtClientCopy = new DataColumn();
-            dtColumnActiveFordtClientCopy.DataType = typeof(string);
-            dtColumnActiveFordtClientCopy.ColumnName = "Active";
+            DataColumn dtColumnActiveFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "Active"
+            };
             dtClientCopy.Columns.Add(dtColumnActiveFordtClientCopy);
 
-            DataColumn dtColumnDateTimeCreationFordtClientCopy = new DataColumn();
-            dtColumnDateTimeCreationFordtClientCopy.DataType = typeof(string);
-            dtColumnDateTimeCreationFordtClientCopy.ColumnName = "DateTimeCreation";
+            DataColumn dtColumnDateTimeCreationFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "DateTimeCreation"
+            };
             dtClientCopy.Columns.Add(dtColumnDateTimeCreationFordtClientCopy);
 
-            DataColumn dtColumnDateTimeLastModificationFordtClientCopy = new DataColumn();
-            dtColumnDateTimeLastModificationFordtClientCopy.DataType = typeof(string);
-            dtColumnDateTimeLastModificationFordtClientCopy.ColumnName = "DateTimeLastModification";
+            DataColumn dtColumnDateTimeLastModificationFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "DateTimeLastModification"
+            };
             dtClientCopy.Columns.Add(dtColumnDateTimeLastModificationFordtClientCopy);
 
-            DataColumn dtColumnUserCreationIdFordtClientCopy = new DataColumn();
-            dtColumnUserCreationIdFordtClientCopy.DataType = typeof(string);
-            dtColumnUserCreationIdFordtClientCopy.ColumnName = "UserCreationId";
+            DataColumn dtColumnUserCreationIdFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "UserCreationId"
+            };
             dtClientCopy.Columns.Add(dtColumnUserCreationIdFordtClientCopy);
 
-            DataColumn dtColumnUserLastModificationIdFordtClientCopy = new DataColumn();
-            dtColumnUserLastModificationIdFordtClientCopy.DataType = typeof(string);
-            dtColumnUserLastModificationIdFordtClientCopy.ColumnName = "UserLastModificationId";
+            DataColumn dtColumnUserLastModificationIdFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "UserLastModificationId"
+            };
             dtClientCopy.Columns.Add(dtColumnUserLastModificationIdFordtClientCopy);
 
-            DataColumn dtColumnBooleanFordtClientCopy = new DataColumn();
-            dtColumnBooleanFordtClientCopy.DataType = typeof(string);
-            dtColumnBooleanFordtClientCopy.ColumnName = "Boolean";
+            DataColumn dtColumnBooleanFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "Boolean"
+            };
             dtClientCopy.Columns.Add(dtColumnBooleanFordtClientCopy);
 
-            DataColumn dtColumnDateTimeFordtClientCopy = new DataColumn();
-            dtColumnDateTimeFordtClientCopy.DataType = typeof(string);
-            dtColumnDateTimeFordtClientCopy.ColumnName = "DateTime";
+            DataColumn dtColumnDateTimeFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "DateTime"
+            };
             dtClientCopy.Columns.Add(dtColumnDateTimeFordtClientCopy);
 
-            DataColumn dtColumnDecimalFordtClientCopy = new DataColumn();
-            dtColumnDecimalFordtClientCopy.DataType = typeof(string);
-            dtColumnDecimalFordtClientCopy.ColumnName = "Decimal";
+            DataColumn dtColumnDecimalFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "Decimal"
+            };
             dtClientCopy.Columns.Add(dtColumnDecimalFordtClientCopy);
 
-            DataColumn dtColumnIntegerFordtClientCopy = new DataColumn();
-            dtColumnIntegerFordtClientCopy.DataType = typeof(string);
-            dtColumnIntegerFordtClientCopy.ColumnName = "Integer";
+            DataColumn dtColumnIntegerFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "Integer"
+            };
             dtClientCopy.Columns.Add(dtColumnIntegerFordtClientCopy);
 
-            DataColumn dtColumnTextAreaFordtClientCopy = new DataColumn();
-            dtColumnTextAreaFordtClientCopy.DataType = typeof(string);
-            dtColumnTextAreaFordtClientCopy.ColumnName = "TextArea";
+            DataColumn dtColumnTextAreaFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "TextArea"
+            };
             dtClientCopy.Columns.Add(dtColumnTextAreaFordtClientCopy);
 
-            DataColumn dtColumnTextBasicFordtClientCopy = new DataColumn();
-            dtColumnTextBasicFordtClientCopy.DataType = typeof(string);
-            dtColumnTextBasicFordtClientCopy.ColumnName = "TextBasic";
+            DataColumn dtColumnTextBasicFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "TextBasic"
+            };
             dtClientCopy.Columns.Add(dtColumnTextBasicFordtClientCopy);
 
-            DataColumn dtColumnTextEditorFordtClientCopy = new DataColumn();
-            dtColumnTextEditorFordtClientCopy.DataType = typeof(string);
-            dtColumnTextEditorFordtClientCopy.ColumnName = "TextEditor";
+            DataColumn dtColumnTextEditorFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "TextEditor"
+            };
             dtClientCopy.Columns.Add(dtColumnTextEditorFordtClientCopy);
 
-            DataColumn dtColumnTextEmailFordtClientCopy = new DataColumn();
-            dtColumnTextEmailFordtClientCopy.DataType = typeof(string);
-            dtColumnTextEmailFordtClientCopy.ColumnName = "TextEmail";
+            DataColumn dtColumnTextEmailFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "TextEmail"
+            };
             dtClientCopy.Columns.Add(dtColumnTextEmailFordtClientCopy);
 
-            DataColumn dtColumnTextFileFordtClientCopy = new DataColumn();
-            dtColumnTextFileFordtClientCopy.DataType = typeof(string);
-            dtColumnTextFileFordtClientCopy.ColumnName = "TextFile";
+            DataColumn dtColumnTextFileFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "TextFile"
+            };
             dtClientCopy.Columns.Add(dtColumnTextFileFordtClientCopy);
 
-            DataColumn dtColumnTextHexColourFordtClientCopy = new DataColumn();
-            dtColumnTextHexColourFordtClientCopy.DataType = typeof(string);
-            dtColumnTextHexColourFordtClientCopy.ColumnName = "TextHexColour";
+            DataColumn dtColumnTextHexColourFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "TextHexColour"
+            };
             dtClientCopy.Columns.Add(dtColumnTextHexColourFordtClientCopy);
 
-            DataColumn dtColumnTextPasswordFordtClientCopy = new DataColumn();
-            dtColumnTextPasswordFordtClientCopy.DataType = typeof(string);
-            dtColumnTextPasswordFordtClientCopy.ColumnName = "TextPassword";
+            DataColumn dtColumnTextPasswordFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "TextPassword"
+            };
             dtClientCopy.Columns.Add(dtColumnTextPasswordFordtClientCopy);
 
-            DataColumn dtColumnTextPhoneNumberFordtClientCopy = new DataColumn();
-            dtColumnTextPhoneNumberFordtClientCopy.DataType = typeof(string);
-            dtColumnTextPhoneNumberFordtClientCopy.ColumnName = "TextPhoneNumber";
+            DataColumn dtColumnTextPhoneNumberFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "TextPhoneNumber"
+            };
             dtClientCopy.Columns.Add(dtColumnTextPhoneNumberFordtClientCopy);
 
-            DataColumn dtColumnTextTagFordtClientCopy = new DataColumn();
-            dtColumnTextTagFordtClientCopy.DataType = typeof(string);
-            dtColumnTextTagFordtClientCopy.ColumnName = "TextTag";
+            DataColumn dtColumnTextTagFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "TextTag"
+            };
             dtClientCopy.Columns.Add(dtColumnTextTagFordtClientCopy);
 
-            DataColumn dtColumnTextURLFordtClientCopy = new DataColumn();
-            dtColumnTextURLFordtClientCopy.DataType = typeof(string);
-            dtColumnTextURLFordtClientCopy.ColumnName = "TextURL";
+            DataColumn dtColumnTextURLFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "TextURL"
+            };
             dtClientCopy.Columns.Add(dtColumnTextURLFordtClientCopy);
 
-            DataColumn dtColumnClientStatusIdFordtClientCopy = new DataColumn();
-            dtColumnClientStatusIdFordtClientCopy.DataType = typeof(string);
-            dtColumnClientStatusIdFordtClientCopy.ColumnName = "ClientStatusId";
+            DataColumn dtColumnClientStatusIdFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "ClientStatusId"
+            };
             dtClientCopy.Columns.Add(dtColumnClientStatusIdFordtClientCopy);
 
+            DataColumn dtColumnTimeSpanFordtClientCopy = new()
+            {
+                DataType = typeof(string),
+                ColumnName = "TimeSpan"
+            };
+            dtClientCopy.Columns.Add(dtColumnTimeSpanFordtClientCopy);
 
+            
             #endregion
 
             dtClientOriginal = dtClient;
@@ -142,19 +195,19 @@ namespace EmptyProject.Areas.EmptyProject.Services
 
             Sheet.ColumnsUsed().AdjustToContents();
 
-            Book.SaveAs(Path);
+            Book.SaveAs(path);
         }
 
-        public void ExportToCSV(string Path, List<Client> lstClient)
+        public void ExportToCSV(string path, List<Client> lstClient)
         {
-            using var Writer = new StreamWriter(Path);
+            using var Writer = new StreamWriter(path);
 
             using var CsvWriter = new CsvWriter(Writer, CultureInfo.InvariantCulture);
 
             CsvWriter.WriteRecords(lstClient);
         }
 
-        public void ExportToPDF(string Path, List<Client> lstClient)
+        public void ExportToPDF(string path, List<Client> lstClient)
         {
             string ProjectName = "EmptyProject";
             string Table = "Client";
@@ -297,7 +350,7 @@ namespace EmptyProject.Areas.EmptyProject.Services
 <font face=""'Source Sans Pro', sans-serif"" color=""#868686"" style=""font-size: 17px; line-height: 20px;"">
     <span style=""font-family: 'Source Sans Pro', Arial, Tahoma, Geneva, sans-serif; color: #868686; font-size: 17px; line-height: 20px;"">Printed on: {DateTime.Now}</span>
 </font>
-").SaveAs(Path);
+").SaveAs(path);
         }
         #endregion
 
@@ -315,7 +368,7 @@ namespace EmptyProject.Areas.EmptyProject.Services
 
                 if (rowNumber > 1)
                 {
-                    bool Boolean= Convert.ToBoolean(row.Cell(7).GetString());
+                    bool Boolean = Convert.ToBoolean(row.Cell(7).GetString());
                     DateTime DateTime = Convert.ToDateTime(row.Cell(8).GetString());
                     decimal Decimal = Convert.ToDecimal(row.Cell(9).GetString());
                     int Integer = Convert.ToInt32(row.Cell(10).GetString());
@@ -330,6 +383,8 @@ namespace EmptyProject.Areas.EmptyProject.Services
                     string TextTag = row.Cell(19).GetString();
                     string TextURL = row.Cell(20).GetString();
                     int ClientStatusId = Convert.ToInt32(row.Cell(21).GetString());
+                    TimeSpan TimeSpan = TimeSpan.Parse(row.Cell(22).GetString());
+                    
 
                     Client Client = new()
                     {
@@ -353,7 +408,9 @@ namespace EmptyProject.Areas.EmptyProject.Services
                         TextPhoneNumber = TextPhoneNumber,
                         TextTag = TextTag,
                         TextURL = TextURL,
-                        ClientStatusId = ClientStatusId
+                        ClientStatusId = ClientStatusId,
+                        TimeSpan = TimeSpan,
+                        
                     };
 
                     lstClient.Add(Client);
