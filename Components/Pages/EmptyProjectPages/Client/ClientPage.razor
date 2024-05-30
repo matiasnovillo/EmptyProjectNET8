@@ -15,7 +15,7 @@
     <EmptyProject.Components.Layout.NavBarDashboard Pagina="Client"></EmptyProject.Components.Layout.NavBarDashboard>
     <div class="container-fluid px-2 px-md-4">
         <div class="page-header min-height-300 border-radius-xl mt-4"
-             style="background-image: url('img/BasicCore/Landscape.jpg');">
+        style="background-image: url('img/BasicCore/Landscape.jpg');">
             <span class="mask bg-gradient-dark opacity-6"></span>
         </div>
         <div class="card card-body mx-3 mx-md-4 mt-n6">
@@ -56,10 +56,10 @@
                                 <b>
                                     Búsqueda estricta o laxa
                                     <button type="button" 
-                                        class="btn btn-outline-dark" 
-                                        data-bs-toggle-tooltip="tooltip" 
-                                        data-bs-placement="right" 
-                                        title="Una búsqueda laxa es más flexible, permite errores y devuelve resultados más amplios, algo que una búsqueda estricta no permite">
+                                    class="btn btn-outline-dark" 
+                                    data-bs-toggle-tooltip="tooltip" 
+                                    data-bs-placement="right" 
+                                    title="Una búsqueda laxa es más flexible, permite errores y devuelve resultados más amplios, algo que una búsqueda estricta no permite">
                                         <i class="fas fa-circle-info"></i>
                                     </button>
                                 </b>
@@ -67,12 +67,12 @@
                             
                             <div class="form-check form-switch">
                                 <input class="form-check-input"
-                                       type="checkbox"
-                                       name="strict-search"
-                                       @bind="CheckStrict"
-                                       id="strict-search" />
+                                type="checkbox"
+                                name="strict-search"
+                                @bind="CheckStrict"
+                                id="strict-search" />
                                 <label class="form-check-label"
-                                       for="strict-search">
+                                for="strict-search">
                                     Búsqueda estricta
                                 </label>
                             </div>
@@ -86,14 +86,14 @@
                         </h6>
                         <div class="btn-group mb-3" role="group" aria-label="btngroup">
                             <button type="button"
-                                    class="btn btn-dark"
-                                    onclick=@(() => ChangeView("table"))>
+                            class="btn btn-dark"
+                            onclick=@(() => ChangeView("table"))>
                                 <i class="fas fa-table"></i>
                                 Tabla
                             </button>
                             <button type="button"
-                                    class="btn btn-dark"
-                                    onclick=@(() => ChangeView("list"))>
+                            class="btn btn-dark"
+                            onclick=@(() => ChangeView("list"))>
                                 <i class="fas fa-th-list"></i>
                                 Lista
                             </button>
@@ -107,30 +107,30 @@
                         </h6>
                         <div class="dropdown">
                             <button class="btn btn-dark dropdown-toggle"
-                                    type="button"
-                                    id="dropdown-registers-per-page"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
+                            type="button"
+                            id="dropdown-registers-per-page"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
                                 Ver @RegistersPerPage
                             </button>
                             <ul class="dropdown-menu px-2 py-3" aria-labelledby="dropdown-registers-per-page">
                                 <li>
                                     <a class="dropdown-item border-radius-md"
-                                       href="javascript:;"
-                                       @onclick="(() => ChangeRegistersPerPage(50))">
+                                    href="javascript:;"
+                                    @onclick="(() => ChangeRegistersPerPage(50))">
                                         50
                                     </a>
                                 </li>
                                 <li>
                                     <button class="dropdown-item border-radius-md"
-                                            @onclick="(() => ChangeRegistersPerPage(500))">
+                                    @onclick="(() => ChangeRegistersPerPage(500))">
                                         500
                                     </button>
                                 </li>
                                 <li>
                                     <a class="dropdown-item border-radius-md"
-                                       href="javascript:;"
-                                       @onclick="(() => ChangeRegistersPerPage(5000))">
+                                    href="javascript:;"
+                                    @onclick="(() => ChangeRegistersPerPage(5000))">
                                         5.000
                                     </a>
                                 </li>
@@ -158,7 +158,8 @@
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="modal-import-title">
+                                                <h5 class="modal-title" 
+                                                id="modal-import-title">
                                                     Importar
                                                 </h5>
                                             </div>
@@ -169,9 +170,9 @@
                                                             Archivo a importar
                                                         </label>
                                                         <InputFile type="file"
-                                                                   id="importingfile"
-                                                                   class="form-control"
-                                                                   OnChange="@UploadImportingFile" />
+                                                        id="importingfile"
+                                                        class="form-control"
+                                                        OnChange="@UploadImportingFile" />
                                                         @{
                                                             var ProgressCssForImportingFile = "progress" + (DisplayProgressForImportingFile ? "" : "d-none");
                                                             var ProgressWidthStyleForImportingFile = ProgressPercentForImportingFile + "%";
@@ -179,10 +180,10 @@
                                                         <!--Progress bar-->
                                                         <div class="@ProgressCssForImportingFile">
                                                             <div class="progress-bar progress-bar-striped progress-bar-animated @ProgressBarColourForImportingFile"
-                                                                 role="progressbar" style="width:@ProgressWidthStyleForImportingFile"
-                                                                 area-valuenow="@ProgressPercentForImportingFile"
-                                                                 aria-valuemin="0"
-                                                                 aria-valuemax="100">
+                                                            role="progressbar" style="width:@ProgressWidthStyleForImportingFile"
+                                                            area-valuenow="@ProgressPercentForImportingFile"
+                                                            aria-valuemin="0"
+                                                            aria-valuemax="100">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -203,7 +204,11 @@
                                                 @((MarkupString)ImportingMessage)
                                             </div>
                                             <div class="modal-footer justify-content-end">
-                                                <button type="button" class="btn btn-outline-dark mb-0" data-bs-dismiss="modal">Cerrar</button>
+                                                <button type="button" 
+                                                class="btn btn-outline-dark mb-0" 
+                                                data-bs-dismiss="modal">
+                                                    Cerrar
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -213,7 +218,7 @@
                                 class="btn btn-outline-dark mx-2"
                                 data-bs-toggle="modal"
                                 data-bs-target="#modal-export"
-                                        data-bs-placement="bottom"
+                                data-bs-placement="bottom"
                                 data-bs-toggle-tooltip="tooltip"
                                 title="Exportar">
                                     <i class="fas fa-file-export fa-xl"></i>
@@ -226,7 +231,8 @@
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="modal-export-title">
+                                                <h5 class="modal-title" 
+                                                id="modal-export-title">
                                                     Exportar
                                                 </h5>
                                             </div>
@@ -238,12 +244,12 @@
                                                     <div class="form-group mb-3">
                                                         <div class="custom-control custom-radio">
                                                             <input name="export" 
-                                                                type="radio" 
-                                                                class="custom-control-input" 
-                                                                checked
-                                                                id="export-just"
-                                                                value="just"
-                                                                @onchange="@(() => ExportationType = "just")">
+                                                            type="radio" 
+                                                            class="custom-control-input" 
+                                                            checked
+                                                            id="export-just"
+                                                            value="just"
+                                                            @onchange="@(() => ExportationType = "just")">
                                                             <label class="custom-control-label" 
                                                             for="export-just">
                                                                 Sólo los registros seleccionados
@@ -251,11 +257,11 @@
                                                         </div>
                                                         <div class="custom-control custom-radio">
                                                             <input name="export"
-                                                                type="radio" 
-                                                                class="custom-control-input"
-                                                                id="export-all"
-                                                                value="all"
-                                                                @onchange="@(() => ExportationType = "all")">
+                                                            type="radio" 
+                                                            class="custom-control-input"
+                                                            id="export-all"
+                                                            value="all"
+                                                            @onchange="@(() => ExportationType = "all")">
                                                             <label class="custom-control-label" 
                                                             for="export-all">
                                                                 Todo
@@ -268,16 +274,20 @@
                                                     <!-- Export as PDF file button -->
                                                     <div class="d-flex justify-content-start">
                                                         <button class="btn btn-icon btn-dark"
-                                                                type="button"
-                                                                @onclick="ConvertToPDF">
-                                                            <span class="btn-inner--icon"><i class="fas fa-file-pdf"></i></span>
-                                                            <span class="btn-inner--text">Exportar como PDF</span>
+                                                        type="button"
+                                                        @onclick="ExportToPDF">
+                                                            <span class="btn-inner--icon">
+                                                                <i class="fas fa-file-pdf"></i>
+                                                            </span>
+                                                            <span class="btn-inner--text">
+                                                                Exportar como PDF
+                                                            </span>
                                                         </button>
                                                         @if (DownloadPathForPDF != "")
                                                         {
                                                             <a class="btn btn-icon btn-success mx-3"
-                                                               download
-                                                               href="@DownloadPathForPDF">
+                                                            download
+                                                            href="@DownloadPathForPDF">
                                                                 Descargar
                                                             </a>
                                                         }
@@ -286,9 +296,13 @@
                                                     <div class="d-flex justify-content-start">
                                                         <button class="btn btn-icon btn-dark"
                                                         type="button"
-                                                        @onclick="ConvertToExcel">
-                                                            <span class="btn-inner--icon"><i class="fas fa-file-excel"></i></span>
-                                                            <span class="btn-inner--text">Exportar como Excel</span>
+                                                        @onclick="ExportToExcel">
+                                                            <span class="btn-inner--icon">
+                                                                <i class="fas fa-file-excel"></i>
+                                                            </span>
+                                                            <span class="btn-inner--text">
+                                                                Exportar como Excel
+                                                            </span>
                                                         </button>
                                                         @if (DownloadPathForExcel != "")
                                                         {
@@ -302,16 +316,20 @@
                                                     <!-- Export as CSV file button -->
                                                     <div class="d-flex justify-content-start">
                                                         <button class="btn btn-icon btn-dark"
-                                                                type="button"
-                                                                @onclick="ConvertToCSV">
-                                                            <span class="btn-inner--icon"><i class="fas fa-file-csv"></i></span>
-                                                            <span class="btn-inner--text">Exportar como CSV</span>
+                                                        type="button"
+                                                        @onclick="ExportToCSV">
+                                                            <span class="btn-inner--icon">
+                                                                <i class="fas fa-file-csv"></i>
+                                                            </span>
+                                                            <span class="btn-inner--text">
+                                                                Exportar como CSV
+                                                            </span>
                                                         </button>
                                                         @if (DownloadPathForCSV != "")
                                                         {
                                                             <a class="btn btn-icon btn-success mx-3"
-                                                               download
-                                                               href="@DownloadPathForCSV">
+                                                            download
+                                                            href="@DownloadPathForCSV">
                                                                 Descargar
                                                             </a>
                                                         }
@@ -319,7 +337,11 @@
                                                 </form>
                                             </div>
                                             <div class="modal-footer justify-content-end">
-                                                <button type="button" class="btn btn-outline-dark mb-0" data-bs-dismiss="modal">Cerrar</button>
+                                                <button type="button" 
+                                                class="btn btn-outline-dark mb-0" 
+                                                data-bs-dismiss="modal">
+                                                    Cerrar
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -330,20 +352,21 @@
                                 class="btn btn-outline-dark mx-2"
                                 data-bs-toggle="modal"
                                 data-bs-target="#modal-massive-actions"
-                                        data-bs-placement="bottom"
+                                data-bs-placement="bottom"
                                 data-bs-toggle-tooltip="tooltip"
                                 title="Acciones masivas">
                                     <i class="fas fa-rocket fa-xl"></i>
                                 </button>
                                 <div class="modal fade"
-                                     id="modal-massive-actions"
-                                     tabindex="-1"
-                                     aria-labelledby="modal-massive-actions-title"
-                                     aria-hidden="true">
+                                id="modal-massive-actions"
+                                tabindex="-1"
+                                aria-labelledby="modal-massive-actions-title"
+                                aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="modal-massive-actions-title">
+                                                <h5 class="modal-title"
+                                                id="modal-massive-actions-title">
                                                     Acciones masivas
                                                 </h5>
                                             </div>
@@ -355,24 +378,24 @@
                                                     <div class="form-group mb-3">
                                                         <div class="custom-control custom-radio">
                                                             <input name="massiveactions"
-                                                                   type="radio"
-                                                                   class="custom-control-input"
-                                                                   checked
-                                                                   id="massiveactions-just"
-                                                                   @onchange="@(() => MassiveActionType = "just")">
+                                                            type="radio"
+                                                            class="custom-control-input"
+                                                            checked
+                                                            id="massiveactions-just"
+                                                            @onchange="@(() => MassiveActionType = "just")">
                                                             <label class="custom-control-label"
-                                                                   for="massiveactions-just">
+                                                            for="massiveactions-just">
                                                                 Sólo los registros seleccionados
                                                             </label>
                                                         </div>
                                                         <div class="custom-control custom-radio">
                                                             <input name="massiveactions"
-                                                                   type="radio"
-                                                                   class="custom-control-input"
-                                                                   id="massiveactions-all"
-                                                                   @onchange="@(() => MassiveActionType = "all")">
+                                                            type="radio"
+                                                            class="custom-control-input"
+                                                            id="massiveactions-all"
+                                                            @onchange="@(() => MassiveActionType = "all")">
                                                             <label class="custom-control-label"
-                                                                   for="massiveactions-all">
+                                                            for="massiveactions-all">
                                                                 Todo
                                                             </label>
                                                         </div>
@@ -383,26 +406,38 @@
                                                     <div class="form-group">
                                                         <!-- Copy button -->
                                                         <button class="btn btn-icon btn-dark"
-                                                            type="button"
-                                                            @onclick="Copy">
-                                                            <span class="btn-inner--icon"><i class="fas fa-copy"></i></span>
-                                                            <span class="btn-inner--text">Copiar</span>
+                                                        type="button"
+                                                        @onclick="Copy">
+                                                            <span class="btn-inner--icon">
+                                                                <i class="fas fa-copy"></i>
+                                                            </span>
+                                                            <span class="btn-inner--text">
+                                                                Copiar
+                                                            </span>
                                                         </button>
                                                     </div>
                                                     <div class="form-group">
                                                         <!-- Delete button -->
                                                         <button class="btn btn-icon btn-dark"
-                                                                type="button"
-                                                                @onclick="Delete">
-                                                            <span class="btn-inner--icon"><i class="fas fa-trash"></i></span>
-                                                            <span class="btn-inner--text">Eliminar</span>
+                                                        type="button"
+                                                        @onclick="Delete">
+                                                            <span class="btn-inner--icon">
+                                                                <i class="fas fa-trash"></i>
+                                                            </span>
+                                                            <span class="btn-inner--text">
+                                                                Eliminar
+                                                            </span>
                                                         </button>
                                                     </div>
                                                 </form>
                                                 @((MarkupString)MassiveActionMessage)
                                             </div>
                                             <div class="modal-footer justify-content-end">
-                                                <button type="button" class="btn btn-outline-dark mb-0" data-bs-dismiss="modal">Cerrar</button>
+                                                <button type="button" 
+                                                class="btn btn-outline-dark mb-0" 
+                                                data-bs-dismiss="modal">
+                                                    Cerrar
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -845,8 +880,7 @@
                                                     1,
                                                     RegistersPerPage);
 
-                    TotalRows = clientRepository
-                                    .Count();
+                    TotalRows = paginatedClientDTO.TotalItems;
 
                     ChosenView = "list";
                 }
@@ -922,8 +956,7 @@
                                                     1,
                                                     RegistersPerPage);
 
-            TotalRows = clientRepository
-                            .Count();
+            TotalRows = paginatedClientDTO.TotalItems;
 
             ChosenView = "list";
 
@@ -1055,8 +1088,7 @@
                                             1,
                                             RegistersPerPage);
 
-            TotalRows = clientRepository
-                            .Count();
+            TotalRows = paginatedClientDTO.TotalItems;
 
             //Re-render the page
             await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
@@ -1104,8 +1136,7 @@
                                                 paginatedClientDTO.PageSize);
             }
 
-            TotalRows = clientRepository
-                                .Count();
+            TotalRows = paginatedClientDTO.TotalItems;
         }
         catch (Exception ex)
         {
@@ -1147,8 +1178,7 @@
                                                 pageIndex,
                                                 paginatedClientDTO.PageSize);
 
-            TotalRows = clientRepository
-                            .Count();
+            TotalRows = paginatedClientDTO.TotalItems;
         }
         catch (Exception ex)
         {
@@ -1193,8 +1223,7 @@
                                                 paginatedClientDTO.PageSize);
             }
 
-            TotalRows = clientRepository
-                                .Count();
+            TotalRows = paginatedClientDTO.TotalItems;
         }
         catch (Exception ex)
         {
@@ -1246,8 +1275,7 @@
                                             1,
                                             RegistersPerPage);
 
-            TotalRows = clientRepository
-                                .Count();
+            TotalRows = paginatedClientDTO.TotalItems;
 
             TextToSearch = "";
 
@@ -1332,8 +1360,8 @@
     }
     #endregion
 
-    #region Conversions
-    private async Task ConvertToExcel()
+    #region Exportations
+    private async Task ExportToExcel()
     {
         try
         {
@@ -1388,7 +1416,7 @@
         }
     }
 
-    private async Task ConvertToCSV()
+    private async Task ExportToCSV()
     {
         try
         {
@@ -1442,7 +1470,7 @@
         }
     }
 
-    private async Task ConvertToPDF()
+    private async Task ExportToPDF()
     {
         try
         {
@@ -1529,8 +1557,7 @@
                                                     1,
                                                     RegistersPerPage);
 
-            TotalRows = clientRepository
-                            .Count();
+            TotalRows = paginatedClientDTO.TotalItems;
 
             ChosenView = "list";
 
@@ -1597,8 +1624,7 @@
                                                     1,
                                                     RegistersPerPage);
 
-            TotalRows = clientRepository
-                            .Count();
+            TotalRows = paginatedClientDTO.TotalItems;
 
             ChosenView = "list";
 
