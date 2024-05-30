@@ -18,7 +18,7 @@
         style="background-image: url('img/BasicCore/Landscape.jpg');">
             <span class="mask bg-gradient-dark opacity-6"></span>
         </div>
-        <div class="card card-body mx-3 mx-md-4 mt-n6">
+        <div class="card mx-3 mx-md-4 mt-n6">
             <!--CARD HEADER-->
             <div class="card-header mb-0 pb-0 bg-white">
                 <h3 class="mb-3">
@@ -460,28 +460,24 @@
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th>ClientId</th>
-                                    <th>Active</th>
-                                    <th>DateTimeCreation</th>
-                                    <th>DateTimeLastModification</th>
-                                    <th>UserCreationId</th>
-                                    <th>UserLastModificationId</th>
-                                    <th>Boolean</th>
-                                    <th>DateTime</th>
-                                    <th>Decimal</th>
-                                    <th>Integer</th>
-                                    <th>TextArea</th>
-                                    <th>TextBasic</th>
-                                    <th>TextEditor</th>
-                                    <th>TextEmail</th>
-                                    <th>TextFile</th>
-                                    <th>TextHexColour</th>
-                                    <th>TextPassword</th>
-                                    <th>TextPhoneNumber</th>
-                                    <th>TextTag</th>
-                                    <th>TextURL</th>
-                                    <th>ClientStatusId</th>
-                                    <th>TimeSpan</th>
+                                    <th>ID</th>
+                                <th>Boolean</th>
+                                <th>DateTime</th>
+                                <th>Decimal</th>
+                                <th>Integer</th>
+                                <th>TextArea</th>
+                                <th>TextBasic</th>
+                                <th>TextEditor</th>
+                                <th>TextEmail</th>
+                                <th>TextFile</th>
+                                <th>TextHexColour</th>
+                                <th>TextPassword</th>
+                                <th>TextPhoneNumber</th>
+                                <th>TextTag</th>
+                                <th>TextURL</th>
+                                <th>ClientStatusId</th>
+                                <th>TimeSpan</th>
+                                
 
                                     <th>Acciones</th>
                                 </tr>
@@ -499,80 +495,65 @@
                                                 @onchange="(() => CheckList(clientId))" />
                                             </td>
                                             <td>@paginatedClientDTO.lstClient[i]?.ClientId</td>
-                                            @if (@paginatedClientDTO.lstClient[i]!.Active)
-                                            {
-                                                <td>
-                                                    <span class="badge rounded-pill bg-success">Sí</span>
-                                                </td>
-                                            }
-                                            else
-                                            {
-                                                <td>
-                                                    <span class="badge rounded-pill bg-danger">No</span>
-                                                </td>
-                                            }
-                                            <td>@paginatedClientDTO.lstClient[i]?.DateTimeCreation</td>
-                                            <td>@paginatedClientDTO.lstClient[i]?.DateTimeLastModification</td>
-                                            <td>@paginatedClientDTO.lstClient[i]?.UserCreationId</td>
-                                            <td>@paginatedClientDTO.lstClient[i]?.UserLastModificationId</td>
-                                            @if (@paginatedClientDTO.lstClient[i]!.Boolean)
-                                            {
-                                                <td>
-                                                    <span class="badge rounded-pill bg-success">Sí</span>
-                                                </td>
-                                            }
-                                            else
-                                            {
-                                                <td>
-                                                    <span class="badge rounded-pill bg-danger">No</span>
-                                                </td>
-                                            }
-                                            <td>@paginatedClientDTO.lstClient[i]?.DateTime</td>
-                                            <td>@paginatedClientDTO.lstClient[i]?.Decimal</td>
-                                            <td>@paginatedClientDTO.lstClient[i]?.Integer</td>
-                                            <td>@paginatedClientDTO.lstClient[i]?.TextArea</td>
-                                            <td>@paginatedClientDTO.lstClient[i]?.TextBasic</td>
-                                            <td>@paginatedClientDTO.lstClient[i]?.TextEditor</td>
+                                        @if (@paginatedClientDTO.lstClient[i]!.Boolean)
+                                        {
                                             <td>
-                                                <a class="nav-link text-info"
-                                                   href="mailto:@paginatedClientDTO.lstClient[i]?.TextEmail">
-                                                    <b class="fas fa-envelope"></b>
-                                                    @paginatedClientDTO.lstClient[i]?.TextEmail
-                                                </a>
+                                                <span class="badge rounded-pill bg-success">Sí</span>
                                             </td>
+                                        }
+                                        else
+                                        {
                                             <td>
-                                                <a class="nav-link text-info"
-                                                   href="@paginatedClientDTO.lstClient[i]?.TextFile"
-                                                   download>
-                                                    <b class="fas fa-download"></b>
-                                                    @paginatedClientDTO.lstClient[i]?.TextFile
-                                                </a>
+                                                <span class="badge rounded-pill bg-danger">No</span>
                                             </td>
-                                            <td>
-                                                <span style="color:@paginatedClientDTO.lstClient[i]?.TextHexColour">
-                                                    <b class="fas fa-palette"></b>
-                                                    @paginatedClientDTO.lstClient[i]?.TextHexColour
-                                                </span>
-                                            </td>
-                                            <td>@paginatedClientDTO.lstClient[i]?.TextPassword</td>
-                                            <td>
-                                                <a class="nav-link text-info"
-                                                   href="tel:@paginatedClientDTO.lstClient[i]?.TextPhoneNumber">
-                                                    <b class="fas fa-phone"></b>
-                                                    @paginatedClientDTO.lstClient[i]?.TextPhoneNumber
-                                                </a>
-                                            </td>
-                                            <td>@paginatedClientDTO.lstClient[i]?.TextTag</td>
-                                            <td>
-                                                <a class="nav-link text-info"
-                                                   href="@paginatedClientDTO.lstClient[i]?.TextURL"
-                                                   target="_blank">
-                                                    <b class="fas fa-link"></b>
-                                                    @paginatedClientDTO.lstClient[i]?.TextURL
-                                                </a>
-                                            </td>
-                                            <td>@paginatedClientDTO.lstClient[i]?.ClientStatusId</td>
-                                            <td>@paginatedClientDTO.lstClient[i]?.TimeSpan</td>
+                                        }
+                                        <td>@paginatedClientDTO.lstClient[i]?.DateTime</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.Decimal</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.Integer</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.TextArea</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.TextBasic</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.TextEditor</td>
+                                        <td>
+                                            <a class="nav-link text-info"
+                                               href="mailto:@paginatedClientDTO.lstClient[i]?.TextEmail">
+                                                <b class="fas fa-envelope"></b>
+                                                @paginatedClientDTO.lstClient[i]?.TextEmail
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a class="nav-link text-info"
+                                               href="@paginatedClientDTO.lstClient[i]?.TextFile"
+                                               download>
+                                                <b class="fas fa-download"></b>
+                                                @paginatedClientDTO.lstClient[i]?.TextFile
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span style="color:@paginatedClientDTO.lstClient[i]?.TextHexColour">
+                                                <b class="fas fa-palette"></b>
+                                                @paginatedClientDTO.lstClient[i]?.TextHexColour
+                                            </span>
+                                        </td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.TextPassword</td>
+                                        <td>
+                                            <a class="nav-link text-info"
+                                               href="tel:@paginatedClientDTO.lstClient[i]?.TextPhoneNumber">
+                                                <b class="fas fa-phone"></b>
+                                                @paginatedClientDTO.lstClient[i]?.TextPhoneNumber
+                                            </a>
+                                        </td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.TextTag</td>
+                                        <td>
+                                            <a class="nav-link text-info"
+                                               href="@paginatedClientDTO.lstClient[i]?.TextURL"
+                                               target="_blank">
+                                                <b class="fas fa-link"></b>
+                                                @paginatedClientDTO.lstClient[i]?.TextURL
+                                            </a>
+                                        </td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.ClientStatusId</td>
+                                        <td>@paginatedClientDTO.lstClient[i]?.TimeSpan</td>
+                                        
 
                                             <td>
                                                 <div class="d-flex justify-content-start">
@@ -626,7 +607,7 @@
 
                             <div class="card shadow-lg mt-2">
                                 <div class="card-body">
-                                        <p><b>ClientId: </b>@paginatedClientDTO.lstClient[i]?.ClientId</p>
+                                    <p><b>ClientId: </b>@paginatedClientDTO.lstClient[i]?.ClientId</p>
                                         @if (@paginatedClientDTO.lstClient[i]!.Active)
                                         {
                                             <p>
@@ -906,8 +887,8 @@
                     Active = true,
                     DateTimeCreation = DateTime.Now,
                     DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                     EmergencyLevel = 1,
                     Comment = "",
                     Message = ex.Message,
@@ -1050,8 +1031,8 @@
                     Active = true,
                     DateTimeCreation = DateTime.Now,
                     DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                     EmergencyLevel = 1,
                     Comment = "",
                     Message = ex.Message,
@@ -1100,8 +1081,8 @@
                     Active = true,
                     DateTimeCreation = DateTime.Now,
                     DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                     EmergencyLevel = 1,
                     Comment = "",
                     Message = ex.Message,
@@ -1145,8 +1126,8 @@
                     Active = true,
                     DateTimeCreation = DateTime.Now,
                     DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                     EmergencyLevel = 1,
                     Comment = "",
                     Message = ex.Message,
@@ -1187,8 +1168,8 @@
                     Active = true,
                     DateTimeCreation = DateTime.Now,
                     DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                     EmergencyLevel = 1,
                     Comment = "",
                     Message = ex.Message,
@@ -1232,8 +1213,8 @@
                     Active = true,
                     DateTimeCreation = DateTime.Now,
                     DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                     EmergencyLevel = 1,
                     Comment = "",
                     Message = ex.Message,
@@ -1290,8 +1271,8 @@
                 Active = true,
                 DateTimeCreation = DateTime.Now,
                 DateTimeLastModification = DateTime.Now,
-                UserCreationId = 1,
-                UserLastModificationId = 1,
+                UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                 EmergencyLevel = 1,
                 Comment = "",
                 Message = ex.Message,
@@ -1337,8 +1318,8 @@
                     Active = true,
                     DateTimeCreation = DateTime.Now,
                     DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                     EmergencyLevel = 1,
                     Comment = "",
                     Message = ex.Message,
@@ -1394,8 +1375,8 @@
                 Active = true,
                 DateTimeCreation = DateTime.Now,
                 DateTimeLastModification = DateTime.Now,
-                UserCreationId = 1,
-                UserLastModificationId = 1,
+                UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                 EmergencyLevel = 1,
                 Comment = "",
                 Message = ex.Message,
@@ -1448,8 +1429,8 @@
                 Active = true,
                 DateTimeCreation = DateTime.Now,
                 DateTimeLastModification = DateTime.Now,
-                UserCreationId = 1,
-                UserLastModificationId = 1,
+                UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                 EmergencyLevel = 1,
                 Comment = "",
                 Message = ex.Message,
@@ -1502,8 +1483,8 @@
                 Active = true,
                 DateTimeCreation = DateTime.Now,
                 DateTimeLastModification = DateTime.Now,
-                UserCreationId = 1,
-                UserLastModificationId = 1,
+                UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                 EmergencyLevel = 1,
                 Comment = "",
                 Message = ex.Message,
@@ -1572,8 +1553,8 @@
                     Active = true,
                     DateTimeCreation = DateTime.Now,
                     DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                     EmergencyLevel = 1,
                     Comment = "",
                     Message = ex.Message,
@@ -1639,8 +1620,50 @@
                     Active = true,
                     DateTimeCreation = DateTime.Now,
                     DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+    #endregion
+}
+
+ge
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+    #endregion
+}
+
+class=""alert alert-success text-white font-weight-bold"" role=""alert"">
+                            Proceso de eliminado finalizado correctamente
+                         </div>";
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                     EmergencyLevel = 1,
                     Comment = "",
                     Message = ex.Message,
