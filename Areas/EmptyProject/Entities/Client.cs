@@ -21,18 +21,19 @@ namespace EmptyProject.Areas.EmptyProject.Entities
         ///<summary>
         /// For auditing purposes
         ///</summary>
+        [Library.ModelAttributeValidator.Required("Active", "Active")]   
         public bool Active { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.DateTime("DateTimeCreation", "DateTimeCreation", false, "1753-01-01T00:00", "9998-12-30T23:59")]
+        [Library.ModelAttributeValidator.DateTime("DateTimeCreation", "DateTimeCreation", true, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime DateTimeCreation { get; set; }
 
         ///<summary>
         /// For auditing purposes
         ///</summary>
-        [Library.ModelAttributeValidator.DateTime("DateTimeLastModification", "DateTimeLastModification", false, "1753-01-01T00:00", "9998-12-30T23:59")]
+        [Library.ModelAttributeValidator.DateTime("DateTimeLastModification", "DateTimeLastModification", true, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime DateTimeLastModification { get; set; }
 
         ///<summary>
@@ -47,12 +48,13 @@ namespace EmptyProject.Areas.EmptyProject.Entities
         [Library.ModelAttributeValidator.Key("UserLastModificationId", "UserLastModificationId")]
         public int UserLastModificationId { get; set; }
 
+        [Library.ModelAttributeValidator.Required("Boolean", "Boolean")]   
         public bool Boolean { get; set; }
 
-        [Library.ModelAttributeValidator.DateTime("DateTime", "DateTime", false, "1753-01-01T00:00", "9998-12-30T23:59")]
+        [Library.ModelAttributeValidator.DateTime("DateTime", "DateTime", true, "1753-01-01T00:00", "9998-12-30T23:59")]
         public DateTime DateTime { get; set; }
 
-        [Library.ModelAttributeValidator.Decimal("Decimal", "Decimal", false, 0D, 999999999D)]
+        [Library.ModelAttributeValidator.Decimal("Decimal", "Decimal", true, 0D, 999999999D)]
         public decimal Decimal { get; set; }
 
         [Library.ModelAttributeValidator.Int("Integer", "Integer", true, 0, 999999999)]

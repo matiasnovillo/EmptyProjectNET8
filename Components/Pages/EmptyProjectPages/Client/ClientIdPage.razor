@@ -1,4 +1,3 @@
-
 @page "/EmptyProject/ClientPage/{ClientId:int}"
 
 @using EmptyProject.Areas.EmptyProject.Repositories;
@@ -52,29 +51,29 @@ else
                     <!--Boolean-->
                     <div class="form-check form-switch">
                         <input class="form-check-input"
-                               type="checkbox"
-                               value="@Client!.Boolean"
-                               @onchange="HandleBooleanChange"
-                               id="boolean" />
+                        type="checkbox"
+                        value="@Client!.Boolean"
+                        @onchange="HandleBooleanChange"
+                        id="boolean" />
                         <label class="form-check-label"
-                               for="boolean">
+                        for="boolean">
                             Boolean
                         </label>
                     </div>
                     <!--DateTime-->
                     <div class="input-group input-group-static mb-3">
                         <label for="datetime">
-                                DateTime
+                            DateTime
                             @if (ErrorMessageDateTime != "")
                             {
                                 @((MarkupString)ErrorMessageDateTime)
                             }
                         </label>
                         <input type="datetime"
-                               id="datetime"
-                               class="form-control"
-                               value="@Client!.DateTime"
-                               @onchange="HandleDateTimeChange"/>
+                        id="datetime"
+                        class="form-control"
+                        value="@Client!.DateTime"
+                        @onchange="HandleDateTimeChange"/>
                     </div>
                     <!--Decimal-->
                     <div class="input-group input-group-static mb-3">
@@ -86,13 +85,11 @@ else
                             }
                         </label>
                         <input type="number"
-                               step="0.1"
-                               id="decimal"
-                               min="5" 
-                               max="999999999" 
-                               class="form-control"
-                               value="@Client!.Decimal"
-                               @onchange="HandleDecimalChange" />
+                        step="0.1"
+                        id="decimal" 
+                        class="form-control"
+                        value="@Client!.Decimal"
+                        @onchange="HandleDecimalChange" />
                     </div>
                     <!--Integer-->
                     <div class="input-group input-group-static mb-3">
@@ -104,13 +101,11 @@ else
                             }
                         </label>
                         <input type="number"
-                               step="1"
-                               min="10" 
-                               max="999999999" 
-                               id="integer"
-                               class="form-control"
-                               value="@Client!.Integer"
-                               @onchange="HandleIntegerChange" />
+                        step="1" 
+                        id="integer"
+                        class="form-control"
+                        value="@Client!.Integer"
+                        @onchange="HandleIntegerChange" />
                     </div>
                     <!--TextArea-->
                     <div class="input-group input-group-static mb-3">
@@ -122,10 +117,10 @@ else
                             }
                         </label>
                         <textarea rows="10"
-                            class="form-control"
-                            value="@Client!.TextArea"
-                            @onchange="HandleTextAreaChange"
-                            id="textarea">
+                        class="form-control"
+                        value="@Client!.TextArea"
+                        @onchange="HandleTextAreaChange"
+                        id="textarea">
                         </textarea>
                     </div>
                     <!--TextBasic-->
@@ -143,7 +138,6 @@ else
                                value="@Client!.TextBasic"
                                @onchange="HandleTextBasicChange" />
                     </div>
-                    
                     <!--TextEditor-->
                     <div class="mb-3">
                         <label for="quill-editor-texteditor">
@@ -345,9 +339,7 @@ else
                             class="form-control"
                             value="@Client!.ClientStatusId"
                             @onchange="HandleClientStatusIdChange">
-                            <option value="0">Valor 0</option>
-                            <option value="1">Valor 1</option>
-                            <option value="2">Valor 2</option>
+                            <option value="0">Seleccionar</option>
                         </select>
                     </div>
                     <!--TimeSpan-->
@@ -363,8 +355,9 @@ else
                                id="timespan"
                                class="form-control"
                                value="@Client!.TimeSpan"
-                               @onchange="HandleTextURLChange" />
+                               @onchange="HandleTimeSpanChange" />
                     </div>
+                    
                     <hr />
                     @((MarkupString)Message)
                     <div class="d-flex justify-content-between">
@@ -412,28 +405,37 @@ else
     public User User { get; set; } = new();
 
     //Error messages for inputs
+    public string ErrorMessageClientId { get; set; } = "";
+    public string ErrorMessageActive { get; set; } = "";
+    public string ErrorMessageDateTimeCreation { get; set; } = "";
+    public string ErrorMessageDateTimeLastModification { get; set; } = "";
+    public string ErrorMessageUserCreationId { get; set; } = "";
+    public string ErrorMessageUserLastModificationId { get; set; } = "";
     public string ErrorMessageBoolean { get; set; } = "";
     public string ErrorMessageDateTime { get; set; } = "";
     public string ErrorMessageDecimal { get; set; } = "";
     public string ErrorMessageInteger { get; set; } = "";
+    public string ErrorMessageTextArea { get; set; } = "";
+    public string ErrorMessageTextBasic { get; set; } = "";
+    public string ErrorMessageTextEditor { get; set; } = "";
     public string ErrorMessageTextEmail { get; set; } = "";
-    public string ErrorMessageClientStatusId { get; set; } = "";
     public string ErrorMessageTextFile { get; set; } = "";
     public string ErrorMessageTextHexColour { get; set; } = "";
-    public string ErrorMessageTextTag { get; set; } = "";
     public string ErrorMessageTextPassword { get; set; } = "";
-    public string ErrorMessageTextURL { get; set; } = "";
     public string ErrorMessageTextPhoneNumber { get; set; } = "";
+    public string ErrorMessageTextTag { get; set; } = "";
+    public string ErrorMessageTextURL { get; set; } = "";
+    public string ErrorMessageClientStatusId { get; set; } = "";
     public string ErrorMessageTimeSpan { get; set; } = "";
-    public string ErrorMessageTextArea { get; set; } = "";
-    public string ErrorMessageTextEditor { get; set; } = "";
-    public string ErrorMessageTextBasic { get; set; } = "";
+    
 
     //Progress bar for TextFile
     public bool DisplayProgressForTextFile { get; set; } = false;
     public int ProgressPercentForTextFile { get; set; } = 0;
     public string ProgressTextForTextFile { get; set; } = "";
     public string ProgressBarColourForTextFile { get; set; } = "bg-info";
+    
+    
     #endregion
 
     protected override void OnInitialized()
@@ -499,8 +501,8 @@ else
                     Active = true,
                     DateTimeCreation = DateTime.Now,
                     DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                     EmergencyLevel = 1,
                     Comment = "",
                     Message = ex.Message,
@@ -560,8 +562,8 @@ else
                     Active = true,
                     DateTimeCreation = DateTime.Now,
                     DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                     EmergencyLevel = 1,
                     Comment = "",
                     Message = ex.Message,
@@ -600,10 +602,9 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
+        
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleDateTimeChange(ChangeEventArgs e)
     {
         Client.DateTime = Convert.ToDateTime(e.Value?.ToString());
@@ -621,10 +622,9 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
+        
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleDecimalChange(ChangeEventArgs e)
     {
         Client.Decimal = Convert.ToDecimal(e.Value?.ToString());
@@ -642,10 +642,9 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
+        
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleIntegerChange(ChangeEventArgs e)
     {
         Client.Integer = Convert.ToInt32(e.Value?.ToString());
@@ -663,10 +662,9 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
+        
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleTextAreaChange(ChangeEventArgs e)
     {
         Client.TextArea = e.Value?.ToString();
@@ -684,10 +682,8 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleTextBasicChange(ChangeEventArgs e)
     {
         Client.TextBasic = e.Value?.ToString();
@@ -705,10 +701,8 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleTextEditorChange(ChangeEventArgs e)
     {
         Client.TextEditor = e.Value?.ToString();
@@ -726,10 +720,8 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleTextEmailChange(ChangeEventArgs e)
     {
         Client.TextEmail = e.Value?.ToString();
@@ -747,10 +739,27 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
+    private async Task HandleTextFileChange(ChangeEventArgs e)
+    {
+        Client.TextFile = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[TextFile]");
 
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextFile = $@"";
+        }
+        else
+        {
+            ErrorMessageTextFile = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
     private async Task HandleTextHexColourChange(ChangeEventArgs e)
     {
         Client.TextHexColour = e.Value?.ToString();
@@ -768,10 +777,8 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleTextPasswordChange(ChangeEventArgs e)
     {
         Client.TextPassword = e.Value?.ToString();
@@ -789,10 +796,8 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleTextPhoneNumberChange(ChangeEventArgs e)
     {
         Client.TextPhoneNumber = e.Value?.ToString();
@@ -810,10 +815,8 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleTextTagChange(ChangeEventArgs e)
     {
         Client.TextTag = e.Value?.ToString();
@@ -831,10 +834,8 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleTextURLChange(ChangeEventArgs e)
     {
         Client.TextURL = e.Value?.ToString();
@@ -852,10 +853,8 @@ else
 </span>";
         }
 
-        //Re-render the page to show ScannedText
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleClientStatusIdChange(ChangeEventArgs e)
     {
         Client.ClientStatusId = Convert.ToInt32(e.Value?.ToString());
@@ -876,7 +875,6 @@ else
         //Re-render the page to show ScannedText
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-
     private async Task HandleTimeSpanChange(ChangeEventArgs e)
     {
         Client.TimeSpan = TimeSpan.Parse(e.Value?.ToString());
@@ -897,6 +895,7 @@ else
         //Re-render the page to show ScannedText
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
+    
     #endregion
 
     /// <summary>
@@ -952,8 +951,8 @@ else
                     Active = true,
                     DateTimeCreation = DateTime.Now,
                     DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
                     EmergencyLevel = 1,
                     Comment = "",
                     Message = ex.Message,
@@ -1031,5 +1030,7 @@ else
             await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
         }
     }
+
+    
 }
 
