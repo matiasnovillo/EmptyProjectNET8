@@ -70,6 +70,7 @@ namespace EmptyProject.DatabaseContexts
 
                 //EmptyProject
                 modelBuilder.ApplyConfiguration(new ClientConfiguration());
+                modelBuilder.Entity<Client>().ToTable("EmptyProject.Client");
 
                 #region User
                 modelBuilder.Entity<User>().HasData(new User
