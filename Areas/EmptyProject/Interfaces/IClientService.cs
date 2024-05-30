@@ -16,12 +16,12 @@ namespace EmptyProject.Areas.EmptyProject.Interfaces
 {
     public interface IClientService
     {
-        void ExportToExcel(string Path, DataTable dtClient);
+        void ExportToExcel(string path, DataTable dtClient);
 
-        void ExportToCSV(string Path, List<Client> lstClient);
+        void ExportToCSV(string path, List<Client> lstClient);
 
-        void ExportToPDF(string Path, List<Client> lstClient);
+        void ExportToPDF(string path, List<Client> lstClient);
 
-        List<Client> ImportExcel(string Path);
+        List<Client> ImportExcel(string path, int userId);
     }
 }

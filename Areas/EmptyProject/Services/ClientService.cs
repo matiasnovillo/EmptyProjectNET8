@@ -302,11 +302,11 @@ namespace EmptyProject.Areas.EmptyProject.Services
         #endregion
 
         #region Importations
-        public List<Client> ImportExcel(string Path)
+        public List<Client> ImportExcel(string path, int userId)
         {
             List<Client> lstClient = [];
 
-            var WorkBook = new XLWorkbook(Path);
+            var WorkBook = new XLWorkbook(path);
             var Rows = WorkBook.Worksheet(1).RangeUsed().RowsUsed();
 
             foreach (var row in Rows)
@@ -337,8 +337,8 @@ namespace EmptyProject.Areas.EmptyProject.Services
                         Active = true,
                         DateTimeCreation = DateTime.Now,
                         DateTimeLastModification = DateTime.Now,
-                        UserCreationId = 1,
-                        UserLastModificationId = 1,
+                        UserCreationId = userId,
+                        UserLastModificationId = userId,
                         Boolean = Boolean,
                         DateTime = DateTime,
                         Decimal = Decimal,

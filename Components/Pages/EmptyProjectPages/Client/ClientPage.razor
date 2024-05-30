@@ -908,7 +908,7 @@
 
             UploadPath = $@"wwwroot/{UploadPath.Replace("\\","/")}";
 
-            List<Client> lstClient = clientService.ImportExcel(UploadPath);
+            List<Client> lstClient = clientService.ImportExcel(UploadPath, User.UserId);
 
             foreach (Client Client in lstClient)
             {
