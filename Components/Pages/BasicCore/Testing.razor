@@ -7,6 +7,36 @@
     <EmptyProject.Components.Layout.NavBarDashboard></EmptyProject.Components.Layout.NavBarDashboard>
 
     <div class="container">
+        <h4>Select2</h4>
+        <div class="container">
+            <div class="row">
+                <div class="col-4 offset-md-2">
+                    <select class="selectExample" name="selectExample">
+                            <option selected disabled>Seleccioná un país</option>
+                            <option value="AR">Argentina</option>
+                            <option value="UY">Uruguay</option>
+                            <option value="CL">Chile</option>
+                            <option value="BR">Brasil</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+                $('.selectExample').select2({
+                    language: {
+                        noResults: function () {
+                            return "No se encuentran resultados";
+                        },
+                        searching: function () {
+                            return "Buscando...";
+                        }
+                    }
+                });
+            });
+        </script>
+
+
         <!--Tabs-->
         <h4>Tabs</h4>
         <p>No anda la navegacion entre tabs</p>
