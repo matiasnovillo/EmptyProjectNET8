@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
+using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.Areas.BasicCore.Entities;
 using EmptyProject.Areas.BasicCore.DTOs;
 using EmptyProject.Areas.BasicCore.Interfaces;
-using System.Data;
-using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.DatabaseContexts;
+using System.Text.RegularExpressions;
+using System.Data;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -53,7 +53,7 @@ namespace EmptyProject.Areas.BasicCore.Repositories
             try
             {
                 return _context.Failure
-                                .FirstOrDefault(x => x.FailureId == failureId);
+                            .FirstOrDefault(x => x.FailureId == failureId);
             }
             catch (Exception) { throw; }
         }
@@ -63,6 +63,45 @@ namespace EmptyProject.Areas.BasicCore.Repositories
             try
             {
                 return _context.Failure.ToList();
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<Failure> GetAllByFailureIdForModal(string textToSearch)
+        {
+            try
+            {
+                var query = from failure in _context.Failure
+                            select new { Failure = failure};
+
+                // Extraemos los resultados en listas separadas
+                List<Failure> lstFailure = query.Select(result => result.Failure)
+                        .Where(x => x.FailureId.ToString().Contains(textToSearch))
+                        .OrderByDescending(p => p.DateTimeLastModification)
+                        .ToList();
+
+                return lstFailure;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<Failure?> GetAllByFailureId(List<int> lstFailureChecked)
+        {
+            try
+            {
+                List<Failure?> lstFailure = [];
+
+                foreach (int FailureId in lstFailureChecked)
+                {
+                    Failure failure = _context.Failure.Where(x => x.FailureId == FailureId).FirstOrDefault();
+
+                    if (failure != null)
+                    {
+                        lstFailure.Add(failure);
+                    }
+                }
+
+                return lstFailure;
             }
             catch (Exception) { throw; }
         }
@@ -148,7 +187,53 @@ namespace EmptyProject.Areas.BasicCore.Repositories
         }
         #endregion
 
-        #region Other methods
+        #region Methods for DataTable
+        public DataTable GetAllByFailureIdInDataTable(List<int> lstFailureChecked)
+        {
+            try
+            {
+                DataTable DataTable = new();
+                DataTable.Columns.Add("FailureId", typeof(string));
+                DataTable.Columns.Add("Active", typeof(string));
+                DataTable.Columns.Add("DateTimeCreation", typeof(string));
+                DataTable.Columns.Add("DateTimeLastModification", typeof(string));
+                DataTable.Columns.Add("UserCreationId", typeof(string));
+                DataTable.Columns.Add("UserLastModificationId", typeof(string));
+                DataTable.Columns.Add("Message", typeof(string));
+                DataTable.Columns.Add("EmergencyLevel", typeof(string));
+                DataTable.Columns.Add("StackTrace", typeof(string));
+                DataTable.Columns.Add("Source", typeof(string));
+                DataTable.Columns.Add("Comment", typeof(string));
+                
+
+                foreach (int FailureId in lstFailureChecked)
+                {
+                    Failure failure = _context.Failure.Where(x => x.FailureId == FailureId).FirstOrDefault();
+
+                    if (failure != null)
+                    {
+                        DataTable.Rows.Add(
+                        failure.FailureId,
+                        failure.Active,
+                        failure.DateTimeCreation,
+                        failure.DateTimeLastModification,
+                        failure.UserCreationId,
+                        failure.UserLastModificationId,
+                        failure.Message,
+                        failure.EmergencyLevel,
+                        failure.StackTrace,
+                        failure.Source,
+                        failure.Comment
+                        
+                        );
+                    }
+                }                
+
+                return DataTable;
+            }
+            catch (Exception) { throw; }
+        }
+
         public DataTable GetAllInDataTable()
         {
             try

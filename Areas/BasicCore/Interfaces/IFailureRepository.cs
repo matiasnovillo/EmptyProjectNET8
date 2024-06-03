@@ -22,9 +22,13 @@ namespace EmptyProject.Areas.BasicCore.Interfaces
         #region Queries
         int Count();
 
-        Failure? GetByFailureId(int testId);
+        Failure? GetByFailureId(int failureId);
 
         List<Failure?> GetAll();
+
+        List<Failure?> GetAllByFailureId(List<int> lstFailureChecked);
+
+        List<Failure> GetAllByFailureIdForModal(string textToSearch);
 
         paginatedFailureDTO GetAllByFailureIdPaginated(string textToSearch,
             bool strictSearch,
@@ -33,14 +37,16 @@ namespace EmptyProject.Areas.BasicCore.Interfaces
         #endregion
 
         #region Non-Queries
-        bool Add(Failure test);
+        bool Add(Failure failure);
 
-        bool Update(Failure test);
+        bool Update(Failure failure);
 
-        bool DeleteByFailureId(int testId);
+        bool DeleteByFailureId(int failure);
         #endregion
 
-        #region Other methods
+        #region Methods for DataTable
+        DataTable GetAllByFailureIdInDataTable(List<int> lstFailureChecked);
+
         DataTable GetAllInDataTable();
         #endregion
     }

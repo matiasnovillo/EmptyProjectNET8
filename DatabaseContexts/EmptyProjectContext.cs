@@ -5,6 +5,7 @@ using EmptyProject.Areas.BasicCore.Entities.EntitiesConfiguration;
 using EmptyProject.Areas.BasicCore.Entities;
 using EmptyProject.Areas.EmptyProject.Entities;
 using EmptyProject.Areas.EmptyProject.EntitiesConfiguration;
+using EmptyProject.Areas.BasicCore.EntitiesConfiguration;
 
 namespace EmptyProject.DatabaseContexts
 {
@@ -66,12 +67,13 @@ namespace EmptyProject.DatabaseContexts
                 modelBuilder.ApplyConfiguration(new MenuConfiguration());
                 modelBuilder.ApplyConfiguration(new RoleMenuConfiguration());
                 modelBuilder.ApplyConfiguration(new FailureConfiguration());
+                modelBuilder.Entity<Failure>().ToTable("BasicCore.Failure");
                 modelBuilder.ApplyConfiguration(new ParameterConfiguration());
 
                 //EmptyProject
                 modelBuilder.ApplyConfiguration(new ClientConfiguration());
-                modelBuilder.ApplyConfiguration(new ClientStatusConfiguration());
                 modelBuilder.Entity<Client>().ToTable("EmptyProject.Client");
+                modelBuilder.ApplyConfiguration(new ClientStatusConfiguration());
                 modelBuilder.Entity<ClientStatus>().ToTable("EmptyProject.ClientStatus");
 
                 #region User

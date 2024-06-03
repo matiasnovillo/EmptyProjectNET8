@@ -15,26 +15,46 @@ namespace EmptyProject.Areas.BasicCore.Entities
 {
     public class Failure
     {
+        
         public int FailureId { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public bool Active { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public DateTime DateTimeCreation { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public DateTime DateTimeLastModification { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public int UserCreationId { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public int UserLastModificationId { get; set; }
 
+        [Library.ModelAttributeValidator.Required("Mensaje", "Message")]
         public string? Message { get; set; }
 
         public int EmergencyLevel { get; set; }
 
+        [Library.ModelAttributeValidator.Required("Traza", "StackTrace")]
         public string? StackTrace { get; set; }
 
+        [Library.ModelAttributeValidator.Required("Fuente", "Source")]
         public string? Source { get; set; }
 
+        [Library.ModelAttributeValidator.Required("Comentario", "Comment")]
         public string? Comment { get; set; }
     
         public string ToStringOnlyValuesForHTML()

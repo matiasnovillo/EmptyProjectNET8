@@ -6,6 +6,7 @@ using EmptyProject.DatabaseContexts;
 using EmptyProject.Areas.EmptyProject.Repositories;
 using EmptyProject.Areas.EmptyProject.Services;
 using EmptyProject.Middlewares;
+using EmptyProject.Areas.BasicCore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,7 @@ builder.Services.AddScoped<RoleRepository>();
 builder.Services.AddScoped<MenuRepository>();
 builder.Services.AddScoped<RoleMenuRepository>();
 builder.Services.AddScoped<FailureRepository>();
+builder.Services.AddScoped<FailureService>();
 builder.Services.AddScoped<ParameterRepository>();
 
 //Set access to repositories: EmptyProject
