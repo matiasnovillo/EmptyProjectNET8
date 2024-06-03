@@ -39,9 +39,11 @@ builder.Services.AddScoped<UserConfigurationUIRepository>();
 
 //Set access to repositories: EmptyProject
 builder.Services.AddScoped<ClientRepository>();
+builder.Services.AddScoped<ClientStatusRepository>();
 
 //Set access to services: EmptyProject
 builder.Services.AddScoped<ClientService>();
+builder.Services.AddScoped<ClientStatusService>();
 
 //Set access to StateContainer to share data between Blazor components
 builder.Services.AddScoped<StateContainer>();

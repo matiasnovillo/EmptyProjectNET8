@@ -5,6 +5,7 @@
 @using EmptyProject.Areas.EmptyProject.DTOs;
 @using System.ComponentModel.DataAnnotations;
 @inject ClientRepository clientRepository;
+@inject ClientStatusRepository clientStatusRepository;
 
 @if (ClientId == 0)
 {
@@ -327,20 +328,88 @@ else
                                @onchange="HandleTextURLChange" />
                     </div>
                     <!--ClientStatusId-->
-                    <div class="input-group input-group-static mb-3">
-                        <label for="clientstatusid">
-                            ClientStatusId
-                            @if (ErrorMessageClientStatusId != "")
-                            {
-                                @((MarkupString)ErrorMessageClientStatusId)
-                            }
-                        </label>
-                        <select id="clientstatusid"
-                            class="form-control"
-                            value="@Client!.ClientStatusId"
-                            @onchange="HandleClientStatusIdChange">
-                            <option value="0">Seleccionar</option>
-                        </select>
+                    <label>
+                        ClientStatusId
+                        @if (ErrorMessageClientStatusId != "")
+                        {
+                            @((MarkupString)ErrorMessageClientStatusId)
+                        }
+                    </label>
+                    <br/>
+                    <input type="hidden"
+                           id="clientstatusid"
+                           value="@Client!.ClientStatusId"/>
+                    <br/>
+                    <button type="button" 
+                    class="btn btn-dark" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#clientstatusidmodal">
+                        Seleccionar
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" 
+                        id="clientstatusidmodal" 
+                        tabindex="-1" 
+                        aria-labelledby="clientstatusidmodallabel" 
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="clientstatusidmodallabel">
+                                        ClientStatusId
+                                    </h5>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="input-group input-group-dynamic">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-search" aria-hidden="true"></i>
+                                        </span>
+                                        <input class="form-control"
+                                               @oninput="SearchTextClientStatusId"
+                                               type="search">
+                                    </div>
+                                    <br />
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover table-bordered mt-4">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>ID</th>
+                                                    <th>ClientStatusId</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @* @foreach (ClientStatus clientstatus in lstClientStatus)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <input type="radio" 
+                                                            id="@clientstatus.ClientStatusId" 
+                                                            name="clientstatusid"
+                                                            value="@clientstatus.ClientStatusId"
+                                                            @onclick="@(() => HandleClientStatusId(clientstatus.ClientStatusId))">
+                                                        </td>
+                                                        <td>
+                                                            @clientstatus.ClientStatusId
+                                                        </td>
+                                                        <td>
+                                                            @clientstatus.Name
+                                                        </td>
+                                                    </tr>
+                                                } *@
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="modal-footer justify-content-end">
+                                    <button type="button" 
+                                    class="btn btn-dark mb-0" 
+                                    data-bs-dismiss="modal">
+                                        Cerrar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <!--TimeSpan-->
                     <div class="input-group input-group-static mb-3">
@@ -427,15 +496,15 @@ else
     public string ErrorMessageTextURL { get; set; } = "";
     public string ErrorMessageClientStatusId { get; set; } = "";
     public string ErrorMessageTimeSpan { get; set; } = "";
-    
+
 
     //Progress bar for TextFile
     public bool DisplayProgressForTextFile { get; set; } = false;
     public int ProgressPercentForTextFile { get; set; } = 0;
     public string ProgressTextForTextFile { get; set; } = "";
     public string ProgressBarColourForTextFile { get; set; } = "bg-info";
-    
-    
+
+    public List<ClientStatus> lstClientStatus { get; set; } = [];
     #endregion
 
     protected override void OnInitialized()
@@ -465,6 +534,8 @@ else
                                             .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
 
                     lstRole = roleRepository.GetAll();
+
+                    lstClientStatus = clientStatusRepository.GetAllByClientStatusIdForModal("");
 
                     if (ClientId == 0)
                     {
@@ -580,6 +651,46 @@ else
         finally
         {
             //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    private async Task SearchTextClientStatusId(ChangeEventArgs args)
+    {
+        try
+        {
+            //Basic configuration
+            Message = "";
+
+            string TextToSearch = args.Value.ToString();
+
+            lstClientStatus = clientStatusRepository.GetAllByClientStatusIdForModal(TextToSearch);
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page
             await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
         }
     }
@@ -855,14 +966,17 @@ else
 
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
-    private async Task HandleClientStatusIdChange(ChangeEventArgs e)
+
+    private async Task HandleClientStatusId(int clientstatusid)
     {
-        Client.ClientStatusId = Convert.ToInt32(e.Value?.ToString());
+        Client.ClientStatusId = clientstatusid;
         ValidationResult ValidationResult = Check("[ClientStatusId]");
 
         if (ValidationResult == null)
         {
-            ErrorMessageClientStatusId = $@"";
+            ErrorMessageClientStatusId = $@"<span class=""text-success"">
+    <i class=""fas fa-circle-check""></i>
+</span>";
         }
         else
         {
@@ -875,6 +989,7 @@ else
         //Re-render the page to show ScannedText
         await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
+
     private async Task HandleTimeSpanChange(ChangeEventArgs e)
     {
         Client.TimeSpan = TimeSpan.Parse(e.Value?.ToString());

@@ -22,6 +22,7 @@ namespace EmptyProject.DatabaseContexts
 
         //EmptyProject
         public DbSet<Client> Client { get; set; }
+        public DbSet<ClientStatus> ClientStatus { get; set; }
 
         public EmptyProjectContext(IConfiguration configuration)
         {
@@ -70,7 +71,9 @@ namespace EmptyProject.DatabaseContexts
 
                 //EmptyProject
                 modelBuilder.ApplyConfiguration(new ClientConfiguration());
+                modelBuilder.ApplyConfiguration(new ClientStatusConfiguration());
                 modelBuilder.Entity<Client>().ToTable("EmptyProject.Client");
+                modelBuilder.Entity<ClientStatus>().ToTable("EmptyProject.ClientStatus");
 
                 #region User
                 modelBuilder.Entity<User>().HasData(new User
