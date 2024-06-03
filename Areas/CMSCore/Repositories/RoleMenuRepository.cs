@@ -4,6 +4,7 @@ using EmptyProject.Areas.CMSCore.DTOs;
 using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.Areas.BasicCore.DTOs;
 using EmptyProject.DatabaseContexts;
+using EmptyProject.Areas.EmptyProject.Entities;
 
 namespace EmptyProject.Areas.CMSCore.Repositories
 {
@@ -105,6 +106,26 @@ namespace EmptyProject.Areas.CMSCore.Repositories
                                           .ToList();
 
                 return lstMenuResult;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<Menu> GetAllByRoleIdAndPathForPermission(int roleId, string path)
+        {
+            try
+            {
+                var query = from rolemenu in _context.RoleMenu
+                            where rolemenu.RoleId == roleId
+                            join menu in _context.Menu on rolemenu.MenuId equals menu.MenuId
+                            where menu.URLPath == path
+                            select new
+                            {
+                                Menu = menu,
+                            };
+
+                List<Menu> lstMenu = query.Select(result => result.Menu).ToList();
+
+                return lstMenu;
             }
             catch (Exception) { throw; }
         }
