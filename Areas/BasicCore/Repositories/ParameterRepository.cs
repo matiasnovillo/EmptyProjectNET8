@@ -1,13 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
+using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.Areas.BasicCore.Entities;
 using EmptyProject.Areas.BasicCore.DTOs;
 using EmptyProject.Areas.BasicCore.Interfaces;
-using System.Data;
-using DocumentFormat.OpenXml.Spreadsheet;
-using EmptyProject.Areas.CMSCore.Entities;
-using Parameter = EmptyProject.Areas.BasicCore.Entities.Parameter;
 using EmptyProject.DatabaseContexts;
+using System.Text.RegularExpressions;
+using System.Data;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -55,7 +53,7 @@ namespace EmptyProject.Areas.BasicCore.Repositories
             try
             {
                 return _context.Parameter
-                                .FirstOrDefault(x => x.ParameterId == parameterId);
+                            .FirstOrDefault(x => x.ParameterId == parameterId);
             }
             catch (Exception) { throw; }
         }
@@ -65,6 +63,45 @@ namespace EmptyProject.Areas.BasicCore.Repositories
             try
             {
                 return _context.Parameter.ToList();
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<Parameter> GetAllByParameterIdForModal(string textToSearch)
+        {
+            try
+            {
+                var query = from parameter in _context.Parameter
+                            select new { Parameter = parameter};
+
+                // Extraemos los resultados en listas separadas
+                List<Parameter> lstParameter = query.Select(result => result.Parameter)
+                        .Where(x => x.ParameterId.ToString().Contains(textToSearch))
+                        .OrderByDescending(p => p.DateTimeLastModification)
+                        .ToList();
+
+                return lstParameter;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<Parameter?> GetAllByParameterId(List<int> lstParameterChecked)
+        {
+            try
+            {
+                List<Parameter?> lstParameter = [];
+
+                foreach (int ParameterId in lstParameterChecked)
+                {
+                    Parameter parameter = _context.Parameter.Where(x => x.ParameterId == ParameterId).FirstOrDefault();
+
+                    if (parameter != null)
+                    {
+                        lstParameter.Add(parameter);
+                    }
+                }
+
+                return lstParameter;
             }
             catch (Exception) { throw; }
         }
@@ -84,13 +121,13 @@ namespace EmptyProject.Areas.BasicCore.Repositories
 
                 int TotalParameter = _context.Parameter.Count();
 
-                var query = from parametro in _context.Parameter
-                            join userCreation in _context.User on parametro.UserCreationId equals userCreation.UserId
-                            join userLastModification in _context.User on parametro.UserLastModificationId equals userLastModification.UserId
-                            select new { Parametro = parametro, UserCreation = userCreation, UserLastModification = userLastModification };
+                var query = from parameter in _context.Parameter
+                            join userCreation in _context.User on parameter.UserCreationId equals userCreation.UserId
+                            join userLastModification in _context.User on parameter.UserLastModificationId equals userLastModification.UserId
+                            select new { Parameter = parameter, UserCreation = userCreation, UserLastModification = userLastModification };
 
                 // Extraemos los resultados en listas separadas
-                List<Parameter> lstParameter = query.Select(result => result.Parametro)
+                List<Parameter> lstParameter = query.Select(result => result.Parameter)
                         .Where(x => strictSearch ?
                             words.All(word => x.Name.Contains(word)) :
                             words.Any(word => x.Name.Contains(word)))
@@ -150,7 +187,49 @@ namespace EmptyProject.Areas.BasicCore.Repositories
         }
         #endregion
 
-        #region Other methods
+        #region Methods for DataTable
+        public DataTable GetAllByParameterIdInDataTable(List<int> lstParameterChecked)
+        {
+            try
+            {
+                DataTable DataTable = new();
+                DataTable.Columns.Add("ParameterId", typeof(string));
+                DataTable.Columns.Add("Active", typeof(string));
+                DataTable.Columns.Add("DateTimeCreation", typeof(string));
+                DataTable.Columns.Add("DateTimeLastModification", typeof(string));
+                DataTable.Columns.Add("UserCreationId", typeof(string));
+                DataTable.Columns.Add("UserLastModificationId", typeof(string));
+                DataTable.Columns.Add("Name", typeof(string));
+                DataTable.Columns.Add("Value", typeof(string));
+                DataTable.Columns.Add("IsPrivate", typeof(string));
+                
+
+                foreach (int ParameterId in lstParameterChecked)
+                {
+                    Parameter parameter = _context.Parameter.Where(x => x.ParameterId == ParameterId).FirstOrDefault();
+
+                    if (parameter != null)
+                    {
+                        DataTable.Rows.Add(
+                        parameter.ParameterId,
+                        parameter.Active,
+                        parameter.DateTimeCreation,
+                        parameter.DateTimeLastModification,
+                        parameter.UserCreationId,
+                        parameter.UserLastModificationId,
+                        parameter.Name,
+                        parameter.Value,
+                        parameter.IsPrivate
+                        
+                        );
+                    }
+                }                
+
+                return DataTable;
+            }
+            catch (Exception) { throw; }
+        }
+
         public DataTable GetAllInDataTable()
         {
             try

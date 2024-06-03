@@ -15,22 +15,41 @@ namespace EmptyProject.Areas.BasicCore.Entities
 {
     public class Parameter
     {
+        
         public int ParameterId { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public bool Active { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public DateTime DateTimeCreation { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public DateTime DateTimeLastModification { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public int UserCreationId { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public int UserLastModificationId { get; set; }
 
+        [Library.ModelAttributeValidator.String("Nombre", "Name", true, 1, 100, "")]
         public string? Name { get; set; }
 
+        [Library.ModelAttributeValidator.Required("Valor", "Value")]
         public string? Value { get; set; }
 
+        [Library.ModelAttributeValidator.Required("¿Es privada?", "IsPrivate")]  
         public bool IsPrivate { get; set; }
     
         public string ToStringOnlyValuesForHTML()

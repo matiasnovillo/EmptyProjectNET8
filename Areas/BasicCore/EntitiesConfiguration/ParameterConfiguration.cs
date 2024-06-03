@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using EmptyProject.Areas.BasicCore.Entities;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -12,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
  * 
  */
 
-namespace EmptyProject.Areas.BasicCore.Entities.EntitiesConfiguration
+namespace EmptyProject.Areas.BasicCore.EntitiesConfiguration
 {
     public class ParameterConfiguration : IEntityTypeConfiguration<Parameter>
     {
@@ -30,6 +31,16 @@ namespace EmptyProject.Areas.BasicCore.Entities.EntitiesConfiguration
                     .HasColumnType("tinyint")
                     .IsRequired(true);
 
+                //DateTimeCreation
+                entity.Property(e => e.DateTimeCreation)
+                    .HasColumnType("datetime")
+                    .IsRequired(true);
+
+                //DateTimeLastModification
+                entity.Property(e => e.DateTimeLastModification)
+                    .HasColumnType("datetime")
+                    .IsRequired(true);
+
                 //UserCreationId
                 entity.Property(e => e.UserCreationId)
                     .HasColumnType("int")
@@ -42,13 +53,13 @@ namespace EmptyProject.Areas.BasicCore.Entities.EntitiesConfiguration
 
                 //Name
                 entity.Property(e => e.Name)
-                    .HasColumnType("varchar(200)")
-                    .IsRequired(false);
+                    .HasColumnType("varchar(100)")
+                    .IsRequired(true);
 
                 //Value
                 entity.Property(e => e.Value)
                     .HasColumnType("text")
-                    .IsRequired(false);
+                    .IsRequired(true);
 
                 //IsPrivate
                 entity.Property(e => e.IsPrivate)

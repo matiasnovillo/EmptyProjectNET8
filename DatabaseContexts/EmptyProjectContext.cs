@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.Areas.CMSCore.Entities.EntitiesConfiguration;
-using EmptyProject.Areas.BasicCore.Entities.EntitiesConfiguration;
 using EmptyProject.Areas.BasicCore.Entities;
 using EmptyProject.Areas.EmptyProject.Entities;
 using EmptyProject.Areas.EmptyProject.EntitiesConfiguration;
@@ -69,6 +68,7 @@ namespace EmptyProject.DatabaseContexts
                 modelBuilder.ApplyConfiguration(new FailureConfiguration());
                 modelBuilder.Entity<Failure>().ToTable("BasicCore.Failure");
                 modelBuilder.ApplyConfiguration(new ParameterConfiguration());
+                modelBuilder.Entity<Parameter>().ToTable("BasicCore.Parameter");
 
                 //EmptyProject
                 modelBuilder.ApplyConfiguration(new ClientConfiguration());

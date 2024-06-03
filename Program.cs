@@ -37,13 +37,12 @@ builder.Services.AddScoped<RoleMenuRepository>();
 builder.Services.AddScoped<FailureRepository>();
 builder.Services.AddScoped<FailureService>();
 builder.Services.AddScoped<ParameterRepository>();
+builder.Services.AddScoped<ParameterService>();
 
 //Set access to repositories: EmptyProject
 builder.Services.AddScoped<ClientRepository>();
-builder.Services.AddScoped<ClientStatusRepository>();
-
-//Set access to services: EmptyProject
 builder.Services.AddScoped<ClientService>();
+builder.Services.AddScoped<ClientStatusRepository>();
 builder.Services.AddScoped<ClientStatusService>();
 
 //Set access to StateContainer to share data between Blazor components

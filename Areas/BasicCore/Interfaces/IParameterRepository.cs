@@ -22,9 +22,13 @@ namespace EmptyProject.Areas.BasicCore.Interfaces
         #region Queries
         int Count();
 
-        Parameter? GetByParameterId(int testId);
+        Parameter? GetByParameterId(int parameterId);
 
         List<Parameter?> GetAll();
+
+        List<Parameter?> GetAllByParameterId(List<int> lstParameterChecked);
+
+        List<Parameter> GetAllByParameterIdForModal(string textToSearch);
 
         paginatedParameterDTO GetAllByNamePaginated(string textToSearch,
             bool strictSearch,
@@ -33,14 +37,16 @@ namespace EmptyProject.Areas.BasicCore.Interfaces
         #endregion
 
         #region Non-Queries
-        bool Add(Parameter test);
+        bool Add(Parameter parameter);
 
-        bool Update(Parameter test);
+        bool Update(Parameter parameter);
 
-        bool DeleteByParameterId(int testId);
+        bool DeleteByParameterId(int parameter);
         #endregion
 
-        #region Other methods
+        #region Methods for DataTable
+        DataTable GetAllByParameterIdInDataTable(List<int> lstParameterChecked);
+
         DataTable GetAllInDataTable();
         #endregion
     }
