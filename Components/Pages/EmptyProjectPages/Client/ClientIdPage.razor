@@ -5,7 +5,6 @@
 @using EmptyProject.Areas.EmptyProject.DTOs;
 @using System.ComponentModel.DataAnnotations;
 @inject ClientRepository clientRepository;
-@inject ClientStatusRepository clientStatusRepository;
 
 @if (ClientId == 0)
 {
@@ -375,25 +374,21 @@ else
                                                 <tr>
                                                     <th></th>
                                                     <th>ID</th>
-                                                    <th>ClientStatusId</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @* @foreach (ClientStatus clientstatus in lstClientStatus)
+                                                @* @foreach (class var in lst)
                                                 {
                                                     <tr>
                                                         <td>
                                                             <input type="radio" 
-                                                            id="@clientstatus.ClientStatusId" 
+                                                            id="@var.ClientStatusId" 
                                                             name="clientstatusid"
-                                                            value="@clientstatus.ClientStatusId"
-                                                            @onclick="@(() => HandleClientStatusId(clientstatus.ClientStatusId))">
+                                                            value="@var.ClientStatusId"
+                                                            @onclick="@(() => HandleClientStatusId(var.ClientStatusId))">
                                                         </td>
                                                         <td>
-                                                            @clientstatus.ClientStatusId
-                                                        </td>
-                                                        <td>
-                                                            @clientstatus.Name
+                                                            @var.ClientStatusId
                                                         </td>
                                                     </tr>
                                                 } *@
@@ -496,15 +491,15 @@ else
     public string ErrorMessageTextURL { get; set; } = "";
     public string ErrorMessageClientStatusId { get; set; } = "";
     public string ErrorMessageTimeSpan { get; set; } = "";
-
+    
 
     //Progress bar for TextFile
     public bool DisplayProgressForTextFile { get; set; } = false;
     public int ProgressPercentForTextFile { get; set; } = 0;
     public string ProgressTextForTextFile { get; set; } = "";
     public string ProgressBarColourForTextFile { get; set; } = "bg-info";
-
-    public List<ClientStatus> lstClientStatus { get; set; } = [];
+    
+    
     #endregion
 
     protected override void OnInitialized()
@@ -538,8 +533,6 @@ else
                                             .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
 
                     lstRole = roleRepository.GetAll();
-
-                    lstClientStatus = clientStatusRepository.GetAllByClientStatusIdForModal("");
 
                     if (ClientId == 0)
                     {
@@ -659,6 +652,68 @@ else
         }
     }
 
+    #region Uploaders
+    private async void UploadTextFile(InputFileChangeEventArgs e)
+    {
+
+        try
+        {
+            DisplayProgressForTextFile = true;
+            ProgressPercentForTextFile = 80;
+            ProgressBarColourForTextFile = "bg-info";
+
+            string path = Path.Combine(
+                Environment.CurrentDirectory,
+                "wwwroot",
+                "Uploads",
+                "EmptyProject",
+                "Client",
+                e.File.Name);
+
+            long MaxFileSize = 1024L * 1024L; //3MB max.
+
+            await using FileStream FileStream = new(path, FileMode.Create);
+            await e.File.OpenReadStream(MaxFileSize).CopyToAsync(FileStream);
+
+            FileStream.Close();
+
+            string Limitator = "\\wwwroot";
+            int StartIndex = path.IndexOf(Limitator);
+            string Result = "";
+
+            if (StartIndex != -1)
+            {
+                Result = path.Substring(StartIndex + Limitator.Length);
+            }
+
+            Client!.TextFile = Result;
+
+            Check("[TextFile]");
+
+            ProgressPercentForTextFile = 100;
+            ProgressBarColourForTextFile = "bg-success";
+            DisplayProgressForTextFile = false;
+        }
+        catch (Exception ex)
+        {
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                            Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                         </div>";
+
+            ProgressPercentForTextFile = 100;
+            ProgressBarColourForTextFile = "bg-danger";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    
+    #endregion    
+
+    #region Searchers
     private async Task SearchTextClientStatusId(ChangeEventArgs args)
     {
         try
@@ -668,7 +723,7 @@ else
 
             string TextToSearch = args.Value.ToString();
 
-            lstClientStatus = clientStatusRepository.GetAllByClientStatusIdForModal(TextToSearch);
+            //lstClientStatusId = ClientStatusIdRepository.GetAllByClientStatusIdForModal(TextToSearch);
         }
         catch (Exception ex)
         {
@@ -697,322 +752,6 @@ else
             //Re-render the page
             await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
         }
-    }
-
-    #region Handlers
-    private async Task HandleBooleanChange(ChangeEventArgs e)
-    {
-        Client.Boolean = Convert.ToBoolean(e.Value?.ToString());
-        ValidationResult ValidationResult = Check("[Boolean]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageBoolean = $@"";
-        }
-        else
-        {
-            ErrorMessageBoolean = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleDateTimeChange(ChangeEventArgs e)
-    {
-        Client.DateTime = Convert.ToDateTime(e.Value?.ToString());
-        ValidationResult ValidationResult = Check("[DateTime]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageDateTime = $@"";
-        }
-        else
-        {
-            ErrorMessageDateTime = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleDecimalChange(ChangeEventArgs e)
-    {
-        Client.Decimal = Convert.ToDecimal(e.Value?.ToString());
-        ValidationResult ValidationResult = Check("[Decimal]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageDecimal = $@"";
-        }
-        else
-        {
-            ErrorMessageDecimal = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleIntegerChange(ChangeEventArgs e)
-    {
-        Client.Integer = Convert.ToInt32(e.Value?.ToString());
-        ValidationResult ValidationResult = Check("[Integer]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageInteger = $@"";
-        }
-        else
-        {
-            ErrorMessageInteger = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleTextAreaChange(ChangeEventArgs e)
-    {
-        Client.TextArea = e.Value?.ToString();
-        ValidationResult ValidationResult = Check("[TextArea]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageTextArea = $@"";
-        }
-        else
-        {
-            ErrorMessageTextArea = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleTextBasicChange(ChangeEventArgs e)
-    {
-        Client.TextBasic = e.Value?.ToString();
-        ValidationResult ValidationResult = Check("[TextBasic]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageTextBasic = $@"";
-        }
-        else
-        {
-            ErrorMessageTextBasic = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleTextEditorChange(ChangeEventArgs e)
-    {
-        Client.TextEditor = e.Value?.ToString();
-        ValidationResult ValidationResult = Check("[TextEditor]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageTextEditor = $@"";
-        }
-        else
-        {
-            ErrorMessageTextEditor = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleTextEmailChange(ChangeEventArgs e)
-    {
-        Client.TextEmail = e.Value?.ToString();
-        ValidationResult ValidationResult = Check("[TextEmail]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageTextEmail = $@"";
-        }
-        else
-        {
-            ErrorMessageTextEmail = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleTextFileChange(ChangeEventArgs e)
-    {
-        Client.TextFile = e.Value?.ToString();
-        ValidationResult ValidationResult = Check("[TextFile]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageTextFile = $@"";
-        }
-        else
-        {
-            ErrorMessageTextFile = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleTextHexColourChange(ChangeEventArgs e)
-    {
-        Client.TextHexColour = e.Value?.ToString();
-        ValidationResult ValidationResult = Check("[TextHexColour]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageTextHexColour = $@"";
-        }
-        else
-        {
-            ErrorMessageTextHexColour = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleTextPasswordChange(ChangeEventArgs e)
-    {
-        Client.TextPassword = e.Value?.ToString();
-        ValidationResult ValidationResult = Check("[TextPassword]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageTextPassword = $@"";
-        }
-        else
-        {
-            ErrorMessageTextPassword = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleTextPhoneNumberChange(ChangeEventArgs e)
-    {
-        Client.TextPhoneNumber = e.Value?.ToString();
-        ValidationResult ValidationResult = Check("[TextPhoneNumber]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageTextPhoneNumber = $@"";
-        }
-        else
-        {
-            ErrorMessageTextPhoneNumber = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleTextTagChange(ChangeEventArgs e)
-    {
-        Client.TextTag = e.Value?.ToString();
-        ValidationResult ValidationResult = Check("[TextTag]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageTextTag = $@"";
-        }
-        else
-        {
-            ErrorMessageTextTag = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-    private async Task HandleTextURLChange(ChangeEventArgs e)
-    {
-        Client.TextURL = e.Value?.ToString();
-        ValidationResult ValidationResult = Check("[TextURL]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageTextURL = $@"";
-        }
-        else
-        {
-            ErrorMessageTextURL = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-
-    private async Task HandleClientStatusId(int clientstatusid)
-    {
-        Client.ClientStatusId = clientstatusid;
-        ValidationResult ValidationResult = Check("[ClientStatusId]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageClientStatusId = $@"<span class=""text-success"">
-    <i class=""fas fa-circle-check""></i>
-</span>";
-        }
-        else
-        {
-            ErrorMessageClientStatusId = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        //Re-render the page to show ScannedText
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-    }
-
-    private async Task HandleTimeSpanChange(ChangeEventArgs e)
-    {
-        Client.TimeSpan = TimeSpan.Parse(e.Value?.ToString());
-        ValidationResult ValidationResult = Check("[TimeSpan]");
-
-        if (ValidationResult == null)
-        {
-            ErrorMessageTimeSpan = $@"";
-        }
-        else
-        {
-            ErrorMessageTimeSpan = $@"<span class=""text-danger"">
-    <i class=""fas fa-circle-xmark""></i>
-    {ValidationResult.ErrorMessage}
-</span>";
-        }
-
-        //Re-render the page to show ScannedText
-        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
     
     #endregion
@@ -1093,63 +832,350 @@ else
         }
     }
 
-    private async void UploadTextFile(InputFileChangeEventArgs e)
+    #region Handlers
+    private async Task HandleBooleanChange(ChangeEventArgs e)
     {
+        Client.Boolean = Convert.ToBoolean(e.Value?.ToString());
+        ValidationResult ValidationResult = Check("[Boolean]");
 
-        try
+        if (ValidationResult == null)
         {
-            DisplayProgressForTextFile = true;
-            ProgressPercentForTextFile = 80;
-            ProgressBarColourForTextFile = "bg-info";
-
-            string path = Path.Combine(
-                Environment.CurrentDirectory,
-                "wwwroot",
-                "Uploads",
-                "EmptyProject",
-                "Client",
-                e.File.Name);
-
-            long MaxFileSize = 1024L * 1024L; //3MB max.
-
-            await using FileStream FileStream = new(path, FileMode.Create);
-            await e.File.OpenReadStream(MaxFileSize).CopyToAsync(FileStream);
-
-            FileStream.Close();
-
-            string Limitator = "\\wwwroot";
-            int StartIndex = path.IndexOf(Limitator);
-            string Result = "";
-
-            if (StartIndex != -1)
-            {
-                Result = path.Substring(StartIndex + Limitator.Length);
-            }
-
-            Client!.TextFile = Result;
-
-            Check("[TextFile]");
-
-            ProgressPercentForTextFile = 100;
-            ProgressBarColourForTextFile = "bg-success";
-            DisplayProgressForTextFile = false;
+            ErrorMessageBoolean = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
         }
-        catch (Exception ex)
+        else
         {
-            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
-                            Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
-                         </div>";
+            ErrorMessageBoolean = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
 
-            ProgressPercentForTextFile = 100;
-            ProgressBarColourForTextFile = "bg-danger";
-        }
-        finally
-        {
-            //Re-render the page to show ScannedText
-            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
-        }
+        
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
     }
+    private async Task HandleDateTimeChange(ChangeEventArgs e)
+    {
+        Client.DateTime = Convert.ToDateTime(e.Value?.ToString());
+        ValidationResult ValidationResult = Check("[DateTime]");
 
+        if (ValidationResult == null)
+        {
+            ErrorMessageDateTime = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageDateTime = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleDecimalChange(ChangeEventArgs e)
+    {
+        Client.Decimal = Convert.ToDecimal(e.Value?.ToString());
+        ValidationResult ValidationResult = Check("[Decimal]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageDecimal = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageDecimal = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleIntegerChange(ChangeEventArgs e)
+    {
+        Client.Integer = Convert.ToInt32(e.Value?.ToString());
+        ValidationResult ValidationResult = Check("[Integer]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageInteger = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageInteger = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleTextAreaChange(ChangeEventArgs e)
+    {
+        Client.TextArea = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[TextArea]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextArea = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageTextArea = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleTextBasicChange(ChangeEventArgs e)
+    {
+        Client.TextBasic = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[TextBasic]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextBasic = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageTextBasic = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleTextEditorChange(ChangeEventArgs e)
+    {
+        Client.TextEditor = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[TextEditor]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextEditor = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageTextEditor = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleTextEmailChange(ChangeEventArgs e)
+    {
+        Client.TextEmail = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[TextEmail]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextEmail = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageTextEmail = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleTextFileChange(ChangeEventArgs e)
+    {
+        Client.TextFile = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[TextFile]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextFile = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageTextFile = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleTextHexColourChange(ChangeEventArgs e)
+    {
+        Client.TextHexColour = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[TextHexColour]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextHexColour = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageTextHexColour = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleTextPasswordChange(ChangeEventArgs e)
+    {
+        Client.TextPassword = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[TextPassword]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextPassword = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageTextPassword = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleTextPhoneNumberChange(ChangeEventArgs e)
+    {
+        Client.TextPhoneNumber = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[TextPhoneNumber]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextPhoneNumber = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageTextPhoneNumber = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleTextTagChange(ChangeEventArgs e)
+    {
+        Client.TextTag = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[TextTag]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextTag = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageTextTag = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleTextURLChange(ChangeEventArgs e)
+    {
+        Client.TextURL = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[TextURL]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTextURL = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageTextURL = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleClientStatusIdChange(ChangeEventArgs e)
+    {
+        Client.ClientStatusId = Convert.ToInt32(e.Value?.ToString());
+        ValidationResult ValidationResult = Check("[ClientStatusId]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageClientStatusId = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageClientStatusId = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleTimeSpanChange(ChangeEventArgs e)
+    {
+        Client.TimeSpan = TimeSpan.Parse(e.Value?.ToString());
+        ValidationResult ValidationResult = Check("[TimeSpan]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageTimeSpan = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageTimeSpan = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
     
+    #endregion
 }
 

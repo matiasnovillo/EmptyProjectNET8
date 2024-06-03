@@ -67,6 +67,24 @@ namespace EmptyProject.Areas.EmptyProject.Repositories
             catch (Exception) { throw; }
         }
 
+        public List<Client> GetAllByClientIdForModal(string textToSearch)
+        {
+            try
+            {
+                var query = from client in _context.Client
+                            select new { Client = client};
+
+                // Extraemos los resultados en listas separadas
+                List<Client> lstClient = query.Select(result => result.Client)
+                        .Where(x => x.ClientId.ToString().Contains(textToSearch))
+                        .OrderByDescending(p => p.DateTimeLastModification)
+                        .ToList();
+
+                return lstClient;
+            }
+            catch (Exception) { throw; }
+        }
+
         public List<Client?> GetAllByClientId(List<int> lstClientChecked)
         {
             try

@@ -28,6 +28,8 @@ namespace EmptyProject.Areas.EmptyProject.Interfaces
 
         List<Client?> GetAllByClientId(List<int> lstClientChecked);
 
+        List<Client> GetAllByClientIdForModal(string textToSearch);
+
         paginatedClientDTO GetAllByClientIdPaginated(string textToSearch,
             bool strictSearch,
             int pageIndex,
