@@ -7,6 +7,7 @@ using EmptyProject.Areas.EmptyProject.Repositories;
 using EmptyProject.Areas.EmptyProject.Services;
 using EmptyProject.Middlewares;
 using EmptyProject.Areas.BasicCore.Services;
+using EmptyProject.Areas.CMSCore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,7 @@ builder.Services.AddDbContext<EmptyProjectContext>(ServiceLifetime.Scoped);
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<RoleRepository>();
 builder.Services.AddScoped<MenuRepository>();
+builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<RoleMenuRepository>();
 builder.Services.AddScoped<FailureRepository>();
 builder.Services.AddScoped<FailureService>();

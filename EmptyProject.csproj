@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\CMSCore\Interfaces\" />
+    <Folder Include="Components\Pages\CMSCorePages\" />
     <Folder Include="Migrations\" />
     <Folder Include="DatabaseBackups\" />
     <Folder Include="wwwroot\Downloads\ExcelFiles\" />

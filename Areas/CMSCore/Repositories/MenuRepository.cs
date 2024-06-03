@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
+using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.Areas.CMSCore.DTOs;
 using EmptyProject.Areas.CMSCore.Interfaces;
-using System.Data;
 using EmptyProject.DatabaseContexts;
+using System.Text.RegularExpressions;
+using System.Data;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -52,12 +53,12 @@ namespace EmptyProject.Areas.CMSCore.Repositories
             try
             {
                 return _context.Menu
-                                .FirstOrDefault(x => x.MenuId == menuId);
+                            .FirstOrDefault(x => x.MenuId == menuId);
             }
             catch (Exception) { throw; }
         }
 
-        public List<Menu> GetAll()
+        public List<Menu?> GetAll()
         {
             try
             {
@@ -66,7 +67,46 @@ namespace EmptyProject.Areas.CMSCore.Repositories
             catch (Exception) { throw; }
         }
 
-        public paginatedMenuDTO GetAllByNameOrURLPathPaginated(string textToSearch,
+        public List<Menu> GetAllByMenuIdForModal(string textToSearch)
+        {
+            try
+            {
+                var query = from menu in _context.Menu
+                            select new { Menu = menu};
+
+                // Extraemos los resultados en listas separadas
+                List<Menu> lstMenu = query.Select(result => result.Menu)
+                        .Where(x => x.MenuId.ToString().Contains(textToSearch))
+                        .OrderByDescending(p => p.DateTimeLastModification)
+                        .ToList();
+
+                return lstMenu;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<Menu?> GetAllByMenuId(List<int> lstMenuChecked)
+        {
+            try
+            {
+                List<Menu?> lstMenu = [];
+
+                foreach (int MenuId in lstMenuChecked)
+                {
+                    Menu menu = _context.Menu.Where(x => x.MenuId == MenuId).FirstOrDefault();
+
+                    if (menu != null)
+                    {
+                        lstMenu.Add(menu);
+                    }
+                }
+
+                return lstMenu;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public paginatedMenuDTO GetAllByNamePaginated(string textToSearch,
             bool strictSearch,
             int pageIndex, 
             int pageSize)
@@ -147,7 +187,53 @@ namespace EmptyProject.Areas.CMSCore.Repositories
         }
         #endregion
 
-        #region Other methods
+        #region Methods for DataTable
+        public DataTable GetAllByMenuIdInDataTable(List<int> lstMenuChecked)
+        {
+            try
+            {
+                DataTable DataTable = new();
+                DataTable.Columns.Add("MenuId", typeof(string));
+                DataTable.Columns.Add("Active", typeof(string));
+                DataTable.Columns.Add("DateTimeCreation", typeof(string));
+                DataTable.Columns.Add("DateTimeLastModification", typeof(string));
+                DataTable.Columns.Add("UserCreationId", typeof(string));
+                DataTable.Columns.Add("UserLastModificationId", typeof(string));
+                DataTable.Columns.Add("Name", typeof(string));
+                DataTable.Columns.Add("MenuFatherId", typeof(string));
+                DataTable.Columns.Add("Order", typeof(string));
+                DataTable.Columns.Add("URLPath", typeof(string));
+                DataTable.Columns.Add("IconURLPath", typeof(string));
+                
+
+                foreach (int MenuId in lstMenuChecked)
+                {
+                    Menu menu = _context.Menu.Where(x => x.MenuId == MenuId).FirstOrDefault();
+
+                    if (menu != null)
+                    {
+                        DataTable.Rows.Add(
+                        menu.MenuId,
+                        menu.Active,
+                        menu.DateTimeCreation,
+                        menu.DateTimeLastModification,
+                        menu.UserCreationId,
+                        menu.UserLastModificationId,
+                        menu.Name,
+                        menu.MenuFatherId,
+                        menu.Order,
+                        menu.URLPath,
+                        menu.IconURLPath
+                        
+                        );
+                    }
+                }                
+
+                return DataTable;
+            }
+            catch (Exception) { throw; }
+        }
+
         public DataTable GetAllInDataTable()
         {
             try

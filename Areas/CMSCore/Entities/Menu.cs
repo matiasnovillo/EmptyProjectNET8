@@ -15,31 +15,45 @@ namespace EmptyProject.Areas.CMSCore.Entities
 {
     public class Menu
     {
+        
         public int MenuId { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public bool Active { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public DateTime DateTimeCreation { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public DateTime DateTimeLastModification { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public int UserCreationId { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public int UserLastModificationId { get; set; }
 
-        [Library.ModelAttributeValidator.String("Name", "Name", false, 1, 200, "")]
+        [Library.ModelAttributeValidator.String("Nombre", "Name", true, 1, 100, "")]
         public string? Name { get; set; }
 
-        [Library.ModelAttributeValidator.Int("MenuFatherId", "MenuFatherId", false, 0, 5000)]
         public int MenuFatherId { get; set; }
 
-        [Library.ModelAttributeValidator.Int("Order", "Order", false, 0, 5000)]
         public int Order { get; set; }
 
-        [Library.ModelAttributeValidator.String("URLPath", "URLPath", false, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("URL", "URLPath", true, 1, 8000, "")]
         public string? URLPath { get; set; }
 
-        [Library.ModelAttributeValidator.String("IconURLPath", "IconURLPath", false, 1, 8000, "")]
+        [Library.ModelAttributeValidator.String("Icono", "IconURLPath", false, 1, 8000, "")]
         public string? IconURLPath { get; set; }
     
         public string ToStringOnlyValuesForHTML()

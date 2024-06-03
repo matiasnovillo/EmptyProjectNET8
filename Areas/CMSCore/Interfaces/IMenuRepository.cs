@@ -22,25 +22,31 @@ namespace EmptyProject.Areas.CMSCore.Interfaces
         #region Queries
         int Count();
 
-        Menu? GetByMenuId(int testId);
+        Menu? GetByMenuId(int menuId);
 
         List<Menu?> GetAll();
 
-        paginatedMenuDTO GetAllByNameOrURLPathPaginated(string textToSearch,
+        List<Menu?> GetAllByMenuId(List<int> lstMenuChecked);
+
+        List<Menu> GetAllByMenuIdForModal(string textToSearch);
+
+        paginatedMenuDTO GetAllByNamePaginated(string textToSearch,
             bool strictSearch,
             int pageIndex,
             int pageSize);
         #endregion
 
         #region Non-Queries
-        bool Add(Menu test);
+        bool Add(Menu menu);
 
-        bool Update(Menu test);
+        bool Update(Menu menu);
 
-        bool DeleteByMenuId(int testId);
+        bool DeleteByMenuId(int menu);
         #endregion
 
-        #region Other methods
+        #region Methods for DataTable
+        DataTable GetAllByMenuIdInDataTable(List<int> lstMenuChecked);
+
         DataTable GetAllInDataTable();
         #endregion
     }
