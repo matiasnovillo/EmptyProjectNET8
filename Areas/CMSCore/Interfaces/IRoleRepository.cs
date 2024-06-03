@@ -22,9 +22,13 @@ namespace EmptyProject.Areas.CMSCore.Interfaces
         #region Queries
         int Count();
 
-        Role? GetByRoleId(int testId);
+        Role? GetByRoleId(int roleId);
 
         List<Role?> GetAll();
+
+        List<Role?> GetAllByRoleId(List<int> lstRoleChecked);
+
+        List<Role> GetAllByRoleIdForModal(string textToSearch);
 
         paginatedRoleDTO GetAllByNamePaginated(string textToSearch,
             bool strictSearch,
@@ -33,14 +37,16 @@ namespace EmptyProject.Areas.CMSCore.Interfaces
         #endregion
 
         #region Non-Queries
-        bool Add(Role test);
+        bool Add(Role role);
 
-        bool Update(Role test);
+        bool Update(Role role);
 
-        bool DeleteByRoleId(int testId);
+        bool DeleteByRoleId(int role);
         #endregion
 
-        #region Other methods
+        #region Methods for DataTable
+        DataTable GetAllByRoleIdInDataTable(List<int> lstRoleChecked);
+
         DataTable GetAllInDataTable();
         #endregion
     }

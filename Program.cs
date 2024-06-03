@@ -33,6 +33,7 @@ builder.Services.AddDbContext<EmptyProjectContext>(ServiceLifetime.Scoped);
 //Set access to repositories
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<RoleRepository>();
+builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<MenuRepository>();
 builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<RoleMenuRepository>();

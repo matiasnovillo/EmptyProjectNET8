@@ -64,6 +64,7 @@ namespace EmptyProject.DatabaseContexts
             {
                 modelBuilder.ApplyConfiguration(new UserConfiguration());
                 modelBuilder.ApplyConfiguration(new RoleConfiguration());
+                modelBuilder.Entity<Role>().ToTable("CMSCore.Role");
                 modelBuilder.ApplyConfiguration(new MenuConfiguration());
                 modelBuilder.Entity<Menu>().ToTable("CMSCore.Menu");
                 modelBuilder.ApplyConfiguration(new RoleMenuConfiguration());

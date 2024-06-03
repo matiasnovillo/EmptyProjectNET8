@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using EmptyProject.Areas.CMSCore.Entities;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -12,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
  * 
  */
 
-namespace EmptyProject.Areas.CMSCore.Entities.EntitiesConfiguration
+namespace EmptyProject.Areas.CMSCore.EntitiesConfiguration
 {
     public class RoleConfiguration : IEntityTypeConfiguration<Role>
     {
@@ -53,7 +54,7 @@ namespace EmptyProject.Areas.CMSCore.Entities.EntitiesConfiguration
                 //Name
                 entity.Property(e => e.Name)
                     .HasColumnType("varchar(100)")
-                    .IsRequired(false);
+                    .IsRequired(true);
 
                 
             }

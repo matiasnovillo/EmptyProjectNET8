@@ -15,19 +15,35 @@ namespace EmptyProject.Areas.CMSCore.Entities
 {
     public class Role
     {
+        
         public int RoleId { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public bool Active { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public DateTime DateTimeCreation { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public DateTime DateTimeLastModification { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public int UserCreationId { get; set; }
 
+        ///<summary>
+        /// For auditing purposes
+        ///</summary>
         public int UserLastModificationId { get; set; }
 
-        [Library.ModelAttributeValidator.String("Name", "Name", false, 1, 100, "")]
+        [Library.ModelAttributeValidator.String("Nombre", "Name", true, 1, 100, "")]
         public string? Name { get; set; }
     
         public string ToStringOnlyValuesForHTML()

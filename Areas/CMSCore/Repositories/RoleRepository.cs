@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
+using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.Areas.CMSCore.DTOs;
 using EmptyProject.Areas.CMSCore.Interfaces;
-using System.Data;
 using EmptyProject.DatabaseContexts;
+using System.Text.RegularExpressions;
+using System.Data;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -52,16 +53,55 @@ namespace EmptyProject.Areas.CMSCore.Repositories
             try
             {
                 return _context.Role
-                                .FirstOrDefault(x => x.RoleId == roleId);
+                            .FirstOrDefault(x => x.RoleId == roleId);
             }
             catch (Exception) { throw; }
         }
 
-        public List<Role> GetAll()
+        public List<Role?> GetAll()
         {
             try
             {
                 return _context.Role.ToList();
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<Role> GetAllByRoleIdForModal(string textToSearch)
+        {
+            try
+            {
+                var query = from role in _context.Role
+                            select new { Role = role};
+
+                // Extraemos los resultados en listas separadas
+                List<Role> lstRole = query.Select(result => result.Role)
+                        .Where(x => x.RoleId.ToString().Contains(textToSearch))
+                        .OrderByDescending(p => p.DateTimeLastModification)
+                        .ToList();
+
+                return lstRole;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<Role?> GetAllByRoleId(List<int> lstRoleChecked)
+        {
+            try
+            {
+                List<Role?> lstRole = [];
+
+                foreach (int RoleId in lstRoleChecked)
+                {
+                    Role role = _context.Role.Where(x => x.RoleId == RoleId).FirstOrDefault();
+
+                    if (role != null)
+                    {
+                        lstRole.Add(role);
+                    }
+                }
+
+                return lstRole;
             }
             catch (Exception) { throw; }
         }
@@ -147,7 +187,45 @@ namespace EmptyProject.Areas.CMSCore.Repositories
         }
         #endregion
 
-        #region Other methods
+        #region Methods for DataTable
+        public DataTable GetAllByRoleIdInDataTable(List<int> lstRoleChecked)
+        {
+            try
+            {
+                DataTable DataTable = new();
+                DataTable.Columns.Add("RoleId", typeof(string));
+                DataTable.Columns.Add("Active", typeof(string));
+                DataTable.Columns.Add("DateTimeCreation", typeof(string));
+                DataTable.Columns.Add("DateTimeLastModification", typeof(string));
+                DataTable.Columns.Add("UserCreationId", typeof(string));
+                DataTable.Columns.Add("UserLastModificationId", typeof(string));
+                DataTable.Columns.Add("Name", typeof(string));
+                
+
+                foreach (int RoleId in lstRoleChecked)
+                {
+                    Role role = _context.Role.Where(x => x.RoleId == RoleId).FirstOrDefault();
+
+                    if (role != null)
+                    {
+                        DataTable.Rows.Add(
+                        role.RoleId,
+                        role.Active,
+                        role.DateTimeCreation,
+                        role.DateTimeLastModification,
+                        role.UserCreationId,
+                        role.UserLastModificationId,
+                        role.Name
+                        
+                        );
+                    }
+                }                
+
+                return DataTable;
+            }
+            catch (Exception) { throw; }
+        }
+
         public DataTable GetAllInDataTable()
         {
             try

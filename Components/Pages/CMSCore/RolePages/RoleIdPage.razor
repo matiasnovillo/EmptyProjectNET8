@@ -1,0 +1,388 @@
+@page "/CMSCore/RolePage/{RoleId:int}"
+
+@using EmptyProject.Areas.CMSCore.Repositories;
+@using EmptyProject.Areas.CMSCore.Entities;
+@using EmptyProject.Areas.CMSCore.DTOs;
+@using System.ComponentModel.DataAnnotations;
+@inject RoleRepository roleRepository;
+
+@if (RoleId == 0)
+{
+    <PageTitle>Agregar rol - CMS</PageTitle>
+}
+else
+{
+    <PageTitle>Editar rol - CMS</PageTitle>
+}
+
+<EmptyProject.Components.Layout.SideNav lstFoldersAndPages="lstFoldersAndPages"></EmptyProject.Components.Layout.SideNav>
+
+<div class="main-content position-relative max-height-vh-100 h-100">
+    <EmptyProject.Components.Layout.NavBarDashboard Pagina="Roles"></EmptyProject.Components.Layout.NavBarDashboard>
+    <div class="container-fluid px-2 px-md-4">
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
+            <span class="mask bg-gradient-primary opacity-6"></span>
+        </div>
+        <div class="card card-body mx-3 mx-md-4 mt-n6">
+            <div class="card-header mb-0 pb-0">
+                <div class="d-flex justify-content-between">
+                    <h3 class="mb-3">
+                        @if (RoleId == 0)
+                        {
+                            <span>Agregar rol</span>
+                        }
+                        else
+                        {
+                            <span>Editar rol</span>
+                        }
+                    </h3>
+                    <NavLink class="btn btn-outline-dark" href="CMSCore/RolePage">
+                        <span class="fas fa-chevron-left"></span>
+                        &nbsp;Volver
+                    </NavLink>
+                </div>
+                <hr />
+            </div>
+            <div class="card-body px-0">
+                <form method="post" @onsubmit="Submit"
+                      @formname="role-form" class="mb-4">
+                    <AntiforgeryToken />
+                    <!--Name-->
+                    <div class="input-group input-group-static mb-3">
+                        <label for="name">
+                            Nombre
+                            @if(ErrorMessageName != "")
+                            {
+                            @((MarkupString)ErrorMessageName)
+                            }
+                        </label>
+                        <input type="text"
+                               id="name"
+                               class="form-control"
+                               value="@Role!.Name"
+                               @onchange="HandleNameChange" />
+                    </div>
+                    
+                    <hr />
+                    @((MarkupString)Message)
+                    <div class="d-flex justify-content-between">
+                        <button id="btn-submit" type="submit"
+                                class="btn btn-success">
+                            <i class="fas fa-pen"></i>
+                            @if (RoleId == 0)
+                            {
+                                <span>Agregar</span>
+                            }
+                            else
+                            {
+                                <span>Editar</span>
+                            }
+                        </button>
+                        <NavLink class="btn btn-outline-dark mx-3" href="CMSCore/RolePage">
+                            <span class="fas fa-chevron-left"></span>
+                            &nbsp;Volver
+                        </NavLink>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+
+    <EmptyProject.Components.Layout.FixedPlugin></EmptyProject.Components.Layout.FixedPlugin>
+    <EmptyProject.Components.Layout.FooterDashboard></EmptyProject.Components.Layout.FooterDashboard>
+</div>
+
+@code {
+    #region Properties
+    public List<folderForDashboard> lstFoldersAndPages = [];
+
+    public List<Role> lstRole { get; set; } = [];
+
+    [Parameter]
+    public int RoleId { get; set; }
+
+    public string Message { get; set; } = "";
+
+    [SupplyParameterFromForm]
+    public Role Role { get; set; } = new();
+
+    public User User { get; set; } = new();
+
+    //Error messages for inputs
+    public string ErrorMessageRoleId { get; set; } = "";
+    public string ErrorMessageActive { get; set; } = "";
+    public string ErrorMessageDateTimeCreation { get; set; } = "";
+    public string ErrorMessageDateTimeLastModification { get; set; } = "";
+    public string ErrorMessageUserCreationId { get; set; } = "";
+    public string ErrorMessageUserLastModificationId { get; set; } = "";
+    public string ErrorMessageName { get; set; } = "";
+    
+
+    
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //Look for saved user in shared component, simulates a session
+            User = StateContainer.User == null ? new() : StateContainer.User;
+
+            lstFoldersAndPages = [];
+            Role = new();
+
+            if (User != null)
+            {
+                if (User.UserId != 0)
+                {
+                    //Logged user
+                    List<Menu> lstMenuWithPermission = rolemenuRepository
+                                    .GetAllByRoleIdAndPathForPermission(User.RoleId, "/CMSCore/RolePage");
+
+                    if (lstMenuWithPermission.Count == 0)
+                    {
+                        //Redirect to...
+                        NavigationManager.NavigateTo("403");
+                    }
+
+                    List<Menu> lstMenu = menuRepository
+                                        .GetAll();
+
+                    lstFoldersAndPages = rolemenuRepository
+                                            .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
+
+                    lstRole = roleRepository.GetAll();
+
+                    if (RoleId == 0)
+                    {
+                        //Create new Role
+                        Role = new();
+                    }
+                    else
+                    {
+                        //Edit Role
+
+                        Role = roleRepository
+                                    .GetByRoleId(RoleId);
+                    }                    
+                }
+                else
+                {
+                    //Not logged user
+
+                    //Redirect to...
+                    NavigationManager.NavigateTo("Login");
+                }
+            }
+            else
+            {
+                //Impossible
+            }
+
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            if (RoleId == 0)
+            {
+                //Create new Role
+                Role.Active = true;
+                Role.UserCreationId = User.UserId;
+                Role.UserLastModificationId = User.UserId;
+                Role.DateTimeCreation = DateTime.Now;
+                Role.DateTimeLastModification = DateTime.Now;
+
+                if(Check("") == null)
+                {
+                    roleRepository
+                        .Add(Role);
+
+                    //Redirect to users page
+                    NavigationManager.NavigateTo("CMSCore/RolePage");
+                }
+
+
+            }
+            else
+            {
+                //Update data
+                Role.DateTimeLastModification = DateTime.Now;
+                Role.UserLastModificationId = User.UserId;
+
+                if(Check("") == null)
+                {
+                    roleRepository
+                            .Update(Role);
+
+                    //Redirect to users page
+                    NavigationManager.NavigateTo("CMSCore/RolePage");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    #region Uploaders
+    
+    #endregion    
+
+    #region Searchers
+    
+    #endregion
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="attributeToValid">Debe estar encapsulado en []. Ejemplo: [Boolean]</param>
+    /// <returns></returns>
+    private ValidationResult Check(string attributeToValid)
+    {
+        try
+        {
+            List<ValidationResult> lstValidationResult = new List<ValidationResult>();
+            ValidationContext ValidationContext = new ValidationContext(Role);
+
+            bool IsValid = Validator.TryValidateObject(Role, ValidationContext, lstValidationResult, true);
+
+            ValidationResult ValidationResult = lstValidationResult
+            .AsQueryable()
+            .FirstOrDefault(x => x.ErrorMessage.StartsWith(attributeToValid));
+
+            if (!IsValid)
+            {
+                Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Para guardar correctamente debe completar los siguientes puntos: <br/> <ul>";
+
+                foreach (var validationResult in lstValidationResult)
+                {
+                    validationResult.ErrorMessage = validationResult.ErrorMessage.Substring(validationResult.ErrorMessage.IndexOf(']') + 1);
+                    Message += $@"<li>{validationResult}</li>";
+                }
+
+                Message = Message + "</ul></div>";
+            }
+            else
+            {
+                Message = $@"<div class=""alert alert-successs text-white font-weight-bold"" role=""alert"">
+                                Todos los datos ingresados son correctos
+                            </div>";
+            }
+
+
+            if (ValidationResult != null)
+            {
+                ValidationResult.ErrorMessage = ValidationResult.ErrorMessage.Substring(ValidationResult.ErrorMessage.IndexOf(']') + 1);
+            }
+
+            return ValidationResult;
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = User.UserId == 0 ? 1 : User.UserId,
+                    UserLastModificationId = User.UserId == 0 ? 1 : User.UserId,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+
+            return null;
+        }
+        finally
+        {
+
+        }
+    }
+
+    #region Handlers
+    private async Task HandleNameChange(ChangeEventArgs e)
+    {
+        Role.Name = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[Name]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageName = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageName = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    
+    #endregion
+}
+
