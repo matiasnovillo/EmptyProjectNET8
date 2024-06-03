@@ -43,7 +43,7 @@ namespace EmptyProject.Areas.EmptyProject.Entities
         ///</summary>
         public int UserLastModificationId { get; set; }
 
-        [Library.ModelAttributeValidator.Required("Boolean", "Boolean")]   
+          
         public bool Boolean { get; set; }
 
         [Library.ModelAttributeValidator.DateTime("DateTime", "DateTime", true, "1753-01-01T00:00", "9998-12-30T23:59")]
@@ -52,7 +52,6 @@ namespace EmptyProject.Areas.EmptyProject.Entities
         [Library.ModelAttributeValidator.Decimal("Decimal", "Decimal", true, 0D, 999999999D)]
         public decimal Decimal { get; set; }
 
-        [Library.ModelAttributeValidator.Int("Integer", "Integer", true, 0, 999999999)]
         public int Integer { get; set; }
 
         
