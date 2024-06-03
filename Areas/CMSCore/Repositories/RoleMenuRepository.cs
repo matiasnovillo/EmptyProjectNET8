@@ -1,14 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
-using EmptyProject.Areas.CMSCore.DTOs;
+using Microsoft.EntityFrameworkCore;
 using EmptyProject.Areas.CMSCore.Entities;
-using EmptyProject.Areas.BasicCore.DTOs;
+using EmptyProject.Areas.CMSCore.Entities;
+using EmptyProject.Areas.CMSCore.DTOs;
+using EmptyProject.Areas.CMSCore.Interfaces;
 using EmptyProject.DatabaseContexts;
-using EmptyProject.Areas.EmptyProject.Entities;
+using System.Text.RegularExpressions;
+using System.Data;
+using EmptyProject.Areas.BasicCore.DTOs;
+
+/*
+ * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
+ * 
+ * Coded by fiyistack.com
+ * Copyright © 2024
+ * 
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ * 
+ */
 
 namespace EmptyProject.Areas.CMSCore.Repositories
 {
-    public class RoleMenuRepository
+    public class RoleMenuRepository : IRoleMenuRepository
     {
         protected readonly EmptyProjectContext _context;
 
@@ -21,8 +34,7 @@ namespace EmptyProject.Areas.CMSCore.Repositories
         {
             try
             {
-                return _context.RoleMenu
-                        .AsQueryable();
+                return _context.RoleMenu.AsQueryable();
             }
             catch (Exception) { throw; }
         }
@@ -32,27 +44,65 @@ namespace EmptyProject.Areas.CMSCore.Repositories
         {
             try
             {
-                return _context.RoleMenu
-                            .Count();
+                return _context.RoleMenu.Count();
             }
             catch (Exception) { throw; }
         }
 
-        public RoleMenu? GetById(int roleId)
+        public RoleMenu? GetByRoleMenuId(int rolemenuId)
         {
             try
             {
                 return _context.RoleMenu
-                        .FirstOrDefault(x => x.RoleMenuId == roleId);
+                            .FirstOrDefault(x => x.RoleMenuId == rolemenuId);
             }
             catch (Exception) { throw; }
         }
 
-        public List<RoleMenu> GetAll()
+        public List<RoleMenu?> GetAll()
         {
             try
             {
                 return _context.RoleMenu.ToList();
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<RoleMenu> GetAllByRoleMenuIdForModal(string textToSearch)
+        {
+            try
+            {
+                var query = from rolemenu in _context.RoleMenu
+                            select new { RoleMenu = rolemenu};
+
+                // Extraemos los resultados en listas separadas
+                List<RoleMenu> lstRoleMenu = query.Select(result => result.RoleMenu)
+                        .Where(x => x.RoleMenuId.ToString().Contains(textToSearch))
+                        .OrderByDescending(p => p.DateTimeLastModification)
+                        .ToList();
+
+                return lstRoleMenu;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<RoleMenu?> GetAllByRoleMenuId(List<int> lstRoleMenuChecked)
+        {
+            try
+            {
+                List<RoleMenu?> lstRoleMenu = [];
+
+                foreach (int RoleMenuId in lstRoleMenuChecked)
+                {
+                    RoleMenu rolemenu = _context.RoleMenu.Where(x => x.RoleMenuId == RoleMenuId).FirstOrDefault();
+
+                    if (rolemenu != null)
+                    {
+                        lstRoleMenu.Add(rolemenu);
+                    }
+                }
+
+                return lstRoleMenu;
             }
             catch (Exception) { throw; }
         }
@@ -72,18 +122,28 @@ namespace EmptyProject.Areas.CMSCore.Repositories
 
                 int TotalRoleMenu = _context.RoleMenu.Count();
 
-                var paginatedRoleMenu = _context.RoleMenu
+                var query = from rolemenu in _context.RoleMenu
+                            join userCreation in _context.User on rolemenu.UserCreationId equals userCreation.UserId
+                            join userLastModification in _context.User on rolemenu.UserLastModificationId equals userLastModification.UserId
+                            select new { RoleMenu = rolemenu, UserCreation = userCreation, UserLastModification = userLastModification };
+
+                // Extraemos los resultados en listas separadas
+                List<RoleMenu> lstRoleMenu = query.Select(result => result.RoleMenu)
                         .Where(x => strictSearch ?
                             words.All(word => x.RoleMenuId.ToString().Contains(word)) :
                             words.Any(word => x.RoleMenuId.ToString().Contains(word)))
-                        .OrderBy(p => p.RoleMenuId)
+                        .OrderByDescending(p => p.DateTimeLastModification)
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
+                List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
+                List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
 
                 return new paginatedRoleMenuDTO
                 {
-                    lstRoleMenu = paginatedRoleMenu,
+                    lstRoleMenu = lstRoleMenu,
+                    lstUserCreation = lstUserCreation,
+                    lstUserLastModification = lstUserLastModification,
                     TotalItems = TotalRoleMenu,
                     PageIndex = pageIndex,
                     PageSize = pageSize
@@ -171,7 +231,7 @@ namespace EmptyProject.Areas.CMSCore.Repositories
                 return foldersAndPages;
             }
             catch (Exception) { throw; }
-            
+
         }
 
         public List<MenuWithStateDTO> GetAllWithStateByRoleId(int roleId, List<Menu> lstMenu)
@@ -207,9 +267,7 @@ namespace EmptyProject.Areas.CMSCore.Repositories
         {
             try
             {
-                _context.RoleMenu
-                .Add(rolemenu);
-
+                _context.RoleMenu.Add(rolemenu);
                 return _context.SaveChanges() > 0;
             }
             catch (Exception) { throw; }
@@ -219,11 +277,8 @@ namespace EmptyProject.Areas.CMSCore.Repositories
         {
             try
             {
-                _context.RoleMenu
-                .Update(rolemenu);
-
-                return _context
-                            .SaveChanges() > 0;
+                _context.RoleMenu.Update(rolemenu);
+                return _context.SaveChanges() > 0;
             }
             catch (Exception) { throw; }
         }
@@ -233,8 +288,8 @@ namespace EmptyProject.Areas.CMSCore.Repositories
             try
             {
                 AsQueryable()
-                .Where(x => x.RoleMenuId == rolemenuId)
-                .ExecuteDelete();
+                        .Where(x => x.RoleMenuId == rolemenuId)
+                        .ExecuteDelete();
 
                 return _context.SaveChanges() > 0;
             }
@@ -252,6 +307,85 @@ namespace EmptyProject.Areas.CMSCore.Repositories
                 .ExecuteDelete();
 
                 return _context.SaveChanges() > 0;
+            }
+            catch (Exception) { throw; }
+        }
+        #endregion
+
+        #region Methods for DataTable
+        public DataTable GetAllByRoleMenuIdInDataTable(List<int> lstRoleMenuChecked)
+        {
+            try
+            {
+                DataTable DataTable = new();
+                DataTable.Columns.Add("RoleMenuId", typeof(string));
+                DataTable.Columns.Add("Active", typeof(string));
+                DataTable.Columns.Add("DateTimeCreation", typeof(string));
+                DataTable.Columns.Add("DateTimeLastModification", typeof(string));
+                DataTable.Columns.Add("UserCreationId", typeof(string));
+                DataTable.Columns.Add("UserLastModificationId", typeof(string));
+                DataTable.Columns.Add("MenuId", typeof(string));
+                DataTable.Columns.Add("RoleId", typeof(string));
+                
+
+                foreach (int RoleMenuId in lstRoleMenuChecked)
+                {
+                    RoleMenu rolemenu = _context.RoleMenu.Where(x => x.RoleMenuId == RoleMenuId).FirstOrDefault();
+
+                    if (rolemenu != null)
+                    {
+                        DataTable.Rows.Add(
+                        rolemenu.RoleMenuId,
+                        rolemenu.Active,
+                        rolemenu.DateTimeCreation,
+                        rolemenu.DateTimeLastModification,
+                        rolemenu.UserCreationId,
+                        rolemenu.UserLastModificationId,
+                        rolemenu.MenuId,
+                        rolemenu.RoleId
+                        
+                        );
+                    }
+                }                
+
+                return DataTable;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public DataTable GetAllInDataTable()
+        {
+            try
+            {
+                List<RoleMenu> lstRoleMenu = _context.RoleMenu.ToList();
+
+                DataTable DataTable = new();
+                DataTable.Columns.Add("RoleMenuId", typeof(string));
+                DataTable.Columns.Add("Active", typeof(string));
+                DataTable.Columns.Add("DateTimeCreation", typeof(string));
+                DataTable.Columns.Add("DateTimeLastModification", typeof(string));
+                DataTable.Columns.Add("UserCreationId", typeof(string));
+                DataTable.Columns.Add("UserLastModificationId", typeof(string));
+                DataTable.Columns.Add("MenuId", typeof(string));
+                DataTable.Columns.Add("RoleId", typeof(string));
+                
+
+                foreach (RoleMenu rolemenu in lstRoleMenu)
+                {
+                    DataTable.Rows.Add(
+                        rolemenu.RoleMenuId,
+                        rolemenu.Active,
+                        rolemenu.DateTimeCreation,
+                        rolemenu.DateTimeLastModification,
+                        rolemenu.UserCreationId,
+                        rolemenu.UserLastModificationId,
+                        rolemenu.MenuId,
+                        rolemenu.RoleId
+                        
+                        );
+                }
+
+                return DataTable;
             }
             catch (Exception) { throw; }
         }

@@ -37,6 +37,7 @@ builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<MenuRepository>();
 builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<RoleMenuRepository>();
+builder.Services.AddScoped<RoleMenuService>();
 builder.Services.AddScoped<FailureRepository>();
 builder.Services.AddScoped<FailureService>();
 builder.Services.AddScoped<ParameterRepository>();
