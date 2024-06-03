@@ -35,7 +35,6 @@ builder.Services.AddScoped<MenuRepository>();
 builder.Services.AddScoped<RoleMenuRepository>();
 builder.Services.AddScoped<FailureRepository>();
 builder.Services.AddScoped<ParameterRepository>();
-builder.Services.AddScoped<UserConfigurationUIRepository>();
 
 //Set access to repositories: EmptyProject
 builder.Services.AddScoped<ClientRepository>();
