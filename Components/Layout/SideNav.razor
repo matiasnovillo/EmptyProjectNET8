@@ -45,22 +45,38 @@
             {
                 @foreach (folderForDashboard folderandpages in lstFoldersAndPages)
                 {
-                    <li class="nav-item mx-5 mt-3">
-                        <span class="text-white">
-                            <i class="fas fa-folder"></i>&nbsp;
-                            @folderandpages.Folder.Name
-                        </span>
+                    <li class="nav-item">
+                        <a data-bs-toggle="collapse"
+                           href="#@folderandpages.Folder.Name"
+                           class="nav-link text-white"
+                           aria-controls="@folderandpages.Folder.Name"
+                           role="button"
+                           aria-expanded="false">
+                            <i class="fas fa-folder"></i>
+                            <span class="nav-link-text ms-2 ps-1">
+                                @folderandpages.Folder.Name
+                            </span>
+                        </a>
+                        <div class="collapse"
+                             id="@folderandpages.Folder.Name">
+                            <ul class="nav">
+                                @foreach (itemForFolderForDashboard item in folderandpages.Pages)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-white"
+                                        href="@item.URLPath">
+                                            <span class="sidenav-mini-icon">
+                                                @item.IconURLPath
+                                            </span>
+                                            <span class="sidenav-normal ms-2 ps-1">
+                                               @item.Name
+                                            </span>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
                     </li>
-                    foreach (itemForFolderForDashboard item in folderandpages.Pages)
-                    {
-                        <li class="nav-item mx-5 px-3">
-                            <NavLink class="btn-link text-white btn-sm"
-                               href="@item.URLPath">
-                                <i class="fas fa-file"></i>&nbsp;
-                                @item.Name
-                            </NavLink>
-                        </li>
-                    }
                 }
             }
         </ul>
