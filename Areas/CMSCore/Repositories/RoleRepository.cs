@@ -67,7 +67,7 @@ namespace EmptyProject.Areas.CMSCore.Repositories
             catch (Exception) { throw; }
         }
 
-        public List<Role> GetAllByRoleIdForModal(string textToSearch)
+        public List<Role> GetAllByNameForModal(string textToSearch)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace EmptyProject.Areas.CMSCore.Repositories
 
                 // Extraemos los resultados en listas separadas
                 List<Role> lstRole = query.Select(result => result.Role)
-                        .Where(x => x.RoleId.ToString().Contains(textToSearch))
+                        .Where(x => x.Name.Contains(textToSearch))
                         .OrderByDescending(p => p.DateTimeLastModification)
                         .ToList();
 

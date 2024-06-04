@@ -1,4 +1,5 @@
 using EmptyProject.Areas.CMSCore.Entities;
+using EmptyProject.Areas.CMSCore.Entities;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -18,7 +19,6 @@ namespace EmptyProject.Areas.CMSCore.DTOs
         public List<User?> lstUser { get; set; }
         public List<User?> lstUserCreation { get; set; }
         public List<User?> lstUserLastModification { get; set; }
-        public List<Role?> lstRole { get; set; }
         public int TotalItems { get; set; }
         public int PageIndex { get; set; }
         public int PageSize { get; set; }

@@ -28,7 +28,7 @@ namespace EmptyProject.Areas.CMSCore.Interfaces
 
         List<Role?> GetAllByRoleId(List<int> lstRoleChecked);
 
-        List<Role> GetAllByRoleIdForModal(string textToSearch);
+        List<Role> GetAllByNameForModal(string textToSearch);
 
         paginatedRoleDTO GetAllByNamePaginated(string textToSearch,
             bool strictSearch,

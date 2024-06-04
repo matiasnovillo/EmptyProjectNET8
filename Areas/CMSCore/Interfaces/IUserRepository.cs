@@ -22,9 +22,13 @@ namespace EmptyProject.Areas.CMSCore.Interfaces
         #region Queries
         int Count();
 
-        User? GetByUserId(int testId);
+        User? GetByUserId(int userId);
 
         List<User?> GetAll();
+
+        List<User?> GetAllByUserId(List<int> lstUserChecked);
+
+        List<User> GetAllByUserIdForModal(string textToSearch);
 
         paginatedUserDTO GetAllByEmailPaginated(string textToSearch,
             bool strictSearch,
@@ -33,14 +37,16 @@ namespace EmptyProject.Areas.CMSCore.Interfaces
         #endregion
 
         #region Non-Queries
-        bool Add(User test);
+        bool Add(User user);
 
-        bool Update(User test);
+        bool Update(User user);
 
-        bool DeleteByUserId(int testId);
+        bool DeleteByUserId(int user);
         #endregion
 
-        #region Other methods
+        #region Methods for DataTable
+        DataTable GetAllByUserIdInDataTable(List<int> lstUserChecked);
+
         DataTable GetAllInDataTable();
         #endregion
     }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using EmptyProject.Areas.CMSCore.Entities;
-using EmptyProject.Areas.CMSCore.Entities.EntitiesConfiguration;
 using EmptyProject.Areas.BasicCore.Entities;
 using EmptyProject.Areas.EmptyProject.Entities;
 using EmptyProject.Areas.EmptyProject.EntitiesConfiguration;
@@ -63,6 +62,7 @@ namespace EmptyProject.DatabaseContexts
             try
             {
                 modelBuilder.ApplyConfiguration(new UserConfiguration());
+                modelBuilder.Entity<User>().ToTable("CMSCore.User");
                 modelBuilder.ApplyConfiguration(new RoleConfiguration());
                 modelBuilder.Entity<Role>().ToTable("CMSCore.Role");
                 modelBuilder.ApplyConfiguration(new MenuConfiguration());

@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
+using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.Areas.CMSCore.Entities;
 using EmptyProject.Areas.CMSCore.DTOs;
 using EmptyProject.Areas.CMSCore.Interfaces;
-using System.Data;
 using EmptyProject.DatabaseContexts;
+using System.Text.RegularExpressions;
+using System.Data;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -38,7 +39,7 @@ namespace EmptyProject.Areas.CMSCore.Repositories
         }
 
         #region Queries
-        public  int Count()
+        public int Count()
         {
             try
             {
@@ -47,32 +48,60 @@ namespace EmptyProject.Areas.CMSCore.Repositories
             catch (Exception) { throw; }
         }
 
-        public  User? GetByUserId(int userId)
-        {
-            try
-            {
-                return  _context.User
-                                .FirstOrDefault(x => x.UserId == userId);
-            }
-            catch (Exception) { throw; }
-        }
-
-        public  List<User> GetAll()
-        {
-            try
-            {
-                return  _context.User.ToList();
-            }
-            catch (Exception) { throw; }
-        }
-
-        public List<User> GetAllByRoleAsRoot()
+        public User? GetByUserId(int userId)
         {
             try
             {
                 return _context.User
-                    .Where(x => x.RoleId == 1) //Only Root
-                    .ToList();
+                            .FirstOrDefault(x => x.UserId == userId);
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<User?> GetAll()
+        {
+            try
+            {
+                return _context.User.ToList();
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<User> GetAllByUserIdForModal(string textToSearch)
+        {
+            try
+            {
+                var query = from user in _context.User
+                            select new { User = user};
+
+                // Extraemos los resultados en listas separadas
+                List<User> lstUser = query.Select(result => result.User)
+                        .Where(x => x.UserId.ToString().Contains(textToSearch))
+                        .OrderByDescending(p => p.DateTimeLastModification)
+                        .ToList();
+
+                return lstUser;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public List<User?> GetAllByUserId(List<int> lstUserChecked)
+        {
+            try
+            {
+                List<User?> lstUser = [];
+
+                foreach (int UserId in lstUserChecked)
+                {
+                    User user = _context.User.Where(x => x.UserId == UserId).FirstOrDefault();
+
+                    if (user != null)
+                    {
+                        lstUser.Add(user);
+                    }
+                }
+
+                return lstUser;
             }
             catch (Exception) { throw; }
         }
@@ -90,13 +119,12 @@ namespace EmptyProject.Areas.CMSCore.Repositories
                     .Trim(), @"\s+", " ")
                     .Split(" ");
 
-                int TotalUser =  _context.User.Count();
+                int TotalUser = _context.User.Count();
 
                 var query = from user in _context.User
                             join userCreation in _context.User on user.UserCreationId equals userCreation.UserId
                             join userLastModification in _context.User on user.UserLastModificationId equals userLastModification.UserId
-                            join role in _context.Role on user.RoleId equals role.RoleId
-                            select new { User = user, UserCreation = userCreation, UserLastModification = userLastModification, Role = role };
+                            select new { User = user, UserCreation = userCreation, UserLastModification = userLastModification };
 
                 // Extraemos los resultados en listas separadas
                 List<User> lstUser = query.Select(result => result.User)
@@ -109,14 +137,12 @@ namespace EmptyProject.Areas.CMSCore.Repositories
                         .ToList();
                 List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
                 List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
-                List<Role> lstRole = query.Select(result => result.Role).ToList();
 
                 return new paginatedUserDTO
                 {
                     lstUser = lstUser,
                     lstUserCreation = lstUserCreation,
                     lstUserLastModification = lstUserLastModification,
-                    lstRole = lstRole,
                     TotalItems = TotalUser,
                     PageIndex = pageIndex,
                     PageSize = pageSize
@@ -159,7 +185,7 @@ namespace EmptyProject.Areas.CMSCore.Repositories
         public User? GetByEmailAndPassword(string email,
             string password)
         {
-            return  _context.User.AsQueryable()
+            return _context.User.AsQueryable()
                 .Where(u => u.Password == password)
                 .Where(u => u.Email == email)
                 .FirstOrDefault();
@@ -171,8 +197,8 @@ namespace EmptyProject.Areas.CMSCore.Repositories
         {
             try
             {
-                 _context.User.Add(user);
-                return  _context.SaveChanges() > 0;
+                _context.User.Add(user);
+                return _context.SaveChanges() > 0;
             }
             catch (Exception) { throw; }
         }
@@ -182,7 +208,7 @@ namespace EmptyProject.Areas.CMSCore.Repositories
             try
             {
                 _context.User.Update(user);
-                return  _context.SaveChanges() > 0;
+                return _context.SaveChanges() > 0;
             }
             catch (Exception) { throw; }
         }
@@ -195,18 +221,62 @@ namespace EmptyProject.Areas.CMSCore.Repositories
                         .Where(x => x.UserId == userId)
                         .ExecuteDelete();
 
-                return  _context.SaveChanges() > 0;
+                return _context.SaveChanges() > 0;
             }
             catch (Exception) { throw; }
         }
         #endregion
 
-        #region Other methods
+        #region Methods for DataTable
+        public DataTable GetAllByUserIdInDataTable(List<int> lstUserChecked)
+        {
+            try
+            {
+                DataTable DataTable = new();
+                DataTable.Columns.Add("UserId", typeof(string));
+                DataTable.Columns.Add("Active", typeof(string));
+                DataTable.Columns.Add("DateTimeCreation", typeof(string));
+                DataTable.Columns.Add("DateTimeLastModification", typeof(string));
+                DataTable.Columns.Add("UserCreationId", typeof(string));
+                DataTable.Columns.Add("UserLastModificationId", typeof(string));
+                DataTable.Columns.Add("Email", typeof(string));
+                DataTable.Columns.Add("Password", typeof(string));
+                DataTable.Columns.Add("RoleId", typeof(string));
+                DataTable.Columns.Add("ProfilePicture", typeof(string));
+                
+
+                foreach (int UserId in lstUserChecked)
+                {
+                    User user = _context.User.Where(x => x.UserId == UserId).FirstOrDefault();
+
+                    if (user != null)
+                    {
+                        DataTable.Rows.Add(
+                        user.UserId,
+                        user.Active,
+                        user.DateTimeCreation,
+                        user.DateTimeLastModification,
+                        user.UserCreationId,
+                        user.UserLastModificationId,
+                        user.Email,
+                        user.Password,
+                        user.RoleId,
+                        user.ProfilePicture
+                        
+                        );
+                    }
+                }                
+
+                return DataTable;
+            }
+            catch (Exception) { throw; }
+        }
+
         public DataTable GetAllInDataTable()
         {
             try
             {
-                List<User> lstUser =  _context.User.ToList();
+                List<User> lstUser = _context.User.ToList();
 
                 DataTable DataTable = new();
                 DataTable.Columns.Add("UserId", typeof(string));
@@ -218,6 +288,7 @@ namespace EmptyProject.Areas.CMSCore.Repositories
                 DataTable.Columns.Add("Email", typeof(string));
                 DataTable.Columns.Add("Password", typeof(string));
                 DataTable.Columns.Add("RoleId", typeof(string));
+                DataTable.Columns.Add("ProfilePicture", typeof(string));
                 
 
                 foreach (User user in lstUser)

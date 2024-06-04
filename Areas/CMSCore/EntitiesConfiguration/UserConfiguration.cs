@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using EmptyProject.Areas.CMSCore.Entities;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -12,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
  * 
  */
 
-namespace EmptyProject.Areas.CMSCore.Entities.EntitiesConfiguration
+namespace EmptyProject.Areas.CMSCore.EntitiesConfiguration
 {
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
@@ -30,6 +31,16 @@ namespace EmptyProject.Areas.CMSCore.Entities.EntitiesConfiguration
                     .HasColumnType("tinyint")
                     .IsRequired(true);
 
+                //DateTimeCreation
+                entity.Property(e => e.DateTimeCreation)
+                    .HasColumnType("datetime")
+                    .IsRequired(true);
+
+                //DateTimeLastModification
+                entity.Property(e => e.DateTimeLastModification)
+                    .HasColumnType("datetime")
+                    .IsRequired(true);
+
                 //UserCreationId
                 entity.Property(e => e.UserCreationId)
                     .HasColumnType("int")
@@ -42,23 +53,25 @@ namespace EmptyProject.Areas.CMSCore.Entities.EntitiesConfiguration
 
                 //Email
                 entity.Property(e => e.Email)
-                    .HasColumnType("varchar(380)")
-                    .IsRequired(false);
+                    .HasColumnType("varchar(400)")
+                    .IsRequired(true);
 
                 //Password
                 entity.Property(e => e.Password)
                     .HasColumnType("varchar(8000)")
-                    .IsRequired(false);
+                    .IsRequired(true);
 
                 //RoleId
                 entity.Property(e => e.RoleId)
                     .HasColumnType("int")
                     .IsRequired(true);
 
-                //RoleId
+                //ProfilePicture
                 entity.Property(e => e.ProfilePicture)
-                    .HasColumnType("varchar(8000)")
+                    .HasColumnType("varchar(MAX)")
                     .IsRequired(false);
+
+                
             }
             catch (Exception) { throw; }
         }
