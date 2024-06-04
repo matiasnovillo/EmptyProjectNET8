@@ -41,7 +41,7 @@
                         @foreach (Role role in lstAllRole)
                         {
                             <button class="btn btn-dark mx-2"
-                                    @onclick="() => ChooseRole(role.Name)">
+                                    @onclick="() => ChooseRole(role.RoleId)">
                                 @role.Name
                             </button>
                         }
@@ -185,32 +185,16 @@
         }
     }
 
-    private void ChooseRole(string chosenRole)
+    private void ChooseRole(int chosenRoleId)
     {
         try
         {
             List<Menu> lstAllMenu = menuRepository
                                             .GetAll();
 
-            if (chosenRole == "Root")
-            {
-                lstMenuWithState = rolemenuRepository
-                                            .GetAllWithStateByRoleId(1, lstAllMenu); //Role 1: Root
-                ChosenRole = 1;
-            }
-            else if(chosenRole == "Administrator")
-            {
-                lstMenuWithState = rolemenuRepository
-                                            .GetAllWithStateByRoleId(2, lstAllMenu); //Role 2: Administrator
-                ChosenRole = 2;
-            }
-            else
-            {
-                lstMenuWithState = rolemenuRepository
-                                            .GetAllWithStateByRoleId(3, lstAllMenu); //Role 3: Client
-
-                ChosenRole = 3;
-            }
+            lstMenuWithState = rolemenuRepository
+                                            .GetAllWithStateByRoleId(chosenRoleId, lstAllMenu);
+            ChosenRole = chosenRoleId;
         }
         catch (Exception ex)
         {
@@ -244,8 +228,14 @@
             {
                 RoleMenu rolemenu = new()
                     {
+                        DateTimeCreation = DateTime.Now,
+                        DateTimeLastModification = DateTime.Now,
+                        RoleMenuId = 0,
+                        UserCreationId = User.UserId,
+                        UserLastModificationId = User.UserId,
+                        Active = true,
                         MenuId = menuId,
-                        RoleId = ChosenRole
+                        RoleId = ChosenRole,
                     };
 
                 rolemenuRepository
