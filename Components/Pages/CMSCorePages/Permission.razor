@@ -19,26 +19,28 @@
     <div class="container-fluid px-2 px-md-4">
         <div class="page-header min-height-300 border-radius-xl mt-4"
              style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
-            <span class="mask bg-gradient-primary opacity-6"></span>
+            <span class="mask bg-gradient-dark opacity-6"></span>
         </div>
         <div class="card card-body mx-3 mx-md-4 mt-n6">
             <div class="row">
                 <div class="col-12">
-                    <h4 class="mt-4 mb-2">
-                        Permisos
-                    </h4>
-                    <NavLink href="Dashboard"
-                        class="btn btn-outline-info">
-                        <i class="fas fa-chevron-left"></i>
-                        Volver
-                    </NavLink>
+                    <div class="d-flex justify-content-between">
+                        <h4 class="mt-4 mb-2">
+                            Permisos
+                        </h4>
+                        <NavLink href="Dashboard"
+                                 class="btn btn-outline-dark">
+                            <i class="fas fa-chevron-left"></i>
+                            Volver
+                        </NavLink>
+                    </div>
                     <hr />
                     <p>Selecciona un rol</p>
                     @if (lstAllRole != null)
                     {
                         @foreach (Role role in lstAllRole)
                         {
-                            <button class="btn bg-gradient-primary mx-2"
+                            <button class="btn btn-dark mx-2"
                                     @onclick="() => ChooseRole(role.Name)">
                                 @role.Name
                             </button>
@@ -129,8 +131,12 @@
             if (User.UserId != 0)
             {
                 //Logged user
-                if (User.RoleId != 1) //Only Root can access
+                List<Menu> lstMenuWithPermission = rolemenuRepository
+                                .GetAllByRoleIdAndPathForPermission(User.RoleId, "/CMSCore/Permission");
+
+                if (lstMenuWithPermission.Count == 0)
                 {
+                    //Redirect to...
                     NavigationManager.NavigateTo("403");
                 }
                 
