@@ -1,10 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
-using EmptyProject.Areas.CMSCore.Entities;
-using EmptyProject.Areas.BasicCore.Entities;
-using EmptyProject.Areas.EmptyProject.Entities;
-using EmptyProject.Areas.EmptyProject.EntitiesConfiguration;
-using EmptyProject.Areas.BasicCore.EntitiesConfiguration;
-using EmptyProject.Areas.CMSCore.EntitiesConfiguration;
+﻿using EmptyProject.Areas.CMS.MenuBack.Entities;
+using EmptyProject.Areas.CMS.MenuBack.EntitiesConfiguration;
+using EmptyProject.Areas.CMS.RoleBack.Entities;
+using EmptyProject.Areas.CMS.RoleBack.EntitiesConfiguration;
+using EmptyProject.Areas.CMS.RoleMenuBack.Entities;
+using EmptyProject.Areas.CMS.RoleMenuBack.EntitiesConfiguration;
+using EmptyProject.Areas.CMS.UserBack.Entities;
+using EmptyProject.Areas.CMS.UserBack.EntitiesConfiguration;
+using EmptyProject.Areas.System.FailureBack.Entities;
+using EmptyProject.Areas.System.FailureBack.EntitiesConfiguration;
+using EmptyProject.Areas.System.ParameterBack.Entities;
+using EmptyProject.Areas.System.ParameterBack.EntitiesConfiguration;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmptyProject.DatabaseContexts
 {
@@ -20,8 +26,6 @@ namespace EmptyProject.DatabaseContexts
         public DbSet<Parameter> Parameter { get; set; }
 
         //EmptyProject
-        public DbSet<Client> Client { get; set; }
-        public DbSet<ClientStatus> ClientStatus { get; set; }
 
         public EmptyProjectContext(IConfiguration configuration)
         {
@@ -62,23 +66,19 @@ namespace EmptyProject.DatabaseContexts
             try
             {
                 modelBuilder.ApplyConfiguration(new UserConfiguration());
-                modelBuilder.Entity<User>().ToTable("CMSCore.User");
+                modelBuilder.Entity<User>().ToTable("CMS.User");
                 modelBuilder.ApplyConfiguration(new RoleConfiguration());
-                modelBuilder.Entity<Role>().ToTable("CMSCore.Role");
+                modelBuilder.Entity<Role>().ToTable("CMS.Role");
                 modelBuilder.ApplyConfiguration(new MenuConfiguration());
-                modelBuilder.Entity<Menu>().ToTable("CMSCore.Menu");
+                modelBuilder.Entity<Menu>().ToTable("CMS.Menu");
                 modelBuilder.ApplyConfiguration(new RoleMenuConfiguration());
-                modelBuilder.Entity<RoleMenu>().ToTable("CMSCore.RoleMenu");
+                modelBuilder.Entity<RoleMenu>().ToTable("CMS.RoleMenu");
                 modelBuilder.ApplyConfiguration(new FailureConfiguration());
-                modelBuilder.Entity<Failure>().ToTable("BasicCore.Failure");
+                modelBuilder.Entity<Failure>().ToTable("System.Failure");
                 modelBuilder.ApplyConfiguration(new ParameterConfiguration());
-                modelBuilder.Entity<Parameter>().ToTable("BasicCore.Parameter");
+                modelBuilder.Entity<Parameter>().ToTable("System.Parameter");
 
                 //EmptyProject
-                modelBuilder.ApplyConfiguration(new ClientConfiguration());
-                modelBuilder.Entity<Client>().ToTable("EmptyProject.Client");
-                modelBuilder.ApplyConfiguration(new ClientStatusConfiguration());
-                modelBuilder.Entity<ClientStatus>().ToTable("EmptyProject.ClientStatus");
             }
             catch (Exception) { throw; }
         }

@@ -1,8 +1,5 @@
-﻿using EmptyProject.Areas.BasicCore.Entities;
-using EmptyProject.Areas.BasicCore.Interfaces;
-using EmptyProject.Areas.BasicCore.Repositories;
-using System.Net;
-using System.Text.Json;
+﻿using EmptyProject.Areas.System.FailureBack.Entities;
+using EmptyProject.Areas.System.FailureBack.Interfaces;
 
 namespace EmptyProject.Middlewares
 {

@@ -9,9 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\CMSCore\**" />
     <Compile Remove="CommonFunctions\**" />
+    <Content Remove="Areas\CMSCore\**" />
     <Content Remove="CommonFunctions\**" />
+    <EmbeddedResource Remove="Areas\CMSCore\**" />
     <EmbeddedResource Remove="CommonFunctions\**" />
+    <None Remove="Areas\CMSCore\**" />
     <None Remove="CommonFunctions\**" />
   </ItemGroup>
 
@@ -32,7 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\CMSCore\Interfaces\" />
     <Folder Include="Migrations\" />
     <Folder Include="DatabaseBackups\" />
     <Folder Include="wwwroot\Downloads\ExcelFiles\" />
@@ -44,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\js\BasicCore\CustomFacundo.js">
+    <Content Update="wwwroot\js\System\CustomFacundo.js">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

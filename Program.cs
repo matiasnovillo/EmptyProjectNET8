@@ -1,13 +1,19 @@
-using EmptyProject.Areas.BasicCore.Repositories;
-using EmptyProject.Areas.CMSCore.Repositories;
 using EmptyProject.Components.Shared;
 using EmptyProject.Components;
 using EmptyProject.DatabaseContexts;
-using EmptyProject.Areas.EmptyProject.Repositories;
-using EmptyProject.Areas.EmptyProject.Services;
 using EmptyProject.Middlewares;
-using EmptyProject.Areas.BasicCore.Services;
-using EmptyProject.Areas.CMSCore.Services;
+using EmptyProject.Areas.CMS.UserBack.Repositories;
+using EmptyProject.Areas.CMS.UserBack.Services;
+using EmptyProject.Areas.CMS.RoleBack.Repositories;
+using EmptyProject.Areas.CMS.RoleBack.Services;
+using EmptyProject.Areas.CMS.MenuBack.Repositories;
+using EmptyProject.Areas.CMS.MenuBack.Services;
+using EmptyProject.Areas.CMS.RoleMenuBack.Repositories;
+using EmptyProject.Areas.CMS.RoleMenuBack.Services;
+using EmptyProject.Areas.System.FailureBack.Repositories;
+using EmptyProject.Areas.System.FailureBack.Services;
+using EmptyProject.Areas.System.ParameterBack.Repositories;
+using EmptyProject.Areas.System.ParameterBack.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,10 +51,6 @@ builder.Services.AddScoped<ParameterRepository>();
 builder.Services.AddScoped<ParameterService>();
 
 //Set access to repositories: EmptyProject
-builder.Services.AddScoped<ClientRepository>();
-builder.Services.AddScoped<ClientService>();
-builder.Services.AddScoped<ClientStatusRepository>();
-builder.Services.AddScoped<ClientStatusService>();
 
 //Set access to StateContainer to share data between Blazor components
 builder.Services.AddScoped<StateContainer>();

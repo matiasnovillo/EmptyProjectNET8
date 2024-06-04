@@ -6,24 +6,39 @@
 @using static Microsoft.AspNetCore.Components.Web.RenderMode;
 @using Microsoft.AspNetCore.Components.Web.Virtualization;
 @using Microsoft.JSInterop;
-@using EmptyProject;
-@using EmptyProject.Components;
-@using ClosedXML.Excel;
 @using System.Data;
+@using System.Globalization;
+@using System.ComponentModel.DataAnnotations;
+
+@using ClosedXML.Excel;
 @using IronPdf;
 @using CsvHelper;
-@using System.Globalization;
+
+@using EmptyProject;
+@using EmptyProject.Components;
 @using EmptyProject.Components.Shared;
-@inject StateContainer StateContainer;
-@inject NavigationManager NavigationManager;
-@using EmptyProject.Areas.CMSCore.Entities;
-@using EmptyProject.Areas.CMSCore.Repositories;
-@using EmptyProject.Areas.CMSCore.DTOs;
-@using EmptyProject.Areas.BasicCore.Repositories;
-@using EmptyProject.Areas.BasicCore.Entities;
-@using EmptyProject.Areas.BasicCore.DTOs;
+
+@using EmptyProject.Areas.System.FailureBack.Repositories;
+@using EmptyProject.Areas.System.FailureBack.Entities;
+@using EmptyProject.Areas.System.FailureBack.DTOs;
+@using EmptyProject.Areas.System.FailureBack.Services;
+
+@using EmptyProject.Areas.CMS.UserBack.Repositories;
+@using EmptyProject.Areas.CMS.UserBack.Entities;
+@using EmptyProject.Areas.CMS.MenuBack.Repositories;
+@using EmptyProject.Areas.CMS.MenuBack.Entities;
+@using EmptyProject.Areas.CMS.RoleBack.Repositories;
+@using EmptyProject.Areas.CMS.RoleBack.Entities;
+@using EmptyProject.Areas.CMS.RoleMenuBack.Repositories;
+@using EmptyProject.Areas.CMS.RoleMenuBack.Entities;
+
 @inject UserRepository userRepository;
 @inject MenuRepository menuRepository;
 @inject RoleRepository roleRepository;
 @inject RoleMenuRepository rolemenuRepository;
 @inject FailureRepository failureRepository;
+
+@inject StateContainer StateContainer;
+@inject NavigationManager NavigationManager;
+
+@using EmptyProject.Areas.CMS.MenuBack.DTOs;

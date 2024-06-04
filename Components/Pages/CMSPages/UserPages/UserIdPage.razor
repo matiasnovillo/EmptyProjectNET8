@@ -1,0 +1,679 @@
+@page "/CMS/UserPage/{UserId:int}"
+
+@inject UserRepository userRepository;
+
+@if (UserId == 0)
+{
+    <PageTitle>Agregar usuario - CMS</PageTitle>
+}
+else
+{
+    <PageTitle>Editar usuario - CMS</PageTitle>
+}
+
+<EmptyProject.Components.Layout.SideNav lstFoldersAndPages="lstFoldersAndPages"></EmptyProject.Components.Layout.SideNav>
+
+<div class="main-content position-relative max-height-vh-100 h-100">
+    <EmptyProject.Components.Layout.NavBarDashboard Pagina="Usuarios"></EmptyProject.Components.Layout.NavBarDashboard>
+    <div class="container-fluid px-2 px-md-4">
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
+            <span class="mask bg-gradient-primary opacity-6"></span>
+        </div>
+        <div class="card card-body mx-3 mx-md-4 mt-n6">
+            <div class="card-header mb-0 pb-0">
+                <div class="d-flex justify-content-between">
+                    <h3 class="mb-3">
+                        @if (UserId == 0)
+                        {
+                            <span>Agregar usuario</span>
+                        }
+                        else
+                        {
+                            <span>Editar usuario</span>
+                        }
+                    </h3>
+                    <NavLink class="btn btn-outline-dark" href="CMS/UserPage">
+                        <span class="fas fa-chevron-left"></span>
+                        &nbsp;Volver
+                    </NavLink>
+                </div>
+                <hr />
+            </div>
+            <div class="card-body px-0">
+                <form method="post" @onsubmit="Submit"
+                      @formname="user-form" class="mb-4">
+                    <AntiforgeryToken />
+                    <!--Email-->
+                    <div class="input-group input-group-static mb-3">
+                        <label for="email">
+                            Email
+                            @if (ErrorMessageEmail != "")
+                            {
+                                @((MarkupString)ErrorMessageEmail)
+                            }
+                        </label>
+                        <input type="email"
+                               id="email"
+                               class="form-control"
+                               value="@User!.Email"
+                               @onchange="HandleEmailChange" />
+                    </div>
+                    <!--Password-->
+                    <div class="input-group input-group-static mb-3">
+                        <label for="password">
+                            Contraseña
+                            @if (ErrorMessagePassword != "")
+                            {
+                                @((MarkupString)ErrorMessagePassword)
+                            }
+                        </label>
+                        <input type="password"
+                               id="password"
+                               class="form-control"
+                               value="@User!.Password"
+                               @onchange="HandlePasswordChange"/>
+                    </div>
+                    <!--RoleId-->
+                    <label>
+                        Rol
+                        @if (ErrorMessageRoleId != "")
+                        {
+                            @((MarkupString)ErrorMessageRoleId)
+                        }
+                    </label>
+                    <br/>
+                    <input type="hidden"
+                           id="roleid"
+                           value="@User!.RoleId"/>
+                    <br/>
+                    <button type="button" 
+                    class="btn btn-dark" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#roleidmodal">
+                        Seleccionar
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" 
+                        id="roleidmodal" 
+                        tabindex="-1" 
+                        aria-labelledby="roleidmodallabel" 
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="roleidmodallabel">
+                                        RoleId
+                                    </h5>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="input-group input-group-dynamic">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-search" aria-hidden="true"></i>
+                                        </span>
+                                        <input class="form-control"
+                                               @oninput="SearchTextRoleId"
+                                               type="search">
+                                    </div>
+                                    <br />
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover table-bordered mt-4">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>ID</th>
+                                                    <th>Nombre</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (Role role in lstRole)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <input type="radio"
+                                                                   id="@role.RoleId"
+                                                                   name="roleid"
+                                                                   value="@role.RoleId"
+                                                                   @onclick="@(() => HandleRoleIdChange(role.RoleId))">
+                                                        </td>
+                                                        <td>
+                                                            @role.RoleId
+                                                        </td>
+                                                        <td>
+                                                            @role.Name
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="modal-footer justify-content-end">
+                                    <button type="button" 
+                                    class="btn btn-dark mb-0" 
+                                    data-bs-dismiss="modal">
+                                        Cerrar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--ProfilePicture-->
+                    <div class="input-group input-group-static mb-3">
+                        <label for="profilepicture">
+                            ProfilePicture
+                            @if (ErrorMessageProfilePicture != "")
+                            {
+                                @((MarkupString)ErrorMessageProfilePicture)
+                            }
+                        </label>
+                        <InputFile type="file"
+                               id="profilepicture"
+                               class="form-control"
+                               
+                               OnChange="@UploadProfilePicture" />
+                        @{
+                            var ProgressCssForProfilePicture = "progress" + (DisplayProgressForProfilePicture ? "" : "d-none");
+                            var ProgressWidthStyleForProfilePicture = ProgressPercentForProfilePicture + "%";
+                        }
+                        <!--Progress bar-->
+                        <div class="@ProgressCssForProfilePicture">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated @ProgressBarColourForProfilePicture"
+                                 role="progressbar" style="width:@ProgressWidthStyleForProfilePicture"
+                                 area-valuenow="@ProgressPercentForProfilePicture" 
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr />
+                    @((MarkupString)Message)
+                    <div class="d-flex justify-content-between">
+                        <button id="btn-submit" type="submit"
+                                class="btn btn-success">
+                            <i class="fas fa-pen"></i>
+                            @if (UserId == 0)
+                            {
+                                <span>Agregar</span>
+                            }
+                            else
+                            {
+                                <span>Editar</span>
+                            }
+                        </button>
+                        <NavLink class="btn btn-outline-dark mx-3" href="CMS/UserPage">
+                            <span class="fas fa-chevron-left"></span>
+                            &nbsp;Volver
+                        </NavLink>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+
+    <EmptyProject.Components.Layout.FixedPlugin></EmptyProject.Components.Layout.FixedPlugin>
+    <EmptyProject.Components.Layout.FooterDashboard></EmptyProject.Components.Layout.FooterDashboard>
+</div>
+
+@code {
+    #region Properties
+    public List<folderForDashboard> lstFoldersAndPages = [];
+
+    public List<Role> lstRole { get; set; } = [];
+
+    [Parameter]
+    public int UserId { get; set; }
+
+    public string Message { get; set; } = "";
+
+    [SupplyParameterFromForm]
+    public User User { get; set; } = new();
+
+    public User UserOfVerification { get; set; } = new();
+
+    //Error messages for inputs
+    public string ErrorMessageUserId { get; set; } = "";
+    public string ErrorMessageActive { get; set; } = "";
+    public string ErrorMessageDateTimeCreation { get; set; } = "";
+    public string ErrorMessageDateTimeLastModification { get; set; } = "";
+    public string ErrorMessageUserCreationId { get; set; } = "";
+    public string ErrorMessageUserLastModificationId { get; set; } = "";
+    public string ErrorMessageEmail { get; set; } = "";
+    public string ErrorMessagePassword { get; set; } = "";
+    public string ErrorMessageRoleId { get; set; } = "";
+    public string ErrorMessageProfilePicture { get; set; } = "";
+    
+
+    //Progress bar for ProfilePicture
+    public bool DisplayProgressForProfilePicture { get; set; } = false;
+    public int ProgressPercentForProfilePicture { get; set; } = 0;
+    public string ProgressTextForProfilePicture { get; set; } = "";
+    public string ProgressBarColourForProfilePicture { get; set; } = "bg-info";
+    
+    
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //Look for saved user in shared component, simulates a session
+            UserOfVerification = StateContainer.User == null ? new() : StateContainer.User;
+
+            lstFoldersAndPages = [];
+
+            if (UserOfVerification != null)
+            {
+                if (UserOfVerification.UserId != 0)
+                {
+                    //Logged user
+                    List<Menu> lstMenuWithPermission = rolemenuRepository
+                                    .GetAllByRoleIdAndPathForPermission(UserOfVerification.RoleId, "/CMS/UserPage");
+
+                    if (lstMenuWithPermission.Count == 0)
+                    {
+                        //Redirect to...
+                        NavigationManager.NavigateTo("403");
+                    }
+
+                    List<Menu> lstMenu = menuRepository
+                                        .GetAll();
+
+                    lstFoldersAndPages = rolemenuRepository
+                                            .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
+
+                    lstRole = roleRepository.GetAll();
+
+                    if (UserId == 0)
+                    {
+                        //Create new User
+                        User = new();
+                    }
+                    else
+                    {
+                        //Edit User
+
+                        User = userRepository
+                                    .GetByUserId(UserId);
+                    }                    
+                }
+                else
+                {
+                    //Not logged user
+
+                    //Redirect to...
+                    NavigationManager.NavigateTo("Login");
+                }
+            }
+            else
+            {
+                //Impossible
+            }
+
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = UserOfVerification.UserId == 0 ? 1 : UserOfVerification.UserId,
+                    UserLastModificationId = UserOfVerification.UserId == 0 ? 1 : UserOfVerification.UserId,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            if (UserId == 0)
+            {
+                //Create new User
+                User.Active = true;
+                User.UserCreationId = UserOfVerification.UserId;
+                User.UserLastModificationId = UserOfVerification.UserId;
+                User.DateTimeCreation = DateTime.Now;
+                User.DateTimeLastModification = DateTime.Now;
+
+                if(Check("") == null)
+                {
+                    userRepository
+                        .Add(User);
+
+                    //Redirect to users page
+                    NavigationManager.NavigateTo("CMS/UserPage");
+                }
+
+
+            }
+            else
+            {
+                //Update data
+                User.DateTimeLastModification = DateTime.Now;
+                User.UserLastModificationId = User.UserId;
+
+                if(Check("") == null)
+                {
+                    userRepository
+                            .Update(User);
+
+                    //Redirect to users page
+                    NavigationManager.NavigateTo("CMS/UserPage");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = UserOfVerification.UserId == 0 ? 1 : UserOfVerification.UserId,
+                    UserLastModificationId = UserOfVerification.UserId == 0 ? 1 : UserOfVerification.UserId,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    #region Uploaders
+    private async void UploadProfilePicture(InputFileChangeEventArgs e)
+    {
+
+        try
+        {
+            DisplayProgressForProfilePicture = true;
+            ProgressPercentForProfilePicture = 80;
+            ProgressBarColourForProfilePicture = "bg-info";
+
+            string path = Path.Combine(
+                Environment.CurrentDirectory,
+                "wwwroot",
+                "Uploads",
+                "CMS",
+                "User",
+                e.File.Name);
+
+            long MaxFileSize = 1024L * 1024L; //3MB max.
+
+            await using FileStream FileStream = new(path, FileMode.Create);
+            await e.File.OpenReadStream(MaxFileSize).CopyToAsync(FileStream);
+
+            FileStream.Close();
+
+            string Limitator = "\\wwwroot";
+            int StartIndex = path.IndexOf(Limitator);
+            string Result = "";
+
+            if (StartIndex != -1)
+            {
+                Result = path.Substring(StartIndex + Limitator.Length);
+            }
+
+            User!.ProfilePicture = Result;
+
+            Check("[ProfilePicture]");
+
+            ProgressPercentForProfilePicture = 100;
+            ProgressBarColourForProfilePicture = "bg-success";
+            DisplayProgressForProfilePicture = false;
+        }
+        catch (Exception ex)
+        {
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                            Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                         </div>";
+
+            ProgressPercentForProfilePicture = 100;
+            ProgressBarColourForProfilePicture = "bg-danger";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    
+    #endregion    
+
+    #region Searchers
+    private async Task SearchTextRoleId(ChangeEventArgs args)
+    {
+        try
+        {
+            //Basic configuration
+            Message = "";
+
+            string TextToSearch = args.Value.ToString();
+
+            lstRole = roleRepository.GetAllByNameForModal(TextToSearch);
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = UserOfVerification.UserId == 0 ? 1 : UserOfVerification.UserId,
+                    UserLastModificationId = UserOfVerification.UserId == 0 ? 1 : UserOfVerification.UserId,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+    
+    #endregion
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="attributeToValid">Debe estar encapsulado en []. Ejemplo: [Boolean]</param>
+    /// <returns></returns>
+    private ValidationResult Check(string attributeToValid)
+    {
+        try
+        {
+            List<ValidationResult> lstValidationResult = new List<ValidationResult>();
+            ValidationContext ValidationContext = new ValidationContext(User);
+
+            bool IsValid = Validator.TryValidateObject(User, ValidationContext, lstValidationResult, true);
+
+            ValidationResult ValidationResult = lstValidationResult
+            .AsQueryable()
+            .FirstOrDefault(x => x.ErrorMessage.StartsWith(attributeToValid));
+
+            if (!IsValid)
+            {
+                Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Para guardar correctamente debe completar los siguientes puntos: <br/> <ul>";
+
+                foreach (var validationResult in lstValidationResult)
+                {
+                    validationResult.ErrorMessage = validationResult.ErrorMessage.Substring(validationResult.ErrorMessage.IndexOf(']') + 1);
+                    Message += $@"<li>{validationResult}</li>";
+                }
+
+                Message = Message + "</ul></div>";
+            }
+            else
+            {
+                Message = $@"<div class=""alert alert-successs text-white font-weight-bold"" role=""alert"">
+                                Todos los datos ingresados son correctos
+                            </div>";
+            }
+
+
+            if (ValidationResult != null)
+            {
+                ValidationResult.ErrorMessage = ValidationResult.ErrorMessage.Substring(ValidationResult.ErrorMessage.IndexOf(']') + 1);
+            }
+
+            return ValidationResult;
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = UserOfVerification.UserId == 0 ? 1 : UserOfVerification.UserId,
+                    UserLastModificationId = UserOfVerification.UserId == 0 ? 1 : UserOfVerification.UserId,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+
+            return null;
+        }
+        finally
+        {
+
+        }
+    }
+
+    #region Handlers
+    private async Task HandleEmailChange(ChangeEventArgs e)
+    {
+        User.Email = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[Email]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageEmail = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageEmail = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandlePasswordChange(ChangeEventArgs e)
+    {
+        User.Password = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[Password]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessagePassword = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessagePassword = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleRoleIdChange(int roleid)
+    {
+        User.RoleId = roleid;
+        ValidationResult ValidationResult = Check("[RoleId]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageRoleId = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageRoleId = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        //Re-render the page to show ScannedText
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    private async Task HandleProfilePictureChange(ChangeEventArgs e)
+    {
+        User.ProfilePicture = e.Value?.ToString();
+        ValidationResult ValidationResult = Check("[ProfilePicture]");
+
+        if (ValidationResult == null)
+        {
+            ErrorMessageProfilePicture = $@"<span class=""text-success"">
+                <i class=""fas fa-circle-check""></i>
+            </span>";
+        }
+        else
+        {
+            ErrorMessageProfilePicture = $@"<span class=""text-danger"">
+    <i class=""fas fa-circle-xmark""></i>
+    {ValidationResult.ErrorMessage}
+</span>";
+        }
+
+        await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+    }
+    
+    #endregion
+}
+

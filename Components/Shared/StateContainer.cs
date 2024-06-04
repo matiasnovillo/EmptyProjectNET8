@@ -1,4 +1,4 @@
-﻿using EmptyProject.Areas.CMSCore.Entities;
+﻿using EmptyProject.Areas.CMS.UserBack.Entities;
 
 namespace EmptyProject.Components.Shared
 {
