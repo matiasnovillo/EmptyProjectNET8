@@ -121,13 +121,8 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
 
                 int TotalRole = _context.Role.Count();
 
-                var query = from role in _context.Role
-                            join userCreation in _context.User on role.UserCreationId equals userCreation.UserId
-                            join userLastModification in _context.User on role.UserLastModificationId equals userLastModification.UserId
-                            select new { Role = role, UserCreation = userCreation, UserLastModification = userLastModification };
-
-                // Extraemos los resultados en listas separadas
-                List<Role> lstRole = query.Select(result => result.Role)
+                List<Role> lstRole = _context.Role
+                        .AsQueryable()
                         .Where(x => strictSearch ?
                             words.All(word => x.Name.Contains(word)) :
                             words.Any(word => x.Name.Contains(word)))
@@ -135,8 +130,25 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
-                List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
-                List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
+                List<User> lstUserCreation = [];
+                List<User> lstUserLastModification = [];
+
+                foreach (Role role in lstRole)
+                {
+                    User UserCreation = _context.User
+                        .AsQueryable()
+                        .Where(x => x.UserCreationId == role.UserCreationId)
+                        .FirstOrDefault();
+
+                    lstUserCreation.Add(UserCreation);
+
+                    User UserLastModification = _context.User
+                       .AsQueryable()
+                       .Where(x => x.UserLastModificationId == role.UserLastModificationId)
+                       .FirstOrDefault();
+
+                    lstUserLastModification.Add(UserLastModification);
+                }
 
                 return new paginatedRoleDTO
                 {

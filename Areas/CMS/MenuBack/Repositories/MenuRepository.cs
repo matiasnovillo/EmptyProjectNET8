@@ -121,13 +121,8 @@ namespace EmptyProject.Areas.CMS.MenuBack.Repositories
 
                 int TotalMenu = _context.Menu.Count();
 
-                var query = from menu in _context.Menu
-                            join userCreation in _context.User on menu.UserCreationId equals userCreation.UserId
-                            join userLastModification in _context.User on menu.UserLastModificationId equals userLastModification.UserId
-                            select new { Menu = menu, UserCreation = userCreation, UserLastModification = userLastModification };
-
-                // Extraemos los resultados en listas separadas
-                List<Menu> lstMenu = query.Select(result => result.Menu)
+                List<Menu> lstMenu = _context.Menu
+                        .AsQueryable()
                         .Where(x => strictSearch ?
                             words.All(word => x.Name.Contains(word)) :
                             words.Any(word => x.Name.Contains(word)))
@@ -135,8 +130,25 @@ namespace EmptyProject.Areas.CMS.MenuBack.Repositories
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
-                List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
-                List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
+                List<User> lstUserCreation = [];
+                List<User> lstUserLastModification = [];
+
+                foreach (Menu menu in lstMenu)
+                {
+                    User UserCreation = _context.User
+                        .AsQueryable()
+                        .Where(x => x.UserCreationId == menu.UserCreationId)
+                        .FirstOrDefault();
+
+                    lstUserCreation.Add(UserCreation);
+
+                    User UserLastModification = _context.User
+                       .AsQueryable()
+                       .Where(x => x.UserLastModificationId == menu.UserLastModificationId)
+                       .FirstOrDefault();
+
+                    lstUserLastModification.Add(UserLastModification);
+                }
 
                 return new paginatedMenuDTO
                 {

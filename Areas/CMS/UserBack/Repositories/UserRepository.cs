@@ -120,13 +120,8 @@ namespace EmptyProject.Areas.CMS.UserBack.Repositories
 
                 int TotalUser = _context.User.Count();
 
-                var query = from user in _context.User
-                            join userCreation in _context.User on user.UserCreationId equals userCreation.UserId
-                            join userLastModification in _context.User on user.UserLastModificationId equals userLastModification.UserId
-                            select new { User = user, UserCreation = userCreation, UserLastModification = userLastModification };
-
-                // Extraemos los resultados en listas separadas
-                List<User> lstUser = query.Select(result => result.User)
+                List<User> lstUser = _context.User
+                        .AsQueryable()
                         .Where(x => strictSearch ?
                             words.All(word => x.Email.Contains(word)) :
                             words.Any(word => x.Email.Contains(word)))
@@ -134,8 +129,25 @@ namespace EmptyProject.Areas.CMS.UserBack.Repositories
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
-                List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
-                List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
+                List<User> lstUserCreation = [];
+                List<User> lstUserLastModification = [];
+
+                foreach (User user in lstUser)
+                {
+                    User UserCreation = _context.User
+                        .AsQueryable()
+                        .Where(x => x.UserCreationId == user.UserCreationId)
+                        .FirstOrDefault();
+
+                    lstUserCreation.Add(UserCreation);
+
+                    User UserLastModification = _context.User
+                       .AsQueryable()
+                       .Where(x => x.UserLastModificationId == user.UserLastModificationId)
+                       .FirstOrDefault();
+
+                    lstUserLastModification.Add(UserLastModification);
+                }
 
                 return new paginatedUserDTO
                 {

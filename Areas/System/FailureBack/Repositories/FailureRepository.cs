@@ -121,13 +121,8 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
 
                 int TotalFailure = _context.Failure.Count();
 
-                var query = from failure in _context.Failure
-                            join userCreation in _context.User on failure.UserCreationId equals userCreation.UserId
-                            join userLastModification in _context.User on failure.UserLastModificationId equals userLastModification.UserId
-                            select new { Failure = failure, UserCreation = userCreation, UserLastModification = userLastModification };
-
-                // Extraemos los resultados en listas separadas
-                List<Failure> lstFailure = query.Select(result => result.Failure)
+                List<Failure> lstFailure = _context.Failure
+                        .AsQueryable()
                         .Where(x => strictSearch ?
                             words.All(word => x.FailureId.ToString().Contains(word)) :
                             words.Any(word => x.FailureId.ToString().Contains(word)))
@@ -135,8 +130,25 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
-                List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
-                List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
+                List<User> lstUserCreation = [];
+                List<User> lstUserLastModification = [];
+
+                foreach (Failure failure in lstFailure)
+                {
+                    User UserCreation = _context.User
+                        .AsQueryable()
+                        .Where(x => x.UserCreationId == failure.UserCreationId)
+                        .FirstOrDefault();
+
+                    lstUserCreation.Add(UserCreation);
+
+                    User UserLastModification = _context.User
+                       .AsQueryable()
+                       .Where(x => x.UserLastModificationId == failure.UserLastModificationId)
+                       .FirstOrDefault();
+
+                    lstUserLastModification.Add(UserLastModification);
+                }
 
                 return new paginatedFailureDTO
                 {

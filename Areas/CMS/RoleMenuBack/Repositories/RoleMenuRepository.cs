@@ -123,13 +123,8 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
 
                 int TotalRoleMenu = _context.RoleMenu.Count();
 
-                var query = from rolemenu in _context.RoleMenu
-                            join userCreation in _context.User on rolemenu.UserCreationId equals userCreation.UserId
-                            join userLastModification in _context.User on rolemenu.UserLastModificationId equals userLastModification.UserId
-                            select new { RoleMenu = rolemenu, UserCreation = userCreation, UserLastModification = userLastModification };
-
-                // Extraemos los resultados en listas separadas
-                List<RoleMenu> lstRoleMenu = query.Select(result => result.RoleMenu)
+                List<RoleMenu> lstRoleMenu = _context.RoleMenu
+                        .AsQueryable()
                         .Where(x => strictSearch ?
                             words.All(word => x.RoleMenuId.ToString().Contains(word)) :
                             words.Any(word => x.RoleMenuId.ToString().Contains(word)))
@@ -137,8 +132,25 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
-                List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
-                List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
+                List<User> lstUserCreation = [];
+                List<User> lstUserLastModification = [];
+
+                foreach (RoleMenu rolemenu in lstRoleMenu)
+                {
+                    User UserCreation = _context.User
+                        .AsQueryable()
+                        .Where(x => x.UserCreationId == rolemenu.UserCreationId)
+                        .FirstOrDefault();
+
+                    lstUserCreation.Add(UserCreation);
+
+                    User UserLastModification = _context.User
+                       .AsQueryable()
+                       .Where(x => x.UserLastModificationId == rolemenu.UserLastModificationId)
+                       .FirstOrDefault();
+
+                    lstUserLastModification.Add(UserLastModification);
+                }
 
                 return new paginatedRoleMenuDTO
                 {

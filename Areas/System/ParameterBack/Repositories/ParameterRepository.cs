@@ -6,6 +6,7 @@ using EmptyProject.Areas.System.ParameterBack.DTOs;
 using EmptyProject.Areas.System.ParameterBack.Entities;
 using EmptyProject.Areas.System.ParameterBack.Interfaces;
 using EmptyProject.Areas.CMS.UserBack.Entities;
+using EmptyProject.Areas.System.FailureBack.Entities;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -121,13 +122,8 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
 
                 int TotalParameter = _context.Parameter.Count();
 
-                var query = from parameter in _context.Parameter
-                            join userCreation in _context.User on parameter.UserCreationId equals userCreation.UserId
-                            join userLastModification in _context.User on parameter.UserLastModificationId equals userLastModification.UserId
-                            select new { Parameter = parameter, UserCreation = userCreation, UserLastModification = userLastModification };
-
-                // Extraemos los resultados en listas separadas
-                List<Parameter> lstParameter = query.Select(result => result.Parameter)
+                List<Parameter> lstParameter = _context.Parameter
+                        .AsQueryable()
                         .Where(x => strictSearch ?
                             words.All(word => x.Name.Contains(word)) :
                             words.Any(word => x.Name.Contains(word)))
@@ -135,8 +131,25 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
-                List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
-                List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
+                List<User> lstUserCreation = [];
+                List<User> lstUserLastModification = [];
+
+                foreach (Parameter parameter in lstParameter)
+                {
+                    User UserCreation = _context.User
+                        .AsQueryable()
+                        .Where(x => x.UserCreationId == parameter.UserCreationId)
+                        .FirstOrDefault();
+
+                    lstUserCreation.Add(UserCreation);
+
+                    User UserLastModification = _context.User
+                       .AsQueryable()
+                       .Where(x => x.UserLastModificationId == parameter.UserLastModificationId)
+                       .FirstOrDefault();
+
+                    lstUserLastModification.Add(UserLastModification);
+                }
 
                 return new paginatedParameterDTO
                 {
