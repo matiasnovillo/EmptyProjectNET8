@@ -1,10 +1,11 @@
-﻿@page "/404"
+﻿@page "/500"
 
 @using FiyiStackWeb2.Areas.FiyiStackWeb2.VisitorPageCounterBack.Entities;
 @using FiyiStackWeb2.Areas.FiyiStackWeb2.VisitorPageCounterBack.Repositories;
+@using System.Diagnostics
 @inject VisitorPageCounterRepository visitorPageCounterRepository;
 
-<PageTitle>404 - FiyiStack</PageTitle>
+<PageTitle>500 - FiyiStack</PageTitle>
 
 <FiyiStackWeb2.Components.Layout.NavBarHome></FiyiStackWeb2.Components.Layout.NavBarHome>
 
@@ -15,12 +16,18 @@
     <div class="container my-auto">
         <div class="row">
             <div class="col-lg-12 m-auto text-center">
-                <h1 class="display-1 text-bolder text-white">
-                    Página no encontrada 
-                </h1>
-                <h3 class="text-white">
-                    Lo sentimos pero la página que buscas no existe
-                </h3>
+                <h2 class="text-bolder text-white">
+                    ¡Ups! Hubo un error por parte del servidor
+                </h2>
+                <h5 class="text-white mt-4">
+                    Lo sentimos mucho pero ya se ha entregado una notificación a nuestros especialistas
+                </h5>
+                @if (ShowRequestId)
+                {
+                    <p class="lead text-white">
+                        <strong>ID de consulta:</strong> <code>@RequestId</code>
+                    </p>
+                }
                 <p class="lead text-white">
                     Te recomendamos ir a la página de inicio
                 </p>
@@ -37,13 +44,19 @@
 <FiyiStackWeb2.Components.Layout.FooterHome></FiyiStackWeb2.Components.Layout.FooterHome>
 
 @code {
-    [Parameter]
-    public string Path { get; set; } = "";
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
     protected override void OnInitialized()
     {
         try
         {
+            RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+
             //Save visit page
             FiyiStackWeb2.Areas.FiyiStackWeb2.VisitorPageCounterBack.Entities.VisitorPageCounter visitorPageCounter = new()
                 {
@@ -52,9 +65,25 @@
                     DateTimeLastModification = DateTime.Now,
                     UserCreationId = 1,
                     UserLastModificationId = 1,
-                    PageName = "404"
+                    PageName = "500"
                 };
             visitorPageCounterRepository.Add(visitorPageCounter);
+
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = $@"Request ID: {RequestId}",
+                    Source = "",
+                    StackTrace = ""
+                };
+
+            failureRepository.Add(failure);
 
             base.OnInitialized();
         }
