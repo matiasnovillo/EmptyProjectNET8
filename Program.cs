@@ -14,6 +14,7 @@ using EmptyProject.Areas.System.FailureBack.Repositories;
 using EmptyProject.Areas.System.FailureBack.Services;
 using EmptyProject.Areas.System.ParameterBack.Repositories;
 using EmptyProject.Areas.System.ParameterBack.Services;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,8 +32,11 @@ var builder = WebApplication.CreateBuilder(args);
 //});
 
 // Add services to the container.
+builder.Services.AddControllers();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddServerSideBlazor();
+builder.Services.AddHttpClient();
 
 builder.Services.AddDbContext<EmptyProjectContext>(ServiceLifetime.Scoped);
 
@@ -75,9 +79,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.UseMiddleware<ExceptionHandlerMiddleware>();
+//app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+app.MapControllers();
 
 app.Run();

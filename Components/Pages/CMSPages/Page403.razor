@@ -1,12 +1,8 @@
 ﻿@page "/403"
 
-@using FiyiStackWeb2.Areas.FiyiStackWeb2.VisitorPageCounterBack.Entities;
-@using FiyiStackWeb2.Areas.FiyiStackWeb2.VisitorPageCounterBack.Repositories;
-@inject VisitorPageCounterRepository visitorPageCounterRepository;
-
 <PageTitle>403 - FiyiStack</PageTitle>
 
-<FiyiStackWeb2.Components.Layout.NavBarHome></FiyiStackWeb2.Components.Layout.NavBarHome>
+<EmptyProject.Components.Layout.NavBarHome></EmptyProject.Components.Layout.NavBarHome>
 
 <div class="page-header align-items-start min-vh-100"
      style="background-image: url(img/System/404Image.png);"
@@ -35,7 +31,7 @@
     </div>
 </div>
 
-<FiyiStackWeb2.Components.Layout.FooterHome></FiyiStackWeb2.Components.Layout.FooterHome>
+<EmptyProject.Components.Layout.FooterHome></EmptyProject.Components.Layout.FooterHome>
 
 @code {
     [Parameter]
@@ -45,18 +41,6 @@
     {
         try
         {
-            //Save visit page
-            FiyiStackWeb2.Areas.FiyiStackWeb2.VisitorPageCounterBack.Entities.VisitorPageCounter visitorPageCounter = new()
-                {
-                    Active = true,
-                    DateTimeCreation = DateTime.Now,
-                    DateTimeLastModification = DateTime.Now,
-                    UserCreationId = 1,
-                    UserLastModificationId = 1,
-                    PageName = "403"
-                };
-            visitorPageCounterRepository.Add(visitorPageCounter);
-
             base.OnInitialized();
         }
         catch (Exception ex)
