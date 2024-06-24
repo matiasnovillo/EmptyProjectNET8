@@ -6,6 +6,9 @@ using EmptyProject.Areas.CMS.UserBack.Entities;
 using EmptyProject.Areas.CMS.RoleBack.DTOs;
 using EmptyProject.Areas.CMS.RoleBack.Entities;
 using EmptyProject.Areas.CMS.RoleBack.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using DocumentFormat.OpenXml.Drawing.Spreadsheet;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -23,10 +26,19 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
     public class RoleRepository : IRoleRepository
     {
         protected readonly EmptyProjectContext _context;
+        private readonly IMemoryCache _memoryCache;
+        private readonly MemoryCacheEntryOptions _memoryCacheEntryOptions;
 
-        public RoleRepository(EmptyProjectContext context)
+        public RoleRepository(EmptyProjectContext context, IMemoryCache memoryCache)
         {
             _context = context;
+            _memoryCache = memoryCache;
+
+            _memoryCacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+                SlidingExpiration = TimeSpan.FromMinutes(2)
+            };
         }
 
         public IQueryable<Role> AsQueryable()
@@ -52,8 +64,19 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
         {
             try
             {
-                return _context.Role
-                            .FirstOrDefault(x => x.RoleId == roleId);
+                //Look in cache first
+                if (!_memoryCache.TryGetValue($@"CMS.Role.RoleId={roleId}", out Role? role))
+                {
+                    //If not exist in cache, look in DB
+                    role = _context.Role
+                                .FirstOrDefault(x => x.RoleId == roleId);
+                    
+                    if (role != null)
+                    {
+                        _memoryCache.Set(roleId, role, _memoryCacheEntryOptions);
+                    }
+                }
+                return role;
             }
             catch (Exception) { throw; }
         }
@@ -169,8 +192,18 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
         {
             try
             {
-                _context.Role.Add(role);
-                return _context.SaveChanges() > 0;
+                EntityEntry<Role> RoleToAdd = _context.Role.Add(role);
+
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    int AddedRoleId = RoleToAdd.Entity.RoleId;
+
+                    _memoryCache.Set($@"CMS.Role.RoleId={AddedRoleId}", role, _memoryCacheEntryOptions);
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -180,7 +213,15 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
             try
             {
                 _context.Role.Update(role);
-                return _context.SaveChanges() > 0;
+
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    _memoryCache.Set($@"CMS.Role.RoleId={role.RoleId}", role, _memoryCacheEntryOptions);
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -193,7 +234,14 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
                         .Where(x => x.RoleId == roleId)
                         .ExecuteDelete();
 
-                return _context.SaveChanges() > 0;
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    _memoryCache.Remove($@"CMS.Role.RoleId={roleId}");
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }

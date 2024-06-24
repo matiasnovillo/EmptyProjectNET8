@@ -14,22 +14,13 @@ using EmptyProject.Areas.System.FailureBack.Repositories;
 using EmptyProject.Areas.System.FailureBack.Services;
 using EmptyProject.Areas.System.ParameterBack.Repositories;
 using EmptyProject.Areas.System.ParameterBack.Services;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Microsoft.Extensions.Caching.Memory;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//}).AddCookie();
-
-//builder.Services.AddSession(options =>
-//{
-//    options.IdleTimeout = TimeSpan.FromMinutes(30);
-//    options.Cookie.HttpOnly = true;
-//    options.Cookie.IsEssential = true;
-//});
+//Add service to cache data
+builder.Services.AddSingleton<IMemoryCache>(
+    new MemoryCache(new MemoryCacheOptions()));
 
 // Add services to the container.
 builder.Services.AddControllers();
