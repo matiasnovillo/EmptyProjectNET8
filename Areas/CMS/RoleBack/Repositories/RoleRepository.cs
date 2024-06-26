@@ -1,14 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using EmptyProject.Areas.CMS.UserBack.Entities;
+using EmptyProject.Areas.CMS.RoleBack.Entities;
+using EmptyProject.Areas.CMS.RoleBack.DTOs;
+using EmptyProject.Areas.CMS.RoleBack.Interfaces;
 using EmptyProject.DatabaseContexts;
 using System.Text.RegularExpressions;
 using System.Data;
-using EmptyProject.Areas.CMS.UserBack.Entities;
-using EmptyProject.Areas.CMS.RoleBack.DTOs;
-using EmptyProject.Areas.CMS.RoleBack.Entities;
-using EmptyProject.Areas.CMS.RoleBack.Interfaces;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using DocumentFormat.OpenXml.Drawing.Spreadsheet;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -131,7 +130,7 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
 
         public paginatedRoleDTO GetAllByNamePaginated(string textToSearch,
             bool strictSearch,
-            int pageIndex,
+            int pageIndex, 
             int pageSize)
         {
             try
@@ -158,6 +157,7 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
 
                 foreach (Role role in lstRole)
                 {
+
                     User UserCreation = _context.User
                         .AsQueryable()
                         .Where(x => x.UserCreationId == role.UserCreationId)
@@ -260,7 +260,7 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
                 DataTable.Columns.Add("UserCreationId", typeof(string));
                 DataTable.Columns.Add("UserLastModificationId", typeof(string));
                 DataTable.Columns.Add("Name", typeof(string));
-
+                
 
                 foreach (int RoleId in lstRoleChecked)
                 {
@@ -276,10 +276,10 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
                         role.UserCreationId,
                         role.UserLastModificationId,
                         role.Name
-
+                        
                         );
                     }
-                }
+                }                
 
                 return DataTable;
             }
@@ -300,7 +300,7 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
                 DataTable.Columns.Add("UserCreationId", typeof(string));
                 DataTable.Columns.Add("UserLastModificationId", typeof(string));
                 DataTable.Columns.Add("Name", typeof(string));
-
+                
 
                 foreach (Role role in lstRole)
                 {
@@ -312,7 +312,7 @@ namespace EmptyProject.Areas.CMS.RoleBack.Repositories
                         role.UserCreationId,
                         role.UserLastModificationId,
                         role.Name
-
+                        
                         );
                 }
 

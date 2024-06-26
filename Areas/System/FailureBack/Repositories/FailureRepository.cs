@@ -1,11 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using EmptyProject.Areas.CMS.UserBack.Entities;
+using EmptyProject.Areas.System.FailureBack.Entities;
+using EmptyProject.Areas.System.FailureBack.DTOs;
+using EmptyProject.Areas.System.FailureBack.Interfaces;
 using EmptyProject.DatabaseContexts;
 using System.Text.RegularExpressions;
 using System.Data;
-using EmptyProject.Areas.System.FailureBack.DTOs;
-using EmptyProject.Areas.System.FailureBack.Entities;
-using EmptyProject.Areas.System.FailureBack.Interfaces;
-using EmptyProject.Areas.CMS.UserBack.Entities;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -23,10 +25,19 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
     public class FailureRepository : IFailureRepository
     {
         protected readonly EmptyProjectContext _context;
+        private readonly IMemoryCache _memoryCache;
+        private readonly MemoryCacheEntryOptions _memoryCacheEntryOptions;
 
-        public FailureRepository(EmptyProjectContext context)
+        public FailureRepository(EmptyProjectContext context, IMemoryCache memoryCache)
         {
             _context = context;
+            _memoryCache = memoryCache;
+
+            _memoryCacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+                SlidingExpiration = TimeSpan.FromMinutes(2)
+            };
         }
 
         public IQueryable<Failure> AsQueryable()
@@ -52,8 +63,19 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
         {
             try
             {
-                return _context.Failure
-                            .FirstOrDefault(x => x.FailureId == failureId);
+                //Look in cache first
+                if (!_memoryCache.TryGetValue($@"System.Failure.FailureId={failureId}", out Failure? failure))
+                {
+                    //If not exist in cache, look in DB
+                    failure = _context.Failure
+                                .FirstOrDefault(x => x.FailureId == failureId);
+                    
+                    if (failure != null)
+                    {
+                        _memoryCache.Set(failureId, failure, _memoryCacheEntryOptions);
+                    }
+                }
+                return failure;
             }
             catch (Exception) { throw; }
         }
@@ -72,7 +94,7 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
             try
             {
                 var query = from failure in _context.Failure
-                            select new { Failure = failure };
+                            select new { Failure = failure};
 
                 // Extraemos los resultados en listas separadas
                 List<Failure> lstFailure = query.Select(result => result.Failure)
@@ -108,7 +130,7 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
 
         public paginatedFailureDTO GetAllByFailureIdPaginated(string textToSearch,
             bool strictSearch,
-            int pageIndex,
+            int pageIndex, 
             int pageSize)
         {
             try
@@ -126,7 +148,7 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
                         .Where(x => strictSearch ?
                             words.All(word => x.FailureId.ToString().Contains(word)) :
                             words.Any(word => x.FailureId.ToString().Contains(word)))
-                        .OrderByDescending(p => p.DateTimeLastModification)
+                        .OrderByDescending(x => x.DateTimeLastModification)
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
@@ -135,6 +157,7 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
 
                 foreach (Failure failure in lstFailure)
                 {
+
                     User UserCreation = _context.User
                         .AsQueryable()
                         .Where(x => x.UserCreationId == failure.UserCreationId)
@@ -169,8 +192,18 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
         {
             try
             {
-                _context.Failure.Add(failure);
-                return _context.SaveChanges() > 0;
+                EntityEntry<Failure> FailureToAdd = _context.Failure.Add(failure);
+
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    int AddedFailureId = FailureToAdd.Entity.FailureId;
+
+                    _memoryCache.Set($@"System.Failure.FailureId={AddedFailureId}", failure, _memoryCacheEntryOptions);
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -180,7 +213,15 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
             try
             {
                 _context.Failure.Update(failure);
-                return _context.SaveChanges() > 0;
+
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    _memoryCache.Set($@"System.Failure.FailureId={failure.FailureId}", failure, _memoryCacheEntryOptions);
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -193,7 +234,14 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
                         .Where(x => x.FailureId == failureId)
                         .ExecuteDelete();
 
-                return _context.SaveChanges() > 0;
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    _memoryCache.Remove($@"System.Failure.FailureId={failureId}");
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -216,7 +264,7 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
                 DataTable.Columns.Add("StackTrace", typeof(string));
                 DataTable.Columns.Add("Source", typeof(string));
                 DataTable.Columns.Add("Comment", typeof(string));
-
+                
 
                 foreach (int FailureId in lstFailureChecked)
                 {
@@ -236,10 +284,10 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
                         failure.StackTrace,
                         failure.Source,
                         failure.Comment
-
+                        
                         );
                     }
-                }
+                }                
 
                 return DataTable;
             }
@@ -264,7 +312,7 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
                 DataTable.Columns.Add("StackTrace", typeof(string));
                 DataTable.Columns.Add("Source", typeof(string));
                 DataTable.Columns.Add("Comment", typeof(string));
-
+                
 
                 foreach (Failure failure in lstFailure)
                 {
@@ -280,7 +328,7 @@ namespace EmptyProject.Areas.System.FailureBack.Repositories
                         failure.StackTrace,
                         failure.Source,
                         failure.Comment
-
+                        
                         );
                 }
 

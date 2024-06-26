@@ -1,13 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using EmptyProject.Areas.CMS.UserBack.Entities;
+using EmptyProject.Areas.CMS.RoleMenuBack.Entities;
+using EmptyProject.Areas.CMS.RoleMenuBack.DTOs;
+using EmptyProject.Areas.CMS.RoleMenuBack.Interfaces;
+using EmptyProject.Areas.CMS.MenuBack.DTOs;
+using EmptyProject.Areas.CMS.MenuBack.Entities;
 using EmptyProject.DatabaseContexts;
 using System.Text.RegularExpressions;
 using System.Data;
-using EmptyProject.Areas.CMS.UserBack.Entities;
-using EmptyProject.Areas.CMS.MenuBack.DTOs;
-using EmptyProject.Areas.CMS.MenuBack.Entities;
-using EmptyProject.Areas.CMS.RoleMenuBack.DTOs;
-using EmptyProject.Areas.CMS.RoleMenuBack.Entities;
-using EmptyProject.Areas.CMS.RoleMenuBack.Interfaces;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -25,10 +27,19 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
     public class RoleMenuRepository : IRoleMenuRepository
     {
         protected readonly EmptyProjectContext _context;
+        private readonly IMemoryCache _memoryCache;
+        private readonly MemoryCacheEntryOptions _memoryCacheEntryOptions;
 
-        public RoleMenuRepository(EmptyProjectContext context)
+        public RoleMenuRepository(EmptyProjectContext context, IMemoryCache memoryCache)
         {
             _context = context;
+            _memoryCache = memoryCache;
+
+            _memoryCacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+                SlidingExpiration = TimeSpan.FromMinutes(2)
+            };
         }
 
         public IQueryable<RoleMenu> AsQueryable()
@@ -54,8 +65,19 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
         {
             try
             {
-                return _context.RoleMenu
-                            .FirstOrDefault(x => x.RoleMenuId == rolemenuId);
+                //Look in cache first
+                if (!_memoryCache.TryGetValue($@"CMS.RoleMenu.RoleMenuId={rolemenuId}", out RoleMenu? rolemenu))
+                {
+                    //If not exist in cache, look in DB
+                    rolemenu = _context.RoleMenu
+                                .FirstOrDefault(x => x.RoleMenuId == rolemenuId);
+                    
+                    if (rolemenu != null)
+                    {
+                        _memoryCache.Set(rolemenuId, rolemenu, _memoryCacheEntryOptions);
+                    }
+                }
+                return rolemenu;
             }
             catch (Exception) { throw; }
         }
@@ -110,7 +132,7 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
 
         public paginatedRoleMenuDTO GetAllByRoleMenuIdPaginated(string textToSearch,
             bool strictSearch,
-            int pageIndex,
+            int pageIndex, 
             int pageSize)
         {
             try
@@ -128,7 +150,7 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
                         .Where(x => strictSearch ?
                             words.All(word => x.RoleMenuId.ToString().Contains(word)) :
                             words.Any(word => x.RoleMenuId.ToString().Contains(word)))
-                        .OrderByDescending(p => p.DateTimeLastModification)
+                        .OrderByDescending(x => x.DateTimeLastModification)
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
@@ -280,8 +302,18 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
         {
             try
             {
-                _context.RoleMenu.Add(rolemenu);
-                return _context.SaveChanges() > 0;
+                EntityEntry<RoleMenu> RoleMenuToAdd = _context.RoleMenu.Add(rolemenu);
+
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    int AddedRoleMenuId = RoleMenuToAdd.Entity.RoleMenuId;
+
+                    _memoryCache.Set($@"CMS.RoleMenu.RoleMenuId={AddedRoleMenuId}", rolemenu, _memoryCacheEntryOptions);
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -291,7 +323,15 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
             try
             {
                 _context.RoleMenu.Update(rolemenu);
-                return _context.SaveChanges() > 0;
+
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    _memoryCache.Set($@"CMS.RoleMenu.RoleMenuId={rolemenu.RoleMenuId}", rolemenu, _memoryCacheEntryOptions);
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -304,7 +344,14 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
                         .Where(x => x.RoleMenuId == rolemenuId)
                         .ExecuteDelete();
 
-                return _context.SaveChanges() > 0;
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    _memoryCache.Remove($@"CMS.RoleMenu.RoleMenuId={rolemenuId}");
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -339,7 +386,7 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
                 DataTable.Columns.Add("UserLastModificationId", typeof(string));
                 DataTable.Columns.Add("MenuId", typeof(string));
                 DataTable.Columns.Add("RoleId", typeof(string));
-
+                
 
                 foreach (int RoleMenuId in lstRoleMenuChecked)
                 {
@@ -356,10 +403,10 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
                         rolemenu.UserLastModificationId,
                         rolemenu.MenuId,
                         rolemenu.RoleId
-
+                        
                         );
                     }
-                }
+                }                
 
                 return DataTable;
             }
@@ -381,7 +428,7 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
                 DataTable.Columns.Add("UserLastModificationId", typeof(string));
                 DataTable.Columns.Add("MenuId", typeof(string));
                 DataTable.Columns.Add("RoleId", typeof(string));
-
+                
 
                 foreach (RoleMenu rolemenu in lstRoleMenu)
                 {
@@ -394,7 +441,7 @@ namespace EmptyProject.Areas.CMS.RoleMenuBack.Repositories
                         rolemenu.UserLastModificationId,
                         rolemenu.MenuId,
                         rolemenu.RoleId
-
+                        
                         );
                 }
 

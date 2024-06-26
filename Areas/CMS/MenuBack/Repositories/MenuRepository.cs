@@ -1,11 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using EmptyProject.Areas.CMS.UserBack.Entities;
+using EmptyProject.Areas.CMS.MenuBack.Entities;
+using EmptyProject.Areas.CMS.MenuBack.DTOs;
+using EmptyProject.Areas.CMS.MenuBack.Interfaces;
 using EmptyProject.DatabaseContexts;
 using System.Text.RegularExpressions;
 using System.Data;
-using EmptyProject.Areas.CMS.UserBack.Entities;
-using EmptyProject.Areas.CMS.MenuBack.DTOs;
-using EmptyProject.Areas.CMS.MenuBack.Entities;
-using EmptyProject.Areas.CMS.MenuBack.Interfaces;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -23,10 +25,19 @@ namespace EmptyProject.Areas.CMS.MenuBack.Repositories
     public class MenuRepository : IMenuRepository
     {
         protected readonly EmptyProjectContext _context;
+        private readonly IMemoryCache _memoryCache;
+        private readonly MemoryCacheEntryOptions _memoryCacheEntryOptions;
 
-        public MenuRepository(EmptyProjectContext context)
+        public MenuRepository(EmptyProjectContext context, IMemoryCache memoryCache)
         {
             _context = context;
+            _memoryCache = memoryCache;
+
+            _memoryCacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+                SlidingExpiration = TimeSpan.FromMinutes(2)
+            };
         }
 
         public IQueryable<Menu> AsQueryable()
@@ -52,8 +63,19 @@ namespace EmptyProject.Areas.CMS.MenuBack.Repositories
         {
             try
             {
-                return _context.Menu
-                            .FirstOrDefault(x => x.MenuId == menuId);
+                //Look in cache first
+                if (!_memoryCache.TryGetValue($@"CMS.Menu.MenuId={menuId}", out Menu? menu))
+                {
+                    //If not exist in cache, look in DB
+                    menu = _context.Menu
+                                .FirstOrDefault(x => x.MenuId == menuId);
+                    
+                    if (menu != null)
+                    {
+                        _memoryCache.Set(menuId, menu, _memoryCacheEntryOptions);
+                    }
+                }
+                return menu;
             }
             catch (Exception) { throw; }
         }
@@ -108,7 +130,7 @@ namespace EmptyProject.Areas.CMS.MenuBack.Repositories
 
         public paginatedMenuDTO GetAllByNamePaginated(string textToSearch,
             bool strictSearch,
-            int pageIndex,
+            int pageIndex, 
             int pageSize)
         {
             try
@@ -169,8 +191,18 @@ namespace EmptyProject.Areas.CMS.MenuBack.Repositories
         {
             try
             {
-                _context.Menu.Add(menu);
-                return _context.SaveChanges() > 0;
+                EntityEntry<Menu> MenuToAdd = _context.Menu.Add(menu);
+
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    int AddedMenuId = MenuToAdd.Entity.MenuId;
+
+                    _memoryCache.Set($@"CMS.Menu.MenuId={AddedMenuId}", menu, _memoryCacheEntryOptions);
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -180,7 +212,15 @@ namespace EmptyProject.Areas.CMS.MenuBack.Repositories
             try
             {
                 _context.Menu.Update(menu);
-                return _context.SaveChanges() > 0;
+
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    _memoryCache.Set($@"CMS.Menu.MenuId={menu.MenuId}", menu, _memoryCacheEntryOptions);
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -193,7 +233,14 @@ namespace EmptyProject.Areas.CMS.MenuBack.Repositories
                         .Where(x => x.MenuId == menuId)
                         .ExecuteDelete();
 
-                return _context.SaveChanges() > 0;
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    _memoryCache.Remove($@"CMS.Menu.MenuId={menuId}");
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -216,7 +263,7 @@ namespace EmptyProject.Areas.CMS.MenuBack.Repositories
                 DataTable.Columns.Add("Order", typeof(string));
                 DataTable.Columns.Add("URLPath", typeof(string));
                 DataTable.Columns.Add("IconURLPath", typeof(string));
-
+                
 
                 foreach (int MenuId in lstMenuChecked)
                 {
@@ -236,10 +283,10 @@ namespace EmptyProject.Areas.CMS.MenuBack.Repositories
                         menu.Order,
                         menu.URLPath,
                         menu.IconURLPath
-
+                        
                         );
                     }
-                }
+                }                
 
                 return DataTable;
             }
@@ -264,7 +311,7 @@ namespace EmptyProject.Areas.CMS.MenuBack.Repositories
                 DataTable.Columns.Add("Order", typeof(string));
                 DataTable.Columns.Add("URLPath", typeof(string));
                 DataTable.Columns.Add("IconURLPath", typeof(string));
-
+                
 
                 foreach (Menu menu in lstMenu)
                 {
@@ -280,7 +327,7 @@ namespace EmptyProject.Areas.CMS.MenuBack.Repositories
                         menu.Order,
                         menu.URLPath,
                         menu.IconURLPath
-
+                        
                         );
                 }
 

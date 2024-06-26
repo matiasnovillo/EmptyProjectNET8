@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using EmptyProject.Areas.CMS.UserBack.Entities;
+using EmptyProject.Areas.System.ParameterBack.Entities;
+using EmptyProject.Areas.System.ParameterBack.DTOs;
+using EmptyProject.Areas.System.ParameterBack.Interfaces;
 using EmptyProject.DatabaseContexts;
 using System.Text.RegularExpressions;
 using System.Data;
-using EmptyProject.Areas.System.ParameterBack.DTOs;
-using EmptyProject.Areas.System.ParameterBack.Entities;
-using EmptyProject.Areas.System.ParameterBack.Interfaces;
-using EmptyProject.Areas.CMS.UserBack.Entities;
-using EmptyProject.Areas.System.FailureBack.Entities;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -24,10 +25,19 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
     public class ParameterRepository : IParameterRepository
     {
         protected readonly EmptyProjectContext _context;
+        private readonly IMemoryCache _memoryCache;
+        private readonly MemoryCacheEntryOptions _memoryCacheEntryOptions;
 
-        public ParameterRepository(EmptyProjectContext context)
+        public ParameterRepository(EmptyProjectContext context, IMemoryCache memoryCache)
         {
             _context = context;
+            _memoryCache = memoryCache;
+
+            _memoryCacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+                SlidingExpiration = TimeSpan.FromMinutes(2)
+            };
         }
 
         public IQueryable<Parameter> AsQueryable()
@@ -53,8 +63,19 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
         {
             try
             {
-                return _context.Parameter
-                            .FirstOrDefault(x => x.ParameterId == parameterId);
+                //Look in cache first
+                if (!_memoryCache.TryGetValue($@"System.Parameter.ParameterId={parameterId}", out Parameter? parameter))
+                {
+                    //If not exist in cache, look in DB
+                    parameter = _context.Parameter
+                                .FirstOrDefault(x => x.ParameterId == parameterId);
+                    
+                    if (parameter != null)
+                    {
+                        _memoryCache.Set(parameterId, parameter, _memoryCacheEntryOptions);
+                    }
+                }
+                return parameter;
             }
             catch (Exception) { throw; }
         }
@@ -73,7 +94,7 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
             try
             {
                 var query = from parameter in _context.Parameter
-                            select new { Parameter = parameter };
+                            select new { Parameter = parameter};
 
                 // Extraemos los resultados en listas separadas
                 List<Parameter> lstParameter = query.Select(result => result.Parameter)
@@ -107,9 +128,19 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
             catch (Exception) { throw; }
         }
 
+        public string GetByName(string name)
+        {
+            try
+            {
+                return _context.Parameter
+                                .FirstOrDefault(x => x.Name == name).Value;
+            }
+            catch (Exception) { throw; }
+        }
+
         public paginatedParameterDTO GetAllByNamePaginated(string textToSearch,
             bool strictSearch,
-            int pageIndex,
+            int pageIndex, 
             int pageSize)
         {
             try
@@ -136,6 +167,7 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
 
                 foreach (Parameter parameter in lstParameter)
                 {
+
                     User UserCreation = _context.User
                         .AsQueryable()
                         .Where(x => x.UserCreationId == parameter.UserCreationId)
@@ -170,8 +202,18 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
         {
             try
             {
-                _context.Parameter.Add(parameter);
-                return _context.SaveChanges() > 0;
+                EntityEntry<Parameter> ParameterToAdd = _context.Parameter.Add(parameter);
+
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    int AddedParameterId = ParameterToAdd.Entity.ParameterId;
+
+                    _memoryCache.Set($@"System.Parameter.ParameterId={AddedParameterId}", parameter, _memoryCacheEntryOptions);
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -181,7 +223,15 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
             try
             {
                 _context.Parameter.Update(parameter);
-                return _context.SaveChanges() > 0;
+
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    _memoryCache.Set($@"System.Parameter.ParameterId={parameter.ParameterId}", parameter, _memoryCacheEntryOptions);
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -194,7 +244,14 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
                         .Where(x => x.ParameterId == parameterId)
                         .ExecuteDelete();
 
-                return _context.SaveChanges() > 0;
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    _memoryCache.Remove($@"System.Parameter.ParameterId={parameterId}");
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -215,7 +272,7 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
                 DataTable.Columns.Add("Name", typeof(string));
                 DataTable.Columns.Add("Value", typeof(string));
                 DataTable.Columns.Add("IsPrivate", typeof(string));
-
+                
 
                 foreach (int ParameterId in lstParameterChecked)
                 {
@@ -233,10 +290,10 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
                         parameter.Name,
                         parameter.Value,
                         parameter.IsPrivate
-
+                        
                         );
                     }
-                }
+                }                
 
                 return DataTable;
             }
@@ -259,7 +316,7 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
                 DataTable.Columns.Add("Name", typeof(string));
                 DataTable.Columns.Add("Value", typeof(string));
                 DataTable.Columns.Add("IsPrivate", typeof(string));
-
+                
 
                 foreach (Parameter parameter in lstParameter)
                 {
@@ -273,7 +330,7 @@ namespace EmptyProject.Areas.System.ParameterBack.Repositories
                         parameter.Name,
                         parameter.Value,
                         parameter.IsPrivate
-
+                        
                         );
                 }
 

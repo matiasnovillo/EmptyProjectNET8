@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using EmptyProject.Areas.CMS.UserBack.Entities;
+using EmptyProject.Areas.CMS.UserBack.DTOs;
+using EmptyProject.Areas.CMS.UserBack.Interfaces;
 using EmptyProject.DatabaseContexts;
 using System.Text.RegularExpressions;
 using System.Data;
-using EmptyProject.Areas.CMS.UserBack.Entities;
-using EmptyProject.Areas.CMS.UserBack.Interfaces;
-using EmptyProject.Areas.CMS.UserBack.DTOs;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -22,10 +24,19 @@ namespace EmptyProject.Areas.CMS.UserBack.Repositories
     public class UserRepository : IUserRepository
     {
         protected readonly EmptyProjectContext _context;
+        private readonly IMemoryCache _memoryCache;
+        private readonly MemoryCacheEntryOptions _memoryCacheEntryOptions;
 
-        public UserRepository(EmptyProjectContext context)
+        public UserRepository(EmptyProjectContext context, IMemoryCache memoryCache)
         {
             _context = context;
+            _memoryCache = memoryCache;
+
+            _memoryCacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+                SlidingExpiration = TimeSpan.FromMinutes(2)
+            };
         }
 
         public IQueryable<User> AsQueryable()
@@ -51,8 +62,19 @@ namespace EmptyProject.Areas.CMS.UserBack.Repositories
         {
             try
             {
-                return _context.User
-                            .FirstOrDefault(x => x.UserId == userId);
+                //Look in cache first
+                if (!_memoryCache.TryGetValue($@"CMS.User.UserId={userId}", out User? user))
+                {
+                    //If not exist in cache, look in DB
+                    user = _context.User
+                                .FirstOrDefault(x => x.UserId == userId);
+                    
+                    if (user != null)
+                    {
+                        _memoryCache.Set(userId, user, _memoryCacheEntryOptions);
+                    }
+                }
+                return user;
             }
             catch (Exception) { throw; }
         }
@@ -107,7 +129,7 @@ namespace EmptyProject.Areas.CMS.UserBack.Repositories
 
         public paginatedUserDTO GetAllByEmailPaginated(string textToSearch,
             bool strictSearch,
-            int pageIndex,
+            int pageIndex, 
             int pageSize)
         {
             try
@@ -134,6 +156,7 @@ namespace EmptyProject.Areas.CMS.UserBack.Repositories
 
                 foreach (User user in lstUser)
                 {
+
                     User UserCreation = _context.User
                         .AsQueryable()
                         .Where(x => x.UserCreationId == user.UserCreationId)
@@ -208,8 +231,18 @@ namespace EmptyProject.Areas.CMS.UserBack.Repositories
         {
             try
             {
-                _context.User.Add(user);
-                return _context.SaveChanges() > 0;
+                EntityEntry<User> UserToAdd = _context.User.Add(user);
+
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    int AddedUserId = UserToAdd.Entity.UserId;
+
+                    _memoryCache.Set($@"CMS.User.UserId={AddedUserId}", user, _memoryCacheEntryOptions);
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -219,7 +252,15 @@ namespace EmptyProject.Areas.CMS.UserBack.Repositories
             try
             {
                 _context.User.Update(user);
-                return _context.SaveChanges() > 0;
+
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    _memoryCache.Set($@"CMS.User.UserId={user.UserId}", user, _memoryCacheEntryOptions);
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -232,7 +273,14 @@ namespace EmptyProject.Areas.CMS.UserBack.Repositories
                         .Where(x => x.UserId == userId)
                         .ExecuteDelete();
 
-                return _context.SaveChanges() > 0;
+                bool result = _context.SaveChanges() > 0;
+
+                if (result)
+                {
+                    _memoryCache.Remove($@"CMS.User.UserId={userId}");
+                }
+
+                return result;
             }
             catch (Exception) { throw; }
         }
@@ -254,7 +302,7 @@ namespace EmptyProject.Areas.CMS.UserBack.Repositories
                 DataTable.Columns.Add("Password", typeof(string));
                 DataTable.Columns.Add("RoleId", typeof(string));
                 DataTable.Columns.Add("ProfilePicture", typeof(string));
-
+                
 
                 foreach (int UserId in lstUserChecked)
                 {
@@ -275,7 +323,7 @@ namespace EmptyProject.Areas.CMS.UserBack.Repositories
                         user.ProfilePicture
                         );
                     }
-                }
+                }                
 
                 return DataTable;
             }
@@ -299,7 +347,7 @@ namespace EmptyProject.Areas.CMS.UserBack.Repositories
                 DataTable.Columns.Add("Password", typeof(string));
                 DataTable.Columns.Add("RoleId", typeof(string));
                 DataTable.Columns.Add("ProfilePicture", typeof(string));
-
+                
 
                 foreach (User user in lstUser)
                 {
